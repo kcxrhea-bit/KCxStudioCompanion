@@ -7,6 +7,7 @@ import { EcosystemTest } from "./components/EcosystemTest";
 import { DashboardBackground } from "./components/DashboardBackground";
 import kcxEcosystemReference from "./assets/kcx-ecosystem-reference.png";
 import kcxDashboardBg from "./assets/branding/kcx-dashboard-bg.png";
+import { ValhallaPage } from "./valhalla/ValhallaPage";
 
 const coreWorkflowNavItems = ["Dashboard", "Projects", "Project Memory"] as const;
 const aiOperationsNavItems = ["Prompt Generator", "Approval Queue", "AI Providers"] as const;
@@ -50,6 +51,8 @@ const defaultState: AppState = { projects: [], approvals: [], timeline: [], aiDe
 const parseBuildIntel = (logs: string): BuildIntelligence => ({ buildSuccessful: /BUILD SUCCESSFUL/i.test(logs), buildFailed: /BUILD FAILED/i.test(logs), kotlinCompileErrors: (logs.match(/kotlin.*error|e:\s.*kotlin/gi) || []).length, typescriptErrors: (logs.match(/TS\d{4}|typescript.*error/gi) || []).length, gradleErrors: (logs.match(/gradle.*error|\* What went wrong/gi) || []).length, missingDependencyErrors: (logs.match(/cannot find module|could not resolve|missing dependency|unresolved reference/gi) || []).length });
 
 export function App() {
+  const [showValhalla, setShowValhalla] = useState(true);
+
   const [state, setState] = useState<AppState>(defaultState);
   const [tab, setTab] = useState<(typeof navItems)[number]>("Dashboard");
   const [projectId, setProjectId] = useState("");
@@ -785,9 +788,16 @@ ${safetyBlock}`;
   const isKDroneActive = systemState === "processing" || systemTelemetry.slice(0, 8).some((event) => /build|analyz|vite|tsc|compile/i.test(stripAnsi(event.label || "")));
 
   const activeSectionKey = sectionKey(tab);
+  const handleNavigateToCompanionSection = (sectionId: string) => {
+    const nextTab = (navItems as readonly string[]).includes(sectionId) ? (sectionId as (typeof navItems)[number]) : "Dashboard";
+    setTab(nextTab);
+    setShowValhalla(false);
+  };
   const renderNavItem = (item: (typeof navItems)[number]) => <button key={item} className={`nav-item ${tab === item ? "active" : ""} module-${sectionKey(item)}`} onClick={() => setTab(item)}>{item}</button>;
 
-  return <><div className="app-background"><div className="light-ray"></div><div className="light-ray"></div><div className="light-ray"></div><div className="light-ray"></div></div><div className={`shell app-shell section-${activeSectionKey}`}><aside className="sidebar panel-primary edge-glow-left"><div className="nav-group">{coreWorkflowNavItems.map((n) => renderNavItem(n))}</div><div className="nav-separator" /><div className="nav-group">{aiOperationsNavItems.map((n) => renderNavItem(n))}</div><div className="nav-separator" /><div className="nav-group">{developmentNavItems.map((n) => renderNavItem(n))}</div><div className="nav-separator" /><div className="nav-group">{systemNavItems.map((n) => renderNavItem(n))}</div><div className="nav-separator" /><div className="nav-group">{productInfoNavItems.map((n) => renderNavItem(n))}</div>{isDevelopment && <><div className="nav-separator" /><div className="nav-group">{devDebugNavItems.map((n) => renderNavItem(n))}</div></>}</aside><main>
+  if (showValhalla) return <ValhallaPage onExit={() => setShowValhalla(false)} onNavigateToCompanionSection={handleNavigateToCompanionSection} />;
+
+  return <><div className="app-background"><div className="light-ray"></div><div className="light-ray"></div><div className="light-ray"></div><div className="light-ray"></div></div><div className={`shell app-shell section-${activeSectionKey}`}><aside className="sidebar panel-primary edge-glow-left"><div className="nav-group"><button type="button" onClick={() => setShowValhalla(true)}>Enter Valhalla</button></div><div className="nav-separator" /><div className="nav-group">{coreWorkflowNavItems.map((n) => renderNavItem(n))}</div><div className="nav-separator" /><div className="nav-group">{aiOperationsNavItems.map((n) => renderNavItem(n))}</div><div className="nav-separator" /><div className="nav-group">{developmentNavItems.map((n) => renderNavItem(n))}</div><div className="nav-separator" /><div className="nav-group">{systemNavItems.map((n) => renderNavItem(n))}</div><div className="nav-separator" /><div className="nav-group">{productInfoNavItems.map((n) => renderNavItem(n))}</div>{isDevelopment && <><div className="nav-separator" /><div className="nav-group">{devDebugNavItems.map((n) => renderNavItem(n))}</div></>}</aside><main>
     <header className="content-header panel-primary edge-glow-top">
       <button type="button" className="app-title-trigger app-title-center" onClick={() => setIsEcosystemDockOpen(true)}>
         <span className="brand text-header-md">KCx Studio Companion</span>

@@ -1,0 +1,1099 @@
+:root {
+  --vh-black-anvil: #0f1115;
+  --vh-charcoal: #1a1d24;
+  --vh-ash: #2a2f38;
+  --vh-steel: #3a404c;
+  --vh-ember: #ff7a1a;
+  --vh-forgefire: #ff9a3c;
+  --vh-lava: #d9472b;
+  --vh-heat-glow: rgba(255, 122, 26, 0.18);
+  --vh-text: #e7e8eb;
+  --vh-muted: #9aa1ad;
+}
+@keyframes forgeEntry { from { opacity: 0; filter: blur(5px) brightness(0.78); } to { opacity: 1; filter: blur(0) brightness(1); } }
+@keyframes emberPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255, 122, 26, 0.2); opacity: 0.72; } 50% { box-shadow: 0 0 0 6px rgba(255, 122, 26, 0); opacity: 1; } }
+@keyframes heatShimmer { 0%, 100% { opacity: 0.35; transform: translateX(-2%); } 50% { opacity: 0.58; transform: translateX(2%); } }
+@keyframes fogDrift { 0% { transform: translateX(0) translateY(0); } 50% { transform: translateX(2.5%) translateY(1.2%); } 100% { transform: translateX(0) translateY(0); } }
+@keyframes hazeFlow { 0%, 100% { opacity: 0.14; } 50% { opacity: 0.24; } }
+@keyframes emberDrift { 0% { background-position: 0 100%, 30% 90%, 70% 100%, 90% 95%; } 100% { background-position: 0 -10%, 30% -5%, 70% -8%, 90% -12%; } }
+@keyframes parallaxDrift { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(1.5%, -1%, 0); } }
+@keyframes edgeFlow { to { stroke-dashoffset: -16; } }
+
+.valhalla-root { height: 100vh; display: flex; flex-direction: column; background: radial-gradient(980px 560px at 54% 42%, rgba(217, 71, 43, 0.08), transparent 66%), linear-gradient(170deg, #0d1015 0%, #0f1115 44%, #141820 100%); color: var(--vh-text); overflow: hidden; }
+.valhalla-awake { animation: forgeEntry 1.2s ease-out both; }
+.valhalla-header { height: 74px; display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--vh-ash); background: linear-gradient(180deg, rgba(26, 29, 36, 0.96), rgba(15, 17, 21, 0.95)); box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5); position: relative; overflow: hidden; }
+.valhalla-header::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255, 122, 26, 0.08), transparent); animation: heatShimmer 7s ease-in-out infinite; pointer-events: none; }
+.valhalla-header h1 { margin: 0; font-size: 1.16rem; letter-spacing: 0.07em; text-transform: uppercase; }
+.valhalla-divider { width: 1px; height: 30px; margin: 0 14px; background: linear-gradient(180deg, transparent, var(--vh-ember), transparent); opacity: 0.45; }
+.valhalla-header-status { display: flex; gap: 10px; margin-left: auto; }
+.pill { border: 1px solid var(--vh-ash); background: rgba(26, 29, 36, 0.88); color: var(--vh-muted); padding: 6px 10px; border-radius: 999px; font-size: 0.78rem; }
+.pill.active { color: #ffe2ce; border-color: rgba(255, 122, 26, 0.48); background: linear-gradient(140deg, rgba(255, 122, 26, 0.24), rgba(42, 47, 56, 0.78)); }
+.status-dot { width: 7px; height: 7px; border-radius: 999px; display: inline-block; margin-right: 7px; background: var(--vh-forgefire); animation: emberPulse 2.8s ease-in-out infinite; }
+.valhalla-body { flex: 1; min-height: 0; height: 100%; display: grid; grid-template-columns: 210px 1fr 320px; grid-template-rows: minmax(0, 1fr); gap: 14px; padding: 14px; overflow: hidden; align-items: stretch; box-sizing: border-box; }
+.valhalla-sidebar,.valhalla-inspector,.forge-canvas-panel { border: 1px solid var(--vh-ash); border-radius: 14px; background: linear-gradient(180deg, rgba(26, 29, 36, 0.92), rgba(15, 17, 21, 0.95)); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02), 0 18px 34px rgba(0, 0, 0, 0.44); }
+.forge-canvas-panel { height: 100%; display: flex; flex-direction: column; }
+.valhalla-sidebar { padding: 12px; position: relative; }
+.valhalla-sidebar::before { content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 1px; background: linear-gradient(180deg, transparent, rgba(255, 122, 26, 0.35), transparent); }
+.valhalla-sidebar nav { display: flex; flex-direction: column; gap: 8px; }
+.nav-item { padding: 10px 12px; color: var(--vh-muted); text-align: left; border: 1px solid transparent; border-radius: 10px; background: linear-gradient(165deg, rgba(42, 47, 56, 0.36), rgba(26, 29, 36, 0.72)); transition: all 180ms ease; }
+.nav-item:hover { color: #d8dde4; border-color: rgba(255, 122, 26, 0.32); transform: translateY(-1px); }
+.nav-item.active { color: #ffe1cc; border-color: rgba(255, 122, 26, 0.45); box-shadow: inset 0 0 0 1px rgba(255, 154, 60, 0.2), 0 0 24px rgba(255, 122, 26, 0.11); }
+
+.forge-canvas-panel { position: relative; overflow: hidden; min-height: 0; background: radial-gradient(circle at 50% 50%, rgba(26, 29, 36, 0.9), rgba(15, 17, 21, 0.97)); }
+.forge-depth-layer,.forge-atmos-layer,.zone-label,.forge-embers { position: absolute; pointer-events: none; }
+.forge-zone { position: absolute; }
+.forge-depth-layer { inset: -5%; z-index: 0; animation: parallaxDrift 40s ease-in-out infinite; }
+.forge-structures { background: radial-gradient(900px 360px at 52% 96%, rgba(0, 0, 0, 0.36), transparent 66%), linear-gradient(180deg, transparent 58%, rgba(0, 0, 0, 0.25) 100%); }
+.forge-depth-fog { background: radial-gradient(560px 320px at 28% 24%, rgba(58, 64, 76, 0.12), transparent 74%), radial-gradient(680px 360px at 74% 68%, rgba(42, 47, 56, 0.18), transparent 72%); }
+.forge-zone { z-index: 1; filter: blur(5px); opacity: 0.72; }
+.zone-creation { left: 2%; top: 8%; width: 38%; height: 40%; background: radial-gradient(circle, rgba(255, 122, 26, 0.1), transparent 70%); }
+.zone-runtime { left: 40%; top: 4%; width: 34%; height: 36%; background: radial-gradient(circle, rgba(58, 64, 76, 0.12), rgba(255, 122, 26, 0.014) 52%, transparent 74%); }
+.zone-memory { left: 6%; top: 56%; width: 30%; height: 34%; background: radial-gradient(circle, rgba(42, 47, 56, 0.26), transparent 75%); }
+.zone-ai { left: 46%; top: 52%; width: 30%; height: 34%; background: radial-gradient(circle, rgba(217, 71, 43, 0.08), transparent 72%); }
+.zone-device { left: 20%; top: 68%; width: 20%; height: 24%; background: radial-gradient(circle, rgba(255, 154, 60, 0.07), transparent 72%); }
+.zone-cortex { left: 74%; top: 18%; width: 25%; height: 44%; background: radial-gradient(circle, rgba(0, 0, 0, 0.55), rgba(20, 12, 16, 0.26) 52%, transparent 74%); }
+.zone-label { z-index: 2; font-size: 0.68rem; letter-spacing: 0.18em; color: rgba(231, 232, 235, 0.48); text-transform: uppercase; text-shadow: 0 2px 12px rgba(0, 0, 0, 0.65); }
+.zone-label-creation { left: 7%; top: 12%; }
+.zone-label-runtime { left: 51%; top: 10%; color: rgba(154, 161, 173, 0.36); }
+.zone-label-memory { left: 10%; top: 62%; color: rgba(154, 161, 173, 0.44); }
+.zone-label-ai { left: 56%; top: 58%; color: rgba(255, 191, 158, 0.44); }
+.zone-label-device { left: 23%; top: 74%; }
+.zone-label-cortex { left: 76%; top: 25%; color: rgba(217, 71, 43, 0.5); }
+.forge-atmos-layer { inset: 0; z-index: 1; }
+.forge-smoke { background: radial-gradient(500px 280px at 35% 70%, rgba(58, 64, 76, 0.14), transparent 70%), radial-gradient(620px 350px at 70% 25%, rgba(42, 47, 56, 0.2), transparent 74%); animation: fogDrift 28s ease-in-out infinite; }
+.forge-haze { background: radial-gradient(460px 260px at 20% 24%, rgba(255, 122, 26, 0.06), transparent 62%), radial-gradient(360px 220px at 53% 60%, rgba(217, 71, 43, 0.05), transparent 66%), radial-gradient(260px 200px at 83% 34%, rgba(58, 64, 76, 0.06), transparent 66%); animation: hazeFlow 18s ease-in-out infinite; }
+.forge-vignette { box-shadow: inset 0 0 140px rgba(0, 0, 0, 0.7); }
+.forge-embers { inset: 0; z-index: 1; background-image: radial-gradient(circle, rgba(255, 154, 60, 0.14) 0, rgba(255, 154, 60, 0.01) 8px), radial-gradient(circle, rgba(255, 122, 26, 0.12) 0, rgba(255, 122, 26, 0.01) 7px), radial-gradient(circle, rgba(217, 71, 43, 0.1) 0, rgba(217, 71, 43, 0.01) 7px); background-size: 2px 2px, 3px 3px, 2px 2px; background-repeat: no-repeat; animation: emberDrift 42s linear infinite; }
+.forge-canvas-panel .react-flow { z-index: 3; }
+.forge-canvas-panel .react-flow__background { opacity: 0.28; animation: hazeFlow 22s ease-in-out infinite; }
+.forge-canvas-panel .react-flow__edge-path { stroke-width: 1.4; stroke-dasharray: 4 14; animation: edgeFlow 3.2s linear infinite; }
+.forge-canvas-panel .react-flow__edge.forge-edge.edge-creation .react-flow__edge-path { stroke: rgba(255, 122, 26, 0.32); }
+.forge-canvas-panel .react-flow__edge.forge-edge.edge-runtime .react-flow__edge-path { stroke: rgba(255, 154, 60, 0.25); }
+.forge-canvas-panel .react-flow__edge.forge-edge.edge-ai .react-flow__edge-path { stroke: rgba(217, 71, 43, 0.25); }
+.forge-canvas-panel .react-flow__edge.forge-edge.edge-device .react-flow__edge-path { stroke: rgba(255, 154, 60, 0.2); }
+.forge-canvas-panel .react-flow__edge.forge-edge.edge-cortex .react-flow__edge-path { stroke: rgba(217, 71, 43, 0.3); stroke-dasharray: 3 16; opacity: 0.55; }
+.forge-canvas-panel .react-flow__node.forge-node { background: linear-gradient(160deg, #2a2f38, #1a1d24 62%, #141820 100%); border: 1px solid #3a404c; color: #eceef2; border-radius: 12px; padding: 8px 10px; box-shadow: 0 9px 22px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.04); transition: transform 280ms ease, box-shadow 320ms ease, border-color 280ms ease, opacity 320ms ease; animation: hazeFlow 9s ease-in-out infinite; }
+.forge-canvas-panel .react-flow__node.forge-node:hover { transform: translateY(-1px); border-color: rgba(255, 122, 26, 0.34); box-shadow: 0 12px 24px rgba(0, 0, 0, 0.44), 0 0 10px rgba(255, 122, 26, 0.12); }
+.forge-canvas-panel .react-flow__node.forge-node.is-selected,.forge-canvas-panel .react-flow__node.selected { border-color: rgba(255, 154, 60, 0.5); box-shadow: 0 16px 34px rgba(0, 0, 0, 0.52), 0 0 14px rgba(255, 122, 26, 0.12); background: linear-gradient(160deg, #2f343e, #1a1d24 56%, #1f1714 100%); }
+.valhalla-inspector { padding: 16px; overflow-y: auto; min-height: 0; max-height: 100%; height: 100%; box-sizing: border-box; }
+.valhalla-inspector h2 { margin-top: 0; font-size: 1rem; }
+.inspector-meta { border: 1px solid var(--vh-ash); border-radius: 10px; padding: 10px; background: linear-gradient(180deg, rgba(42, 47, 56, 0.45), rgba(26, 29, 36, 0.78)); }
+.inspector-placeholder { margin-top: 12px; min-height: 130px; border: 1px dashed var(--vh-steel); border-radius: 10px; padding: 12px; color: var(--vh-muted); background: rgba(15, 17, 21, 0.74); }
+.inspector-action-result {
+  border: 1px solid rgba(255, 122, 26, 0.22);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: linear-gradient(180deg, rgba(58, 40, 30, 0.42), rgba(15, 17, 21, 0.84));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+}
+.inspector-action-title {
+  margin: 0 0 4px;
+  color: #f6decf;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.inspector-action-result p:last-child {
+  margin: 0;
+  color: rgba(231, 232, 235, 0.84);
+  line-height: 1.45;
+  font-size: 0.78rem;
+}
+@media (max-width: 1140px) { .valhalla-body { grid-template-columns: 180px 1fr; } .valhalla-inspector { grid-column: 1 / -1; } }
+@media (max-width: 760px) { .valhalla-header { height: auto; align-items: flex-start; gap: 10px; padding: 14px; flex-direction: column; } .valhalla-divider { display: none; } .valhalla-header-status { flex-wrap: wrap; margin-left: 0; } .valhalla-body { grid-template-columns: 1fr; } .forge-canvas-panel { min-height: 440px; } }
+/* Phase 4 additions appended */
+@keyframes syncPulse { 0%,100% { opacity: 0.45; } 50% { opacity: 0.85; } }
+@keyframes warningBeat { 0%,100% { box-shadow: 0 0 0 0 rgba(217,71,43,0.2); } 50% { box-shadow: 0 0 0 8px rgba(217,71,43,0); } }
+@keyframes lockedContainment { 0%,100% { opacity: 0.55; filter: brightness(0.8); } 50% { opacity: 0.72; filter: brightness(1); } }
+@keyframes ambientFlare { 0%,88%,100% { opacity: 0; } 92% { opacity: 0.22; } }
+@keyframes ambientRipple { 0%,92%,100% { transform: scale(0.9); opacity: 0; } 95% { transform: scale(1.05); opacity: 0.2; } }
+
+.forge-canvas-panel.realm-focused .react-flow__background { opacity: 0.32; }
+.forge-canvas-panel.realm-focused .forge-zone { opacity: 0.44; }
+.forge-canvas-panel.realm-focused .forge-node.is-dimmed { opacity: 0.34; filter: saturate(0.58) brightness(0.9); }
+.forge-canvas-panel.realm-focused.focus-creation .zone-creation,
+.forge-canvas-panel.realm-focused.focus-runtime .zone-runtime,
+.forge-canvas-panel.realm-focused.focus-memory .zone-memory,
+.forge-canvas-panel.realm-focused.focus-ai .zone-ai,
+.forge-canvas-panel.realm-focused.focus-device .zone-device,
+.forge-canvas-panel.realm-focused.focus-cortex .zone-cortex { opacity: 0.82; }
+
+.zone-state-active { animation: hazeFlow 6s ease-in-out infinite; }
+.zone-state-idle { opacity: 0.56; }
+.zone-state-dormant { opacity: 0.42; }
+.zone-state-sync { animation: syncPulse 5s ease-in-out infinite; }
+.zone-state-warning { animation: warningBeat 5.5s ease-in-out infinite; }
+.zone-state-locked { animation: lockedContainment 8.5s ease-in-out infinite; box-shadow: inset 0 0 64px rgba(0,0,0,0.72); }
+
+.forge-canvas-panel .react-flow__node.forge-node.state-dormant { opacity: 0.74; box-shadow: 0 8px 18px rgba(0,0,0,0.4); }
+.forge-canvas-panel .react-flow__node.forge-node.state-idle { box-shadow: 0 10px 22px rgba(0,0,0,0.44), 0 0 10px rgba(255,122,26,0.08); }
+.forge-canvas-panel .react-flow__node.forge-node.state-active { box-shadow: 0 14px 30px rgba(0,0,0,0.48), 0 0 20px rgba(255,122,26,0.22); animation: syncPulse 4s ease-in-out infinite; }
+.forge-canvas-panel .react-flow__node.forge-node.state-synchronizing { box-shadow: 0 14px 30px rgba(0,0,0,0.48), 0 0 22px rgba(255,154,60,0.2); animation: syncPulse 3.2s ease-in-out infinite; }
+.forge-canvas-panel .react-flow__node.forge-node.state-warning { border-color: rgba(217,71,43,0.54); animation: warningBeat 4.8s ease-in-out infinite; }
+.forge-canvas-panel .react-flow__node.forge-node.state-locked { border-color: rgba(58,64,76,0.9); background: linear-gradient(160deg, #1b1f27, #12151b 62%, #191214 100%); box-shadow: 0 12px 32px rgba(0,0,0,0.58), 0 0 14px rgba(217,71,43,0.12); }
+
+.forge-canvas-panel .react-flow__edge.forge-edge.flow-strong .react-flow__edge-path { stroke-width: 2.1; opacity: 0.9; }
+.forge-canvas-panel .react-flow__edge.edge-ai .react-flow__edge-path { animation-duration: 1s; }
+.forge-canvas-panel .react-flow__edge.edge-cortex .react-flow__edge-path { animation-duration: 1.8s; opacity: 0.66; }
+
+.zone-cortex { box-shadow: inset 0 0 110px rgba(0,0,0,0.84), 0 0 28px rgba(217,71,43,0.1); }
+.zone-label-cortex { letter-spacing: 0.2em; }
+
+.ambient-event { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.ambient-flare { background: radial-gradient(360px 190px at 14% 84%, rgba(255,122,26,0.11), transparent 72%); animation: ambientFlare 52s ease-in-out infinite; }
+.ambient-ripple { background: radial-gradient(circle at 74% 36%, rgba(217,71,43,0.1), transparent 50%); animation: ambientRipple 64s ease-in-out infinite; }
+
+/* Phase 5 awakening */
+@keyframes realmPhaseShift {
+  0%, 100% { filter: brightness(0.92) saturate(0.92); }
+  35% { filter: brightness(0.98) saturate(1); }
+  70% { filter: brightness(1.03) saturate(1.02); }
+}
+@keyframes awakenZone {
+  0% { opacity: 0.12; filter: blur(8px); }
+  65% { opacity: 0.34; filter: blur(5px); }
+  100% { opacity: 1; filter: blur(4px); }
+}
+@keyframes bootFlicker {
+  0% { opacity: 0.2; }
+  12% { opacity: 0.5; }
+  20% { opacity: 0.26; }
+  35% { opacity: 0.62; }
+  100% { opacity: 1; }
+}
+@keyframes syncBurst {
+  0%, 94%, 100% { opacity: 0; }
+  96% { opacity: 0.24; }
+}
+@keyframes cortexPressure {
+  0%, 100% { box-shadow: inset 0 0 118px rgba(0,0,0,0.86), 0 0 20px rgba(217,71,43,0.08); }
+  50% { box-shadow: inset 0 0 136px rgba(0,0,0,0.9), 0 0 28px rgba(217,71,43,0.14); }
+}
+@keyframes deepRumble {
+  0%, 96%, 100% { transform: translateX(0); }
+  97% { transform: translateX(0.25%); }
+  98% { transform: translateX(-0.2%); }
+}
+@keyframes networkWake {
+  0% { stroke-opacity: 0.08; }
+  100% { stroke-opacity: 1; }
+}
+
+.forge-canvas-panel.awakening-sequence {
+  animation: realmPhaseShift 46s ease-in-out infinite, deepRumble 58s ease-in-out infinite;
+}
+.forge-canvas-panel.awakening-sequence .forge-zone { opacity: 0.15; animation: awakenZone 2.6s ease-out both; }
+.forge-canvas-panel.awakening-sequence .stage-1 { animation-delay: 0.2s; }
+.forge-canvas-panel.awakening-sequence .stage-2 { animation-delay: 1.4s; }
+.forge-canvas-panel.awakening-sequence .stage-3 { animation-delay: 2.5s; }
+.forge-canvas-panel.awakening-sequence .stage-4 { animation-delay: 3.6s; }
+.forge-canvas-panel.awakening-sequence .stage-5 { animation-delay: 4.8s; }
+.forge-canvas-panel.awakening-sequence .stage-6 { animation-delay: 6.2s; opacity: 0.62; }
+
+.forge-canvas-panel.awakening-sequence .forge-node { animation: bootFlicker 1.8s ease-out both, hazeFlow 11s ease-in-out infinite; }
+.forge-canvas-panel.awakening-sequence .boot-companion { animation-delay: 0.35s, 0s; }
+.forge-canvas-panel.awakening-sequence .boot-valhalla { animation-delay: 0.75s, 0.2s; }
+.forge-canvas-panel.awakening-sequence .boot-mode { animation-delay: 1.7s, 0.4s; }
+.forge-canvas-panel.awakening-sequence .boot-messenger { animation-delay: 2s, 0.6s; }
+.forge-canvas-panel.awakening-sequence .boot-robot { animation-delay: 2.8s, 0.2s; }
+.forge-canvas-panel.awakening-sequence .boot-local-ai { animation-delay: 3.9s, 0.1s; }
+.forge-canvas-panel.awakening-sequence .boot-cloud-ai { animation-delay: 4.2s, 0.4s; }
+.forge-canvas-panel.awakening-sequence .boot-cortex { animation-delay: 6.7s, 0.8s; opacity: 0.86; }
+
+.forge-canvas-panel.awakening-sequence .react-flow__edge-path { stroke-opacity: 0.08; animation: edgeFlow 3.6s linear infinite, networkWake 3.2s ease-out both; }
+.forge-canvas-panel.awakening-sequence .edge-creation .react-flow__edge-path { animation-delay: 0.7s; }
+.forge-canvas-panel.awakening-sequence .edge-runtime .react-flow__edge-path { animation-delay: 1.8s; }
+.forge-canvas-panel.awakening-sequence .edge-device .react-flow__edge-path { animation-delay: 2.6s; }
+.forge-canvas-panel.awakening-sequence .edge-ai .react-flow__edge-path { animation-delay: 3.8s; }
+.forge-canvas-panel.awakening-sequence .edge-cortex .react-flow__edge-path { animation-delay: 6.8s; stroke-opacity: 0.5; }
+
+.zone-cortex { animation: lockedContainment 16s ease-in-out infinite, cortexPressure 26s ease-in-out infinite; }
+.zone-cortex::after {
+  content: "";
+  position: absolute;
+  inset: 8% 10%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(217,71,43,0.06), transparent 68%);
+  animation: syncBurst 56s ease-in-out infinite;
+}
+
+.ambient-dim-flare {
+  background: radial-gradient(620px 340px at 52% 46%, rgba(255, 154, 60, 0.08), transparent 72%);
+  animation: ambientFlare 86s ease-in-out infinite;
+}
+.ambient-resonance-wave {
+  background: radial-gradient(circle at 58% 42%, rgba(255,122,26,0.08), transparent 54%);
+  animation: syncBurst 78s ease-in-out infinite;
+}
+
+/* Phase 6 intelligent realm */
+.forge-canvas-panel .forge-node.is-related { box-shadow: 0 10px 24px rgba(0,0,0,0.46), 0 0 10px rgba(255,122,26,0.1); }
+.forge-canvas-panel .forge-node.near-cortex { filter: saturate(0.84); }
+.forge-canvas-panel.realm-focused .react-flow__edge { opacity: 0.42; }
+.forge-canvas-panel.realm-focused .forge-node.is-related + .react-flow__handle { opacity: 0.42; }
+
+.forge-canvas-panel.memory-creation-forge .zone-creation,
+.forge-canvas-panel.memory-runtime-nexus .zone-runtime,
+.forge-canvas-panel.memory-ai-systems .zone-ai,
+.forge-canvas-panel.memory-device-grid .zone-device,
+.forge-canvas-panel.memory-cortex-core .zone-cortex {
+  opacity: 0.5;
+  transition: opacity 12s ease-out;
+}
+
+.forge-canvas-panel.mood-calm { filter: saturate(0.94) brightness(0.94); }
+.forge-canvas-panel.mood-sync { filter: saturate(1) brightness(0.98); }
+.forge-canvas-panel.mood-resonance { filter: saturate(1.02) brightness(1); }
+.forge-canvas-panel.mood-pressure { filter: saturate(0.96) brightness(0.93); }
+.forge-canvas-panel.mood-lull { filter: saturate(0.9) brightness(0.9); }
+
+.forge-canvas-panel.realm-navigating .forge-smoke { transform: translate3d(0.4%, 0, 0); transition: transform 900ms ease; }
+.forge-canvas-panel.zoom-near .forge-haze { opacity: 0.24; }
+.forge-canvas-panel.zoom-far .forge-haze { opacity: 0.14; }
+
+.forge-canvas-panel.focus-cortex-core .zone-cortex,
+.forge-canvas-panel .zone-cortex { filter: blur(6px) brightness(0.82); }
+.forge-canvas-panel .zone-cortex::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 36% 52%, rgba(217,71,43,0.06), transparent 60%);
+  animation: syncBurst 84s ease-in-out infinite;
+}
+
+/* Phase 7 interaction layer */
+.forge-zone { border: 0; cursor: default; }
+.forge-zone.zone-selected { outline: 1px solid rgba(255,154,60,0.45); box-shadow: 0 0 0 1px rgba(255,122,26,0.2), 0 0 18px rgba(255,122,26,0.1); }
+.forge-canvas-panel .forge-node.is-selected::before {
+  content: "";
+  position: absolute;
+  inset: -9px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,154,60,0.28);
+  pointer-events: none;
+}
+.forge-canvas-panel .forge-node.is-selected::after {
+  content: "+";
+  position: absolute;
+  right: 8px;
+  top: 6px;
+  color: rgba(255,154,60,0.62);
+  font-size: 0.7rem;
+}
+.forge-canvas-panel .forge-node.class-reactor-core { border-color: rgba(217,71,43,0.36); }
+.forge-canvas-panel .forge-node.class-ai-infrastructure { border-color: rgba(255,122,26,0.3); }
+.forge-canvas-panel .forge-node.class-runtime-system { border-color: rgba(255,154,60,0.26); }
+
+.valhalla-inspector { display: flex; flex-direction: column; gap: 12px; transition: opacity 300ms ease, transform 300ms ease; }
+.inspector-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+.badge {
+  border: 1px solid var(--vh-ash);
+  background: rgba(42,47,56,0.55);
+  color: #d9dde4;
+  border-radius: 999px;
+  padding: 4px 9px;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+}
+.inspector-lore { color: #b8bec8; font-style: italic; margin-top: 8px; }
+.inspector-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.inspector-actions button {
+  border: 1px solid var(--vh-ash);
+  background: linear-gradient(160deg, rgba(42,47,56,0.42), rgba(15,17,21,0.78));
+  color: #d7dbe3;
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 0.74rem;
+  text-align: left;
+}
+.inspector-actions button:hover { border-color: rgba(255,122,26,0.34); color: #f1dfd4; }
+
+/* Phase 8 operational layer */
+.inspector-controls { border: 1px solid var(--vh-ash); border-radius: 9px; padding: 8px; background: rgba(20,24,30,0.72); }
+.inspector-controls label { font-size: 0.78rem; color: #d5d9e0; }
+.inspector-modes { display: flex; flex-wrap: wrap; gap: 6px; }
+.mode-btn { border: 1px solid var(--vh-ash); background: rgba(26,29,36,0.8); color: #aeb5c1; border-radius: 999px; padding: 4px 8px; font-size: 0.7rem; }
+.mode-btn.active { border-color: rgba(255,122,26,0.42); color: #ffe0cd; background: rgba(62,38,30,0.7); }
+.inspector-timeline { border: 1px solid var(--vh-ash); border-radius: 10px; padding: 9px; background: rgba(13,16,22,0.78); }
+.inspector-timeline p { margin: 0 0 6px; color: #aab1bc; font-size: 0.74rem; }
+.inspector-timeline p:last-child { margin-bottom: 0; }
+
+.forge-canvas-panel.operational-overlay-on .react-flow__edge-path { stroke-width: 1.7; opacity: 0.78; }
+.forge-canvas-panel.operational-overlay-on .zone-label { opacity: 0.75; }
+.forge-canvas-panel.operational-overlay-on .forge-node.is-related { box-shadow: 0 10px 24px rgba(0,0,0,0.5), 0 0 14px rgba(255,122,26,0.14); }
+.forge-canvas-panel.operational-overlay-on.mode-synchronization .edge-ai .react-flow__edge-path,
+.forge-canvas-panel.operational-overlay-on.mode-synchronization .edge-runtime .react-flow__edge-path { opacity: 0.92; }
+.forge-canvas-panel.operational-overlay-on.mode-containment .zone-cortex,
+.forge-canvas-panel.operational-overlay-on.mode-containment .edge-cortex .react-flow__edge-path { opacity: 0.9; }
+.forge-canvas-panel.operational-overlay-on.mode-runtime .zone-runtime,
+.forge-canvas-panel.operational-overlay-on.mode-runtime .class-runtime-system { opacity: 1; }
+.forge-canvas-panel.operational-overlay-off .react-flow__edge-path { opacity: 0.48; }
+
+/* Phase 8.5 visual identity recovery */
+.forge-canvas-panel {
+  background:
+    radial-gradient(900px 520px at 28% 35%, rgba(255, 122, 26, 0.055), transparent 68%),
+    radial-gradient(920px 560px at 78% 54%, rgba(0, 0, 0, 0.42), transparent 72%),
+    linear-gradient(150deg, #0b0d11 0%, #0f1115 48%, #151820 100%);
+}
+
+.forge-structures {
+  background:
+    radial-gradient(980px 420px at 48% 100%, rgba(0, 0, 0, 0.52), transparent 66%),
+    linear-gradient(105deg, transparent 0 18%, rgba(42, 47, 56, 0.1) 18% 19%, transparent 19% 100%),
+    linear-gradient(180deg, transparent 52%, rgba(0, 0, 0, 0.36) 100%);
+}
+
+.forge-depth-fog {
+  background:
+    radial-gradient(720px 380px at 24% 30%, rgba(58, 64, 76, 0.1), transparent 78%),
+    radial-gradient(820px 460px at 76% 68%, rgba(15, 17, 21, 0.38), transparent 74%);
+}
+
+.forge-zone {
+  pointer-events: none;
+  border: 0;
+  border-radius: 45%;
+  filter: blur(14px);
+  opacity: 0.34;
+  mix-blend-mode: screen;
+  cursor: default;
+  user-select: none;
+}
+
+.zone-creation {
+  background: radial-gradient(ellipse, rgba(255, 122, 26, 0.07), rgba(217, 71, 43, 0.035) 42%, transparent 76%);
+}
+
+.zone-runtime {
+  background: radial-gradient(ellipse, rgba(58, 64, 76, 0.12), rgba(255, 122, 26, 0.018) 48%, transparent 78%);
+}
+
+.zone-memory {
+  background: radial-gradient(ellipse, rgba(42, 47, 56, 0.18), rgba(15, 17, 21, 0.18) 54%, transparent 80%);
+}
+
+.zone-ai {
+  background: radial-gradient(ellipse, rgba(217, 71, 43, 0.052), rgba(42, 47, 56, 0.08) 52%, transparent 78%);
+}
+
+.zone-device {
+  background: radial-gradient(ellipse, rgba(255, 154, 60, 0.045), rgba(42, 47, 56, 0.07) 48%, transparent 78%);
+}
+
+.zone-cortex {
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.72), rgba(20, 12, 16, 0.28) 50%, transparent 78%);
+  filter: blur(18px) brightness(0.68);
+}
+
+.zone-label {
+  color: rgba(231, 232, 235, 0.31);
+  text-shadow: 0 3px 18px rgba(0, 0, 0, 0.82);
+}
+
+.zone-label-runtime {
+  color: rgba(154, 161, 173, 0.3);
+}
+
+.zone-label-ai,
+.zone-label-cortex {
+  color: rgba(255, 191, 158, 0.34);
+}
+
+.forge-smoke {
+  background:
+    radial-gradient(620px 340px at 30% 72%, rgba(58, 64, 76, 0.18), transparent 74%),
+    radial-gradient(760px 420px at 68% 22%, rgba(42, 47, 56, 0.18), transparent 78%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.08), transparent 45%, rgba(0, 0, 0, 0.18));
+}
+
+.forge-haze {
+  background:
+    radial-gradient(620px 320px at 22% 28%, rgba(255, 122, 26, 0.052), transparent 68%),
+    radial-gradient(420px 280px at 54% 58%, rgba(217, 71, 43, 0.034), transparent 70%);
+}
+
+.forge-vignette {
+  box-shadow: inset 0 0 170px rgba(0, 0, 0, 0.82);
+}
+
+.forge-canvas-panel .react-flow__background {
+  opacity: 0.16;
+}
+
+.forge-canvas-panel .react-flow__edge-path {
+  stroke-width: 1.05;
+  stroke-dasharray: 3 20;
+}
+
+.forge-canvas-panel.operational-overlay-off .react-flow__edge-path {
+  opacity: 0.2;
+}
+
+.forge-canvas-panel.operational-overlay-on .react-flow__edge-path {
+  stroke-width: 1.25;
+  opacity: 0.42;
+}
+
+.forge-canvas-panel.operational-overlay-on .zone-label {
+  opacity: 0.48;
+}
+
+.forge-canvas-panel.operational-overlay-on.mode-synchronization .edge-ai .react-flow__edge-path,
+.forge-canvas-panel.operational-overlay-on.mode-synchronization .edge-runtime .react-flow__edge-path {
+  opacity: 0.55;
+}
+
+.forge-canvas-panel.operational-overlay-on.mode-containment .zone-cortex,
+.forge-canvas-panel.operational-overlay-on.mode-containment .edge-cortex .react-flow__edge-path {
+  opacity: 0.58;
+}
+
+.forge-canvas-panel.operational-overlay-on.mode-runtime .zone-runtime,
+.forge-canvas-panel.operational-overlay-on.mode-runtime .class-runtime-system {
+  opacity: 0.72;
+}
+
+.forge-canvas-panel .react-flow__edge.forge-edge.flow-strong .react-flow__edge-path {
+  stroke-width: 1.45;
+  opacity: 0.44;
+}
+
+.forge-canvas-panel.realm-focused .react-flow__edge {
+  opacity: 0.28;
+}
+
+.forge-canvas-panel.realm-focused .forge-zone {
+  opacity: 0.24;
+}
+
+.forge-canvas-panel.realm-focused.focus-creation .zone-creation,
+.forge-canvas-panel.realm-focused.focus-runtime .zone-runtime,
+.forge-canvas-panel.realm-focused.focus-memory .zone-memory,
+.forge-canvas-panel.realm-focused.focus-ai .zone-ai,
+.forge-canvas-panel.realm-focused.focus-device .zone-device,
+.forge-canvas-panel.realm-focused.focus-cortex .zone-cortex {
+  opacity: 0.48;
+}
+
+.forge-zone.zone-selected {
+  outline: 0;
+  box-shadow: 0 0 42px rgba(255, 122, 26, 0.09);
+  opacity: 0.56;
+}
+
+.forge-canvas-panel .react-flow__node.forge-node {
+  background: linear-gradient(160deg, #252a33, #171a21 58%, #111318 100%);
+  border-color: rgba(58, 64, 76, 0.82);
+  box-shadow: 0 13px 26px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.forge-canvas-panel .react-flow__node.forge-node:hover,
+.forge-canvas-panel .react-flow__node.forge-node.is-selected,
+.forge-canvas-panel .react-flow__node.selected {
+  border-color: rgba(255, 154, 60, 0.38);
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.58), 0 0 12px rgba(255, 122, 26, 0.1);
+}
+
+.forge-canvas-panel .react-flow__node.forge-node.state-active,
+.forge-canvas-panel .react-flow__node.forge-node.state-synchronizing {
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.55), 0 0 13px rgba(255, 122, 26, 0.11);
+}
+
+.forge-canvas-panel .react-flow__node.forge-node.state-locked {
+  background: linear-gradient(160deg, #181b22, #101217 62%, #150f11 100%);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.66), 0 0 9px rgba(217, 71, 43, 0.07);
+}
+
+.forge-canvas-panel .forge-node.is-related,
+.forge-canvas-panel.operational-overlay-on .forge-node.is-related {
+  box-shadow: 0 13px 28px rgba(0, 0, 0, 0.52), 0 0 8px rgba(255, 122, 26, 0.08);
+}
+
+.forge-canvas-panel.mood-calm,
+.forge-canvas-panel.mood-sync,
+.forge-canvas-panel.mood-resonance,
+.forge-canvas-panel.mood-pressure,
+.forge-canvas-panel.mood-lull {
+  filter: saturate(0.9) brightness(0.91);
+}
+
+.forge-canvas-panel.zoom-near .forge-haze {
+  opacity: 0.18;
+}
+
+.forge-canvas-panel.zoom-far .forge-haze {
+  opacity: 0.1;
+}
+
+.ambient-flare,
+.ambient-ripple,
+.ambient-dim-flare,
+.ambient-resonance-wave {
+  opacity: 0.7;
+}
+
+/* Phase 9 coherence pass */
+.valhalla-root *,
+.valhalla-root *::before,
+.valhalla-root *::after {
+  letter-spacing: 0;
+}
+
+.forge-canvas-panel,
+.forge-zone,
+.zone-label,
+.forge-canvas-panel .react-flow__edge,
+.forge-canvas-panel .react-flow__edge-path,
+.forge-canvas-panel .react-flow__node.forge-node,
+.valhalla-inspector,
+.inspector-meta,
+.inspector-timeline,
+.inspector-actions button,
+.mode-btn {
+  transition-duration: 720ms;
+  transition-timing-function: cubic-bezier(0.2, 0.72, 0.12, 1);
+}
+
+.forge-canvas-panel {
+  background:
+    radial-gradient(980px 560px at 24% 34%, rgba(255, 122, 26, 0.048), transparent 70%),
+    radial-gradient(1080px 640px at 78% 58%, rgba(0, 0, 0, 0.5), transparent 74%),
+    linear-gradient(150deg, #090b0f 0%, #0f1115 50%, #171a21 100%);
+}
+
+.forge-structures {
+  opacity: 0.78;
+}
+
+.forge-smoke,
+.forge-haze,
+.forge-depth-fog {
+  transition: opacity 1400ms cubic-bezier(0.2, 0.72, 0.12, 1), transform 1600ms cubic-bezier(0.2, 0.72, 0.12, 1);
+}
+
+.zone-creation {
+  background: radial-gradient(ellipse, rgba(255, 122, 26, 0.072), rgba(217, 71, 43, 0.03) 44%, transparent 78%);
+}
+
+.zone-runtime {
+  background: radial-gradient(ellipse, rgba(58, 64, 76, 0.105), rgba(255, 122, 26, 0.012) 50%, transparent 80%);
+}
+
+.zone-memory {
+  background: radial-gradient(ellipse, rgba(42, 47, 56, 0.15), rgba(8, 9, 12, 0.24) 56%, transparent 82%);
+}
+
+.zone-ai {
+  background: radial-gradient(ellipse, rgba(217, 71, 43, 0.044), rgba(58, 64, 76, 0.07) 55%, transparent 80%);
+}
+
+.zone-device {
+  background: radial-gradient(ellipse, rgba(255, 154, 60, 0.038), rgba(42, 47, 56, 0.065) 50%, transparent 80%);
+}
+
+.zone-cortex {
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.78), rgba(20, 12, 16, 0.22) 52%, transparent 80%);
+  opacity: 0.3;
+}
+
+.zone-label {
+  opacity: 0.74;
+}
+
+.forge-canvas-panel.realm-unfocused .zone-label {
+  opacity: 0.42;
+}
+
+.zone-state-active,
+.zone-state-sync,
+.zone-state-warning,
+.zone-state-locked {
+  animation-duration: 18s;
+}
+
+.forge-canvas-panel .react-flow__node.forge-node.state-active,
+.forge-canvas-panel .react-flow__node.forge-node.state-synchronizing,
+.forge-canvas-panel .react-flow__node.forge-node.state-warning {
+  animation-duration: 12s;
+}
+
+.forge-canvas-panel .react-flow__edge.edge-ai .react-flow__edge-path,
+.forge-canvas-panel .react-flow__edge.edge-cortex .react-flow__edge-path {
+  animation-duration: 4.8s;
+}
+
+.forge-canvas-panel.operational-overlay-on.realm-unfocused .react-flow__edge-path {
+  opacity: 0.26;
+}
+
+.forge-canvas-panel.operational-overlay-on.realm-focused .react-flow__edge-path {
+  opacity: 0.4;
+}
+
+.forge-canvas-panel.operational-overlay-on.mode-runtime .zone-runtime,
+.forge-canvas-panel.operational-overlay-on.mode-runtime .class-runtime-system {
+  opacity: 0.62;
+}
+
+.forge-canvas-panel.operational-overlay-on.mode-synchronization .edge-ai .react-flow__edge-path,
+.forge-canvas-panel.operational-overlay-on.mode-synchronization .edge-runtime .react-flow__edge-path {
+  opacity: 0.46;
+}
+
+.forge-canvas-panel.operational-overlay-on.mode-containment .zone-cortex,
+.forge-canvas-panel.operational-overlay-on.mode-containment .edge-cortex .react-flow__edge-path {
+  opacity: 0.5;
+}
+
+.forge-canvas-panel .react-flow__node.forge-node.is-selected {
+  transform: translateY(-1px) scale(1.01);
+}
+
+.forge-canvas-panel.realm-focused .forge-node.is-dimmed {
+  opacity: 0.28;
+}
+
+.forge-canvas-panel .react-flow__node.forge-node.is-selected::before {
+  border-color: rgba(255, 154, 60, 0.2);
+}
+
+.ambient-flare,
+.ambient-ripple,
+.ambient-dim-flare,
+.ambient-resonance-wave {
+  opacity: 0.48;
+}
+
+.valhalla-inspector {
+  background: linear-gradient(180deg, rgba(24, 27, 34, 0.9), rgba(11, 13, 17, 0.94));
+}
+
+.inspector-meta,
+.inspector-timeline,
+.inspector-controls {
+  background: linear-gradient(180deg, rgba(35, 40, 49, 0.34), rgba(12, 14, 18, 0.74));
+}
+
+.inspector-meta p,
+.inspector-timeline p {
+  line-height: 1.45;
+}
+
+.dev-log-panel {
+  border: 1px solid rgba(58, 64, 76, 0.88);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(18, 20, 24, 0.9), rgba(10, 12, 15, 0.96));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025);
+  overflow: hidden;
+}
+
+.dev-log-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 10px 8px;
+  border-bottom: 1px solid rgba(58, 64, 76, 0.7);
+}
+
+.dev-log-header h3 {
+  margin: 0;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(231, 232, 235, 0.72);
+}
+
+.dev-log-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.dev-log-actions button {
+  border: 1px solid rgba(58, 64, 76, 0.9);
+  background: rgba(26, 29, 36, 0.88);
+  color: rgba(231, 232, 235, 0.78);
+  border-radius: 8px;
+  padding: 5px 8px;
+  font-size: 0.68rem;
+}
+
+.dev-log-actions button:hover {
+  border-color: rgba(255, 122, 26, 0.32);
+  color: #f0e3d8;
+}
+
+.dev-log-list {
+  max-height: 180px;
+  overflow: auto;
+  padding: 8px 10px 10px;
+}
+
+.dev-log-list p {
+  margin: 0 0 6px;
+  color: rgba(231, 232, 235, 0.72);
+  font-size: 0.7rem;
+  line-height: 1.35;
+}
+
+.dev-log-list p span {
+  display: inline-block;
+  min-width: 70px;
+  margin-right: 8px;
+  color: rgba(154, 161, 173, 0.72);
+}
+
+.dev-log-empty {
+  color: rgba(154, 161, 173, 0.72);
+}
+
+.enter-chamber-btn {
+  border: 1px solid rgba(255, 122, 26, 0.34);
+  background: linear-gradient(155deg, rgba(58, 40, 30, 0.7), rgba(15, 17, 21, 0.92));
+  color: #f0ddd0;
+  border-radius: 10px;
+  padding: 9px 10px;
+  text-align: left;
+  font-size: 0.78rem;
+}
+
+.enter-chamber-btn:hover {
+  border-color: rgba(255, 154, 60, 0.48);
+  box-shadow: 0 0 10px rgba(255, 122, 26, 0.12);
+}
+
+.valhalla-chamber-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 28px;
+  background:
+    radial-gradient(560px 340px at 52% 54%, rgba(255, 122, 26, 0.06), transparent 74%),
+    rgba(6, 8, 11, 0.74);
+  backdrop-filter: blur(4px);
+}
+
+.valhalla-chamber-shell {
+  width: min(720px, 100%);
+  border: 1px solid rgba(58, 64, 76, 0.92);
+  border-radius: 14px;
+  overflow: hidden;
+  background: linear-gradient(170deg, rgba(23, 26, 33, 0.95), rgba(10, 12, 16, 0.97));
+  box-shadow: 0 26px 56px rgba(0, 0, 0, 0.62), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.valhalla-chamber-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(58, 64, 76, 0.7);
+}
+
+.valhalla-chamber-header p {
+  margin: 0;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(231, 232, 235, 0.72);
+}
+
+.valhalla-chamber-header button,
+.valhalla-chamber-actions button {
+  border: 1px solid rgba(58, 64, 76, 0.95);
+  background: rgba(20, 23, 29, 0.85);
+  color: rgba(231, 232, 235, 0.82);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 0.72rem;
+}
+
+.valhalla-chamber-header button:hover,
+.valhalla-chamber-actions button:hover {
+  border-color: rgba(255, 122, 26, 0.32);
+  color: #f5e4d7;
+}
+
+.valhalla-chamber-body {
+  padding: 18px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.valhalla-chamber-body h2 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.valhalla-chamber-body p {
+  margin: 0;
+  color: rgba(213, 217, 224, 0.9);
+  line-height: 1.45;
+}
+
+.valhalla-chamber-actions {
+  margin-top: 4px;
+  border: 1px solid rgba(58, 64, 76, 0.86);
+  border-radius: 10px;
+  padding: 10px;
+  background: linear-gradient(180deg, rgba(35, 40, 49, 0.34), rgba(12, 14, 18, 0.7));
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Phase 11 correction pass */
+
+.valhalla-sidebar {
+  width: 210px;
+  flex: 0 0 210px;
+}
+
+.forge-canvas-panel {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.forge-canvas-panel .react-flow {
+  height: 100% !important;
+}
+
+.valhalla-inspector {
+  width: 320px;
+  flex: 0 0 320px;
+  height: 100%;
+  max-height: 100vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.valhalla-exit-btn {
+  cursor: pointer;
+}
+
+/* Phase 11.5 color audit correction */
+.forge-canvas-panel .forge-zone {
+  background: rgba(30, 80, 110, 0.18);
+  border: 1px solid rgba(60, 140, 180, 0.25);
+  box-shadow: 0 0 60px rgba(40, 120, 160, 0.12), inset 0 0 40px rgba(20, 60, 90, 0.15);
+}
+
+.forge-canvas-panel .zone-creation {
+  background: radial-gradient(ellipse, rgba(255, 100, 20, 0.08), rgba(180, 60, 10, 0.05) 42%, transparent 78%);
+}
+
+.forge-canvas-panel .zone-runtime {
+  background: radial-gradient(ellipse, rgba(30, 80, 110, 0.18), rgba(20, 60, 90, 0.16) 50%, transparent 80%);
+}
+
+.forge-canvas-panel .zone-memory {
+  background: radial-gradient(ellipse, rgba(30, 80, 110, 0.17), rgba(20, 60, 90, 0.15) 56%, transparent 82%);
+}
+
+.forge-canvas-panel .zone-ai {
+  background: radial-gradient(ellipse, rgba(30, 80, 110, 0.18), rgba(20, 60, 90, 0.16) 55%, transparent 80%);
+}
+
+.forge-canvas-panel .zone-device {
+  background: radial-gradient(ellipse, rgba(30, 80, 110, 0.16), rgba(20, 60, 90, 0.14) 50%, transparent 80%);
+}
+
+.forge-canvas-panel .zone-cortex {
+  background: radial-gradient(ellipse, rgba(20, 50, 75, 0.24), rgba(15, 40, 60, 0.2) 52%, transparent 80%);
+}
+
+.forge-canvas-panel .forge-depth-fog {
+  background:
+    radial-gradient(720px 380px at 24% 30%, rgba(30, 20, 10, 0.4), transparent 78%),
+    radial-gradient(820px 460px at 76% 68%, rgba(10, 8, 6, 0.6), transparent 74%);
+}
+
+.forge-canvas-panel .forge-smoke {
+  background:
+    radial-gradient(620px 340px at 30% 72%, rgba(30, 20, 10, 0.4), transparent 74%),
+    radial-gradient(760px 420px at 68% 22%, rgba(10, 8, 6, 0.6), transparent 78%),
+    linear-gradient(180deg, rgba(10, 8, 6, 0.15), transparent 45%, rgba(10, 8, 6, 0.2));
+  opacity: 0.24;
+}
+
+.forge-canvas-panel .forge-haze {
+  background:
+    radial-gradient(620px 320px at 22% 28%, rgba(255, 100, 20, 0.05), transparent 68%),
+    radial-gradient(420px 280px at 54% 58%, rgba(200, 70, 10, 0.05), transparent 70%);
+  opacity: 0.2;
+}
+
+.forge-canvas-panel .ambient-flare {
+  background: radial-gradient(360px 190px at 14% 84%, rgba(255, 100, 20, 0.06), transparent 72%);
+}
+
+.forge-canvas-panel .ambient-ripple {
+  background: radial-gradient(circle at 74% 36%, rgba(200, 70, 10, 0.06), transparent 50%);
+}
+
+.forge-canvas-panel .ambient-dim-flare {
+  background: radial-gradient(620px 340px at 52% 46%, rgba(255, 100, 20, 0.05), transparent 72%);
+}
+
+.forge-canvas-panel .ambient-resonance-wave {
+  background: radial-gradient(circle at 58% 42%, rgba(200, 70, 10, 0.05), transparent 54%);
+}
+
+.forge-canvas-panel .forge-embers {
+  background-image:
+    radial-gradient(circle, rgba(255, 140, 40, 0.15) 0, rgba(255, 140, 40, 0.01) 8px),
+    radial-gradient(circle, rgba(220, 100, 30, 0.12) 0, rgba(220, 100, 30, 0.01) 7px),
+    radial-gradient(circle, rgba(180, 80, 20, 0.08) 0, rgba(180, 80, 20, 0.01) 7px);
+}
+
+.forge-canvas-panel .forge-depth-layer {
+  opacity: 0.22;
+}
+
+.forge-canvas-panel .zone-label {
+  color: rgba(160, 200, 220, 0.5);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+}
+
+.forge-canvas-panel .react-flow__node.forge-node {
+  background: rgba(20, 24, 32, 0.92);
+  border: 1px solid rgba(100, 120, 150, 0.4);
+  color: #e0e0e0;
+}
+
+.forge-canvas-panel .react-flow__minimap {
+  display: block;
+  opacity: 0.95;
+}
+
+/* === PHASE 11.8 VISIBILITY FIX === */
+
+/* Force zones visible — override the grouped pointer-events:none rule */
+.valhalla-root .forge-canvas-panel .forge-zone {
+  pointer-events: none !important;
+  opacity: 0.85 !important;
+  visibility: visible !important;
+  display: block !important;
+  filter: blur(4px) !important;
+}
+
+/* Restore correct MAGMA zone backgrounds — not blue */
+.valhalla-root .forge-canvas-panel .zone-creation {
+  background: radial-gradient(circle, rgba(255, 100, 30, 0.18), transparent 70%) !important;
+  box-shadow: 0 0 90px rgba(255, 100, 20, 0.10) !important;
+}
+.valhalla-root .forge-canvas-panel .zone-runtime {
+  background: radial-gradient(circle, rgba(80, 70, 60, 0.16), rgba(255, 100, 20, 0.04) 52%, transparent 74%) !important;
+}
+.valhalla-root .forge-canvas-panel .zone-memory {
+  background: radial-gradient(circle, rgba(50, 44, 40, 0.30), transparent 75%) !important;
+}
+.valhalla-root .forge-canvas-panel .zone-ai {
+  background: radial-gradient(circle, rgba(200, 65, 40, 0.12), transparent 72%) !important;
+}
+.valhalla-root .forge-canvas-panel .zone-device {
+  background: radial-gradient(circle, rgba(255, 140, 50, 0.10), transparent 72%) !important;
+}
+.valhalla-root .forge-canvas-panel .zone-cortex {
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.65), rgba(30, 14, 18, 0.30) 52%, transparent 74%) !important;
+  box-shadow: inset 0 0 64px rgba(0,0,0,0.80) !important;
+}
+
+/* Zone borders — warm charcoal, NOT blue */
+.valhalla-root .forge-canvas-panel .forge-zone {
+  border: 1px solid rgba(255, 100, 30, 0.12) !important;
+}
+.valhalla-root .forge-canvas-panel .zone-cortex {
+  border: 1px solid rgba(100, 40, 30, 0.20) !important;
+}
+
+/* Zone labels — warm visible */
+.valhalla-root .forge-canvas-panel .zone-label {
+  opacity: 1 !important;
+  visibility: visible !important;
+  color: rgba(220, 180, 140, 0.55) !important;
+  display: block !important;
+  pointer-events: none !important;
+}
+
+/* Nodes must stay visible regardless of realm-focused dimming */
+.valhalla-root .forge-canvas-panel .react-flow__node {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+.valhalla-root .forge-canvas-panel .react-flow__node.forge-node.is-dimmed {
+  opacity: 0.40 !important;
+}
+
+/* === PHASE 16 POINTER AND LAYER OVERRIDE === */
+.forge-zone {
+  pointer-events: none !important;
+}
+
+.zone-label {
+  pointer-events: none !important;
+  cursor: default !important;
+}
+
+.forge-canvas-panel .react-flow__node {
+  z-index: 30 !important;
+  pointer-events: auto !important;
+}
+
+.forge-canvas-panel .react-flow__edge {
+  pointer-events: none !important;
+}
+/* === END PHASE 16 POINTER AND LAYER OVERRIDE === */
+
+/* Atmosphere layers stay subtle, not covering */
+.valhalla-root .forge-depth-layer,
+.valhalla-root .forge-atmos-layer {
+  opacity: 0.18 !important;
+  pointer-events: none !important;
+}
+
+/* === END PHASE 11.8 === */
+
+/* Override ReactFlow cool/default background tint inside Valhalla only */
+.forge-canvas-panel .react-flow__background pattern line {
+  stroke: rgba(255, 120, 30, 0.08);
+}
+
+.forge-canvas-panel .react-flow__background pattern circle {
+  fill: rgba(255, 120, 30, 0.1);
+}
+
+.forge-canvas-panel > .react-flow {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  height: 100% !important;
+}
+
+.forge-canvas-panel,
+.valhalla-sidebar {
+  max-height: 100%;
+  overflow: hidden;
+}
+
+.forge-canvas-panel .react-flow__minimap {
+  background: rgba(15, 17, 21, 0.92) !important;
+  border: 1px solid rgba(255, 122, 26, 0.20) !important;
+  border-radius: 8px !important;
+  width: 140px !important;
+  height: 96px !important;
+  transform: scale(0.94);
+  transform-origin: bottom right;
+}
+.forge-canvas-panel .react-flow__minimap-mask {
+  fill: rgba(9, 11, 16, 0.75) !important;
+}
