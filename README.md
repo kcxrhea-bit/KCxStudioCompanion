@@ -4,6 +4,26 @@ AI-assisted desktop development cockpit for orchestration, build analysis, promp
 
 ---
 
+## Screenshots
+
+### Main Dashboard
+![Main Dashboard](Screenshots/Dashboard.png)
+
+### Ecosystem Dock
+![Ecosystem Dock](Screenshots/Ecosystem%20Dock.png)
+
+### Build Logs
+![Build Logs](Screenshots/Build%20Logs.png)
+
+### AI Providers
+![AI Providers](Screenshots/AI%20Providers.png)
+
+### Runtime Telemetry
+![Telemetry](Screenshots/Telemetry.png)
+
+### KCx Ecosystem Reference
+![KCx Reference](Screenshots/KCx%20Reference.png)
+
 ## Overview
 
 KCx Studio Companion is a local-first desktop environment designed to help manage the real-world AI-assisted software development workflow.
