@@ -1,0 +1,79 @@
+/* Tron Theme Global Styles */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-primary);
+  background: var(--color-bg-gradient);
+  color: var(--color-text-primary);  /* Hot pink in Tron theme! */
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Headers */
+h1, h2, h3 {
+  color: var(--color-text-secondary);  /* White */
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  font-weight: 200;
+}
+
+[data-glow-effects="true"] h1 {
+  text-shadow: var(--text-shadow-glow);
+}
+
+/* All text should use theme color */
+p, span, div, label, button, input, textarea, select {
+  color: var(--color-text-primary);
+}
+
+/* Buttons */
+button {
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--color-accent-primary) 12%, transparent) 0%,
+    color-mix(in srgb, var(--color-accent-primary) 8%, transparent) 100%
+  );
+  border: 1px solid var(--color-border-active);
+  border-radius: var(--border-radius);
+  color: var(--color-accent-primary);
+  padding: 10px 20px;
+  cursor: pointer;
+  font-family: var(--font-primary);
+  font-size: 12px;
+  letter-spacing: var(--letter-spacing-normal);
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+[data-glow-effects="true"] button:hover {
+  box-shadow: 0 0 20px var(--glow-primary);
+  transform: translateY(-2px);
+}
+
+/* Inputs */
+input, textarea, select {
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border-default);
+  border-radius: calc(var(--border-radius) - 2px);
+  color: var(--color-text-primary);
+  padding: 8px 12px;
+  font-family: var(--font-primary);
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--color-border-active);
+}
+
+[data-glow-effects="true"] input:focus,
+[data-glow-effects="true"] textarea:focus {
+  box-shadow: 0 0 15px color-mix(in srgb, var(--glow-primary) 30%, transparent);
+}

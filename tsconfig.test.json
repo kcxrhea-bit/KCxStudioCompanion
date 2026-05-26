@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "lib": ["ES2022", "DOM"],
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "strict": false,
+    "skipLibCheck": true,
+    "types": ["jest", "node"]
+  },
+  "include": [
+    "src/lib/**/*",
+    "src/renderer/types.ts",
+    "tests/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/main",
+    "src/preload",
+    "src/renderer/App.tsx",
+    "src/renderer/components",
+    "src/renderer/assets",
+    "src/themes"
+  ]
+}

@@ -1,0 +1,17 @@
+Copyright (c) 2026 KCx Labs. All rights reserved.
+
+KCx Studio Companion is proprietary software.
+
+This beta software is provided for evaluation purposes only.
+
+You may not:
+- Redistribute the software
+- Sell or sublicense the software
+- Reverse engineer major systems
+- Repackage or claim ownership
+
+This software is provided "as is" without warranty.
+
+Contact:
+beta@kcxlabs.org
+https://kcxlabs.org

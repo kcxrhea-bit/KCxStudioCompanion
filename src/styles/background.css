@@ -1,0 +1,73 @@
+.app-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: var(--color-bg-gradient);
+}
+
+[data-glow-effects="true"] .app-background::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      color-mix(in srgb, var(--color-accent-primary) 1%, transparent) 2px,
+      color-mix(in srgb, var(--color-accent-primary) 1%, transparent) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      color-mix(in srgb, var(--color-accent-primary) 1%, transparent) 2px,
+      color-mix(in srgb, var(--color-accent-primary) 1%, transparent) 4px
+    );
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+[data-glow-effects="true"] .light-ray {
+  position: absolute;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    color-mix(in srgb, var(--color-accent-primary) 3%, transparent) 50%,
+    transparent 100%
+  );
+  opacity: 0.5;
+  animation: rayDrift 20s ease-in-out infinite;
+}
+
+[data-glow-effects="true"] .light-ray:nth-child(1) {
+  left: 15%;
+  animation-delay: 0s;
+}
+
+[data-glow-effects="true"] .light-ray:nth-child(2) {
+  left: 35%;
+  animation-delay: 3s;
+}
+
+[data-glow-effects="true"] .light-ray:nth-child(3) {
+  left: 55%;
+  animation-delay: 6s;
+}
+
+[data-glow-effects="true"] .light-ray:nth-child(4) {
+  left: 75%;
+  animation-delay: 9s;
+}
+
+@keyframes rayDrift {
+  0%,
+  100% {
+    transform: translateX(0) scaleY(1);
+  }
+  50% {
+    transform: translateX(30px) scaleY(1.1);
+  }
+}

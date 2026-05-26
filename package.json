@@ -1,0 +1,91 @@
+{
+  "name": "kcx-studio-companion",
+  "version": "0.9.0-beta.1",
+  "private": true,
+  "description": "Local-first AI-assisted workflow orchestration platform for desktop builds, prompts, review, and project memory.",
+  "author": {
+    "name": "KCx Labs"
+  },
+  "companyName": "KCx Labs",
+  "copyright": "Copyright (c) 2026 KCx Labs",
+  "main": "dist/main/main/main.js",
+  "scripts": {
+    "dev": "concurrently -k \"npm:dev:main\" \"npm:dev:renderer\" \"npm:dev:electron\"",
+    "dev:main": "tsc -p tsconfig.main.json --watch",
+    "dev:renderer": "vite --host 127.0.0.1 --port 5173 --strictPort",
+    "dev:electron": "wait-on dist/main/main/main.js http://127.0.0.1:5173 && cross-env VITE_DEV_SERVER_URL=http://127.0.0.1:5173 electron .",
+    "build": "npm run build:main && npm run build:renderer",
+    "build:main": "tsc -p tsconfig.main.json",
+    "build:renderer": "vite build",
+    "dist": "npm run build && electron-builder --win nsis portable",
+    "dist:dir": "npm run build && electron-builder --dir",
+    "pack": "npm run build && electron-builder --dir",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^22.19.19",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.1.0",
+    "cross-env": "^7.0.3",
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8",
+    "jest": "^30.4.2",
+    "ts-jest": "^29.4.11",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.1",
+    "wait-on": "^8.0.1"
+  },
+  "build": {
+    "appId": "labs.kcx.studio-companion",
+    "productName": "KCx Studio Companion",
+    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+    "icon": "Build/KCxSC.ico",
+    "directories": {
+      "output": "release",
+      "buildResources": "Build"
+    },
+    "files": [
+      "dist/**/*",
+      "package.json",
+      "RELEASE_NOTES.md",
+      "PRIVACY.md"
+    ],
+    "extraMetadata": {
+      "main": "dist/main/main/main.js"
+    },
+    "asar": true,
+    "compression": "maximum",
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "requestedExecutionLevel": "asInvoker",
+      "verifyUpdateCodeSignature": false,
+      "signtoolOptions": {
+        "publisherName": "KCx Labs"
+      }
+    },
+    "nsis": {
+      "artifactName": "${productName}-${version}-${os}-${arch}-Setup.${ext}",
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "KCx Studio Companion",
+      "deleteAppDataOnUninstall": false
+    },
+    "portable": {
+      "artifactName": "${productName}-${version}-${os}-${arch}-Portable.${ext}"
+    }
+  }
+}

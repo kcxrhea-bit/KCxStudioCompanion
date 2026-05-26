@@ -1,0 +1,7 @@
+# Known Limitations
+
+- Windows code signing is not configured yet; unsigned installers may trigger Defender or SmartScreen warnings.
+- Auto-update transport is not integrated yet; update channels are architecture placeholders.
+- License and entitlement systems are local architecture only; no payment provider is connected.
+- Fresh-machine packaging validation still requires a clean Windows VM pass.
+- Production icon `.ico` should be replaced with final signed brand artwork before public launch.

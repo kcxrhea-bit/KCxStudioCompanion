@@ -1,0 +1,3857 @@
+/* TR2N Font (Grid Zero movie font) + Matrix Terminal */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+:root {
+  /* State colors */
+  --state-stable: #00D9FF;    /* cyan - idle/stable */
+  --state-active: #FF00FF;    /* magenta - processing */
+  --state-warning: #FFB800;   /* amber - warning */
+  --state-error: #FF3864;     /* red - error/critical */
+  --eco-cyan: #00ffff;
+  --eco-cyan-glow: rgba(0, 255, 255, 0.8);
+  --eco-magenta: #ff00ff;
+  --eco-magenta-glow: rgba(255, 0, 255, 0.8);
+  --eco-red: #ff0000;
+  --eco-red-glow: rgba(255, 0, 0, 0.8);
+}
+
+/* ============================================
+   TRON CINEMATIC TRANSFORMATION
+   Maximum intensity Tron aesthetic
+   ============================================ */
+
+/* Override font to TR2N style using Orbitron Bold + wider spacing */
+body, button, input, textarea, select {
+  font-family: 'Orbitron', sans-serif !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em !important;
+}
+
+h1, h2, h3, .brand, .title {
+  font-family: 'Orbitron', sans-serif !important;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+/* ============================================
+   ANIMATED GRID BACKGROUND - TRON FLOOR
+   ============================================ */
+
+.app-background::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 49px,
+      color-mix(in srgb, var(--color-accent-primary) 4%, transparent) 49px,
+      color-mix(in srgb, var(--color-accent-primary) 4%, transparent) 50px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 49px,
+      color-mix(in srgb, var(--color-accent-primary) 4%, transparent) 49px,
+      color-mix(in srgb, var(--color-accent-primary) 4%, transparent) 50px
+    );
+  opacity: 0.32;
+  pointer-events: none;
+  z-index: 1;
+  animation: gridPulse 8s ease-in-out infinite;
+}
+
+@keyframes gridPulse {
+  0%, 100% { opacity: 0.28; }
+  50% { opacity: 0.36; }
+}
+
+/* ============================================
+   INTENSE VOLUMETRIC LIGHTING
+   ============================================ */
+
+.app-background::before {
+  background: 
+    radial-gradient(ellipse at 20% 30%, rgba(0, 180, 255, 0.07) 0%, transparent 46%),
+    radial-gradient(ellipse at 80% 70%, rgba(0, 200, 255, 0.05) 0%, transparent 48%),
+    radial-gradient(circle at 50% 50%, rgba(255, 0, 168, 0.035) 0%, transparent 60%),
+    radial-gradient(circle at 50% 45%, rgba(0, 0, 0, 0.28) 0%, transparent 68%);
+}
+
+/* Light rays - more visible and animated */
+[data-glow-effects="true"] .light-ray {
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    color-mix(in srgb, var(--color-accent-primary) 5%, transparent) 30%,
+    color-mix(in srgb, var(--color-accent-primary) 7%, transparent) 50%,
+    color-mix(in srgb, var(--color-accent-primary) 5%, transparent) 70%,
+    transparent 100%
+  );
+  opacity: 0.55;
+  width: 1px;
+  filter: blur(2px);
+  animation: rayDrift 20s ease-in-out infinite, rayPulse 3s ease-in-out infinite;
+}
+
+@keyframes rayPulse {
+  0%, 100% { opacity: 0.46; }
+  50% { opacity: 0.62; }
+}
+
+/* ============================================
+   TRON PANELS - GEOMETRIC ENERGY BOXES
+   ============================================ */
+
+[data-glow-effects="true"] .panel-primary {
+  background: linear-gradient(145deg, 
+    rgba(0, 14, 28, 0.95) 0%,
+    rgba(0, 8, 18, 0.98) 52%,
+    rgba(0, 5, 12, 0.99) 100%
+  );
+  border: 2px solid color-mix(in srgb, var(--color-accent-primary) 52%, transparent);
+  box-shadow: 
+    0 0 24px color-mix(in srgb, var(--glow-primary) 20%, transparent),
+    inset 0 0 18px color-mix(in srgb, var(--glow-primary) 10%, transparent),
+    0 14px 42px rgba(0, 0, 0, 0.92),
+    inset 0 1px 0 color-mix(in srgb, var(--color-border-glow) 30%, transparent);
+  position: relative;
+  overflow: visible;
+}
+
+[data-glow-effects="true"] .card,
+[data-glow-effects="true"] article {
+  background: linear-gradient(145deg,
+    rgba(0, 11, 22, 0.94) 0%,
+    rgba(0, 7, 16, 0.97) 100%
+  );
+  border: 1px solid color-mix(in srgb, var(--color-accent-primary) 32%, transparent);
+  box-shadow:
+    0 0 16px color-mix(in srgb, var(--glow-primary) 12%, transparent),
+    inset 0 0 10px color-mix(in srgb, var(--glow-primary) 6%, transparent),
+    0 10px 28px rgba(0, 0, 0, 0.9);
+}
+
+/* Glowing corner accents */
+[data-glow-effects="true"] .panel-primary::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 28px;
+  height: 28px;
+  border-top: 2px solid var(--color-accent-primary);
+  border-left: 2px solid var(--color-accent-primary);
+  opacity: 0.9;
+  z-index: 10;
+  filter: drop-shadow(0 0 5px var(--glow-primary));
+}
+
+[data-glow-effects="true"] .panel-primary::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 28px;
+  height: 28px;
+  border-bottom: 2px solid var(--color-accent-primary);
+  border-right: 2px solid var(--color-accent-primary);
+  opacity: 0.9;
+  z-index: 10;
+  filter: drop-shadow(0 0 5px var(--glow-primary));
+}
+
+[data-glow-effects="true"] .card::before {
+  width: 18px;
+  height: 18px;
+  border-top: 2px solid color-mix(in srgb, var(--color-accent-primary) 76%, transparent);
+  border-left: 2px solid color-mix(in srgb, var(--color-accent-primary) 76%, transparent);
+  opacity: 0.72;
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--glow-primary) 45%, transparent));
+}
+
+[data-glow-effects="true"] .card::after {
+  width: 18px;
+  height: 18px;
+  border-bottom: 2px solid color-mix(in srgb, var(--color-accent-primary) 76%, transparent);
+  border-right: 2px solid color-mix(in srgb, var(--color-accent-primary) 76%, transparent);
+  opacity: 0.72;
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--glow-primary) 45%, transparent));
+}
+
+/* ============================================
+   INTENSE ENERGY CHANNELS - NOT JUST BORDERS
+   ============================================ */
+
+[data-glow-effects="true"] .edge-glow-left::before {
+  width: 2px;
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    var(--color-accent-primary) 20%,
+    var(--color-border-glow) 50%,
+    var(--color-accent-primary) 80%,
+    transparent 100%
+  );
+  opacity: 0.8;
+  box-shadow: 
+    -2px 0 16px color-mix(in srgb, var(--glow-primary) 55%, transparent),
+    -4px 0 26px color-mix(in srgb, var(--glow-primary) 35%, transparent),
+    inset 0 0 8px color-mix(in srgb, var(--color-accent-primary) 70%, transparent);
+  animation: energyPulse 2s ease-in-out infinite;
+}
+
+@keyframes energyPulse {
+  0%, 100% { 
+    opacity: 0.8;
+    box-shadow: 
+      -4px 0 30px var(--glow-primary),
+      -8px 0 60px color-mix(in srgb, var(--glow-primary) 50%, transparent);
+  }
+  50% { 
+    opacity: 1;
+    box-shadow: 
+      -6px 0 40px var(--glow-primary),
+      -12px 0 80px color-mix(in srgb, var(--glow-primary) 70%, transparent);
+  }
+}
+
+[data-glow-effects="true"] .edge-glow-top::before {
+  height: 2px;
+  background: linear-gradient(to right,
+    transparent 0%,
+    var(--color-accent-primary) 20%,
+    var(--color-border-glow) 50%,
+    var(--color-accent-primary) 80%,
+    transparent 100%
+  );
+  opacity: 0.85;
+  box-shadow: 
+    0 -2px 16px color-mix(in srgb, var(--glow-primary) 45%, transparent),
+    0 -4px 28px color-mix(in srgb, var(--glow-primary) 30%, transparent);
+  animation: energyPulse 2s ease-in-out infinite;
+}
+
+/* ============================================
+   SIDEBAR NAVIGATION - ENERGY INTERFACE
+   ============================================ */
+
+[data-glow-effects="true"] .sidebar {
+  background: linear-gradient(180deg,
+    rgba(0, 12, 24, 0.92) 0%,
+    rgba(0, 7, 16, 0.96) 100%
+  );
+  border-right: 2px solid color-mix(in srgb, var(--color-accent-primary) 82%, transparent);
+  box-shadow: 
+    4px 0 28px color-mix(in srgb, var(--glow-primary) 20%, transparent),
+    inset -2px 0 10px color-mix(in srgb, var(--glow-primary) 10%, transparent);
+}
+
+[data-glow-effects="true"] .nav-item {
+  background: linear-gradient(135deg,
+    rgba(0, 40, 80, 0.3) 0%,
+    rgba(0, 20, 40, 0.5) 100%
+  );
+  border: 2px solid color-mix(in srgb, var(--color-border-default) 150%, transparent);
+  box-shadow: 
+    inset 0 0 20px color-mix(in srgb, var(--glow-primary) 5%, transparent);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-glow-effects="true"] .nav-item:hover {
+  background: linear-gradient(135deg,
+    rgba(0, 100, 200, 0.25) 0%,
+    rgba(0, 60, 120, 0.35) 100%
+  );
+  border-color: var(--color-border-active);
+  box-shadow: 
+    0 0 25px color-mix(in srgb, var(--glow-primary) 20%, transparent),
+    inset 0 0 30px color-mix(in srgb, var(--glow-primary) 12%, transparent);
+  transform: translateX(6px);
+}
+
+[data-glow-effects="true"] .nav-item.active {
+  background: linear-gradient(135deg,
+    color-mix(in srgb, #ff1ea8 16%, rgba(0, 14, 30, 0.82)) 0%,
+    color-mix(in srgb, var(--color-accent-primary) 28%, rgba(0, 12, 26, 0.92)) 100%
+  );
+  border-color: color-mix(in srgb, #ff1ea8 52%, var(--color-accent-primary));
+  color: #ff37b2;
+  box-shadow: 
+    0 0 24px color-mix(in srgb, #ff1ea8 18%, transparent),
+    inset 0 0 18px color-mix(in srgb, var(--glow-primary) 16%, transparent),
+    -4px 0 20px color-mix(in srgb, #ff1ea8 18%, transparent);
+  transform: translateX(8px);
+}
+
+[data-glow-effects="true"] .nav-item.active::before {
+  width: 3px;
+  background: linear-gradient(to bottom, #ff2ab7, var(--color-accent-primary));
+  box-shadow: 
+    -2px 0 10px color-mix(in srgb, #ff2ab7 35%, transparent),
+    -3px 0 16px color-mix(in srgb, var(--glow-primary) 40%, transparent),
+    inset 0 0 8px color-mix(in srgb, var(--color-accent-primary) 75%, transparent);
+  animation: energyFlow 2s ease-in-out infinite;
+}
+
+@keyframes energyFlow {
+  0%, 100% { 
+    opacity: 0.8;
+    box-shadow: 
+      -2px 0 25px var(--glow-primary),
+      -4px 0 50px var(--color-accent-primary);
+  }
+  50% { 
+    opacity: 1;
+    box-shadow: 
+      -4px 0 35px var(--glow-primary),
+      -8px 0 70px var(--color-accent-primary);
+  }
+}
+
+/* ============================================
+   GLOWING BUTTONS - ENERGY ACTIVATION
+   ============================================ */
+
+[data-glow-effects="true"] button,
+[data-glow-effects="true"] .btn-primary {
+  background: linear-gradient(135deg,
+    rgba(0, 100, 200, 0.2) 0%,
+    rgba(0, 60, 120, 0.3) 100%
+  );
+  border: 2px solid var(--color-border-active);
+  box-shadow: 
+    0 0 20px color-mix(in srgb, var(--glow-primary) 15%, transparent),
+    inset 0 2px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 20px color-mix(in srgb, var(--glow-primary) 8%, transparent);
+  text-shadow: 0 0 10px var(--glow-primary);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-glow-effects="true"] button:hover,
+[data-glow-effects="true"] .btn-primary:hover {
+  border-color: var(--color-border-glow);
+  box-shadow: 
+    0 0 40px color-mix(in srgb, var(--glow-primary) 40%, transparent),
+    inset 0 0 30px color-mix(in srgb, var(--glow-primary) 15%, transparent),
+    0 8px 30px rgba(0, 0, 0, 0.6);
+  transform: translateY(-3px);
+  text-shadow: 0 0 15px var(--glow-primary), 0 0 30px var(--color-accent-primary);
+}
+
+/* ============================================
+   DATA READOUTS - TERMINAL STYLE
+   ============================================ */
+
+.text-data-value,
+.subtle,
+.timeline-timestamp {
+  font-family: 'Orbitron', monospace !important;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+[data-glow-effects="true"] .text-data-value {
+  text-shadow: 
+    0 0 15px var(--glow-secondary),
+    0 0 30px color-mix(in srgb, var(--glow-secondary) 50%, transparent),
+    0 2px 4px rgba(0, 0, 0, 0.8);
+  animation: dataFlicker 3s ease-in-out infinite;
+}
+
+@keyframes dataFlicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.95; }
+}
+
+/* ============================================
+   INPUT FIELDS - ENERGY INPUT PORTS
+   ============================================ */
+
+[data-glow-effects="true"] input,
+[data-glow-effects="true"] textarea,
+[data-glow-effects="true"] select {
+  background: linear-gradient(135deg,
+    rgba(0, 20, 40, 0.8) 0%,
+    rgba(0, 10, 25, 0.9) 100%
+  );
+  border: 2px solid color-mix(in srgb, var(--color-border-default) 150%, transparent);
+  box-shadow: 
+    inset 0 0 20px rgba(0, 0, 0, 0.8),
+    inset 0 2px 10px color-mix(in srgb, var(--glow-primary) 5%, transparent);
+}
+
+[data-glow-effects="true"] input:focus,
+[data-glow-effects="true"] textarea:focus,
+[data-glow-effects="true"] select:focus {
+  border-color: var(--color-border-glow);
+  box-shadow: 
+    0 0 30px color-mix(in srgb, var(--glow-primary) 25%, transparent),
+    inset 0 0 25px color-mix(in srgb, var(--glow-primary) 8%, transparent),
+    inset 0 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+/* ============================================
+   PROJECT CIRCLE - ENERGY CORE
+   ============================================ */
+
+[data-glow-effects="true"] .project-circle {
+  background: radial-gradient(circle,
+    color-mix(in srgb, var(--color-accent-primary) 25%, transparent) 0%,
+    color-mix(in srgb, var(--color-accent-primary) 15%, transparent) 40%,
+    rgba(0, 20, 40, 0.95) 100%
+  );
+  border: 3px solid var(--color-accent-primary);
+  box-shadow: 
+    0 0 80px color-mix(in srgb, var(--glow-primary) 40%, transparent),
+    inset 0 0 80px color-mix(in srgb, var(--glow-primary) 20%, transparent),
+    0 0 140px color-mix(in srgb, var(--glow-primary) 30%, transparent),
+    0 30px 100px rgba(0, 0, 0, 0.9);
+  animation: coreEnergy 3s ease-in-out infinite;
+}
+
+@keyframes coreEnergy {
+  0%, 100% {
+    box-shadow: 
+      0 0 80px color-mix(in srgb, var(--glow-primary) 40%, transparent),
+      inset 0 0 80px color-mix(in srgb, var(--glow-primary) 20%, transparent),
+      0 0 140px color-mix(in srgb, var(--glow-primary) 30%, transparent);
+  }
+  50% {
+    box-shadow: 
+      0 0 100px color-mix(in srgb, var(--glow-primary) 50%, transparent),
+      inset 0 0 100px color-mix(in srgb, var(--glow-primary) 30%, transparent),
+      0 0 180px color-mix(in srgb, var(--glow-primary) 40%, transparent);
+  }
+}
+
+[data-glow-effects="true"] .project-circle::before {
+  border-width: 3px;
+  border-top-color: var(--color-accent-primary);
+  border-right-color: color-mix(in srgb, var(--color-border-glow) 60%, transparent);
+  opacity: 1;
+  filter: drop-shadow(0 0 30px var(--glow-primary));
+}
+
+/* ============================================
+   SCROLLBAR - ENERGY TRACK
+   ============================================ */
+
+[data-glow-effects="true"] ::-webkit-scrollbar {
+  width: 8px;
+}
+
+[data-glow-effects="true"] ::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.5);
+  border-left: 1px solid color-mix(in srgb, var(--color-border-default) 50%, transparent);
+}
+
+[data-glow-effects="true"] ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg,
+    var(--color-accent-primary) 0%,
+    color-mix(in srgb, var(--color-accent-primary) 60%, transparent) 100%
+  );
+  border-radius: 0;
+  box-shadow: 
+    0 0 15px var(--glow-primary),
+    inset 0 0 10px color-mix(in srgb, var(--glow-primary) 30%, transparent);
+}
+
+[data-glow-effects="true"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent-primary);
+  box-shadow: 
+    0 0 25px var(--glow-primary),
+    inset 0 0 15px color-mix(in srgb, var(--glow-primary) 50%, transparent);
+}
+
+/* ============================================
+   HEADER - COMMAND RAIL
+   ============================================ */
+
+[data-glow-effects="true"] .content-header {
+  background: linear-gradient(180deg, 
+    rgba(0, 16, 34, 0.94) 0%, 
+    rgba(0, 8, 20, 0.97) 100%
+  );
+  border: 2px solid var(--color-border-active);
+  box-shadow: 
+    0 0 20px color-mix(in srgb, var(--glow-primary) 16%, transparent),
+    inset 0 0 12px color-mix(in srgb, var(--glow-primary) 8%, transparent);
+}
+
+/* Keep shared header accent clear of title text across all pages */
+[data-glow-effects="true"] .content-header.panel-primary::before {
+  top: -1px;
+  left: -1px;
+  width: 16px;
+  height: 16px;
+  border-top-width: 2px;
+  border-left-width: 2px;
+  opacity: 0.65;
+  z-index: 0;
+}
+
+[data-glow-effects="true"] .content-header > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Brand confidence and cleaner cyan/magenta balance */
+[data-glow-effects="true"] .app-title-center {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  padding-left: 26px;
+}
+
+[data-glow-effects="true"] .brand {
+  color: #ff33b6 !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.14em !important;
+  text-shadow:
+    0 0 10px color-mix(in srgb, #ff33b6 36%, transparent),
+    0 0 18px color-mix(in srgb, var(--color-accent-primary) 22%, transparent),
+    0 1px 1px rgba(0, 0, 0, 0.85) !important;
+}
+
+[data-glow-effects="true"] .hero-title,
+[data-glow-effects="true"] .title {
+  color: #ff2ead !important;
+  text-shadow:
+    0 0 8px color-mix(in srgb, #ff2ead 30%, transparent),
+    0 1px 2px rgba(0, 0, 0, 0.9) !important;
+}
+
+/* Telemetry/subsystem KCx identity accents */
+[data-glow-effects="true"] .telemetry-row {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 46, 173, 0.06) 0%,
+    rgba(0, 14, 26, 0.85) 26%,
+    rgba(0, 10, 20, 0.92) 100%
+  );
+  border-left-color: color-mix(in srgb, #ff2ead 45%, var(--color-accent-primary));
+}
+
+[data-glow-effects="true"] .telemetry .actions button.active {
+  border-color: #ff2ead !important;
+  color: #ff2ead !important;
+  box-shadow:
+    0 0 14px color-mix(in srgb, #ff2ead 26%, transparent),
+    inset 0 0 10px color-mix(in srgb, var(--glow-primary) 10%, transparent) !important;
+}
+
+[data-glow-effects="true"] .subsystem-grid .subsystem-row:last-child .subsystem-name {
+  color: #ff3ab8;
+  text-shadow: 0 0 8px color-mix(in srgb, #ff3ab8 30%, transparent);
+}
+
+/* ============================================
+   Z-INDEX LAYERING FOR DEPTH
+   ============================================ */
+
+.app-shell {
+  position: relative;
+  z-index: 10;
+}
+
+.sidebar {
+  z-index: 20;
+}
+
+.content-header {
+  z-index: 15;
+}
+
+.content-header .app-title-trigger,
+.content-header .ecosystem-dock-trigger {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.content-header .ecosystem-dock-trigger {
+  display: inline-flex;
+  align-items: center;
+}
+
+.ecosystem-dock-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 92px 24px 24px;
+  background: rgba(2, 8, 18, 0.68);
+  backdrop-filter: blur(10px);
+}
+
+.ecosystem-dock {
+  width: min(980px, calc(100vw - 48px));
+  max-height: calc(100vh - 120px);
+  overflow: auto;
+  padding: 18px 18px 20px;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--color-accent-primary) 24%, transparent);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-bg-secondary) 96%, transparent),
+    color-mix(in srgb, var(--color-bg-primary) 98%, transparent)
+  );
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.42),
+    inset 0 0 18px color-mix(in srgb, var(--glow-primary) 8%, transparent);
+}
+
+.ecosystem-dock-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.ecosystem-dock-header .title,
+.ecosystem-dock-header .subtle {
+  margin: 0;
+}
+
+.ecosystem-dock-close {
+  appearance: none;
+  border: 1px solid color-mix(in srgb, var(--color-accent-primary) 32%, transparent);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-bg-tertiary) 94%, transparent),
+    color-mix(in srgb, var(--color-bg-secondary) 96%, transparent)
+  );
+  color: var(--color-accent-primary);
+  font: inherit;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.ecosystem-dock-body .ecosystem-status-panel {
+  margin-bottom: 0;
+  gap: 16px;
+}
+
+.ecosystem-dock-body .ecosystem-node-slot {
+  min-height: 236px;
+  align-items: stretch;
+}
+
+.ecosystem-dock-body .ecosystem-node-slot > .eco-card {
+  justify-content: flex-start;
+  padding: 18px 16px 14px;
+  gap: 12px;
+  background:
+    radial-gradient(78% 42% at 50% 78%, rgba(0, 242, 254, 0.08), rgba(0, 242, 254, 0) 72%),
+    linear-gradient(180deg, rgba(186, 240, 255, 0.06), rgba(186, 240, 255, 0) 28%),
+    linear-gradient(180deg, rgba(7, 17, 30, 0.96), rgba(4, 11, 21, 0.98));
+  box-shadow:
+    inset 0 1px 0 rgba(180, 235, 255, 0.16),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4),
+    inset 0 0 0 1px rgba(0, 242, 254, 0.07),
+    0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.eco-visual-layer {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.drone-depth-layer,
+.xpod-depth-layer {
+  display: none;
+}
+
+.ecosystem-dock-body .ecosystem-node-slot > .eco-card .eco-svg {
+  position: relative;
+  z-index: 2;
+}
+
+.ecosystem-dock-body .wolf-card .wolf-svg {
+  width: 80px;
+  height: 87px;
+  opacity: 0.75;
+}
+
+.ecosystem-dock-body .drone-card .drone-svg {
+  width: 120px;
+  height: 72px;
+  opacity: 0.75;
+}
+
+.ecosystem-dock-body .xpod-card .xpod-svg {
+  width: 120px;
+  height: 78px;
+  opacity: 0.75;
+}
+
+.ecosystem-dock-body .ecosystem-node-slot > .eco-card .platform-rings {
+  opacity: 0.42;
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--glow-primary) 20%, transparent));
+}
+
+.ecosystem-dock-body .ecosystem-node-slot > .eco-card .eco-meta {
+  margin-top: auto;
+  width: 100%;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+}
+
+.ecosystem-dock-body .ecosystem-node-slot .eco-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+}
+
+.ecosystem-dock-body .ecosystem-node-slot .eco-status {
+  font-size: 0.78rem;
+}
+
+.ecosystem-dock-body .ecosystem-node-slot .drone-svg {
+  width: 108px;
+  height: 64px;
+}
+
+.ecosystem-dock-body .drone-card .drone-depth-layer,
+.ecosystem-dock-body .xpod-card .xpod-depth-layer {
+  position: absolute;
+  inset: 22px 12px 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.ecosystem-dock-body .drone-card .drone-depth-layer::before,
+.ecosystem-dock-body .xpod-card .xpod-depth-layer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  filter: blur(10px);
+  opacity: 0.45;
+}
+
+.ecosystem-dock-body .drone-card .drone-depth-layer::before {
+  background:
+    radial-gradient(56% 70% at 50% 62%, rgba(0, 242, 254, 0.16), rgba(0, 242, 254, 0) 72%),
+    linear-gradient(115deg, rgba(255, 0, 127, 0) 18%, rgba(255, 0, 127, 0.08) 52%, rgba(255, 0, 127, 0) 82%);
+}
+
+.ecosystem-dock-body .xpod-card .xpod-depth-layer::before {
+  background:
+    radial-gradient(58% 68% at 50% 60%, rgba(0, 242, 254, 0.16), rgba(0, 242, 254, 0) 74%),
+    linear-gradient(115deg, rgba(255, 0, 127, 0) 12%, rgba(255, 0, 127, 0.08) 46%, rgba(255, 0, 127, 0) 82%);
+}
+
+.ecosystem-dock-body .drone-card .drone-depth-image,
+.ecosystem-dock-body .xpod-card .xpod-depth-image {
+  position: relative;
+  z-index: 1;
+  width: auto;
+  min-height: 120px;
+  max-height: 132px;
+  max-width: 220px;
+  object-fit: contain;
+  transform-origin: 50% 70%;
+  filter: contrast(1.16) brightness(0.98) saturate(1.06);
+}
+
+.ecosystem-dock-body .drone-card .drone-svg {
+  position: relative;
+  z-index: 2;
+  transform-origin: 50% 58%;
+  margin-top: 18px;
+}
+
+.ecosystem-dock-body .drone-card .platform-rings {
+  opacity: 0.46;
+}
+
+.ecosystem-dock-body .drone-card.eco-idle .drone-depth-image {
+  animation: eco-float 4.8s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .drone-card.eco-idle .drone-svg {
+  animation: dock-drone-idle-hover 4.8s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .drone-card.eco-idle .drone-light,
+.ecosystem-dock-body .drone-card.eco-idle .drone-eye {
+  animation: dock-drone-idle-thruster 2.8s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .drone-card.eco-idle .drone-depth-layer::before {
+  animation: eco-breathe 4.6s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .drone-card.eco-processing .drone-depth-image,
+.ecosystem-dock-body .drone-card.drone-active .drone-depth-image {
+  animation: dock-drone-processing-image 2.4s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .drone-card.eco-processing .drone-svg,
+.ecosystem-dock-body .drone-card.drone-active .drone-svg {
+  animation: dock-drone-processing-hover 2.4s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .drone-card.eco-processing .creation-beam,
+.ecosystem-dock-body .drone-card.drone-active .creation-beam {
+  animation: dock-drone-beam-pulse 1.35s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--glow-secondary) 26%, transparent));
+}
+
+.ecosystem-dock-body .drone-card.eco-processing .beam-particle,
+.ecosystem-dock-body .drone-card.drone-active .beam-particle {
+  animation: dock-drone-beam-particle-fall 1.1s linear infinite;
+}
+
+.ecosystem-dock-body .drone-card.eco-processing .beam-target,
+.ecosystem-dock-body .drone-card.drone-active .beam-target {
+  animation: dock-drone-target-pulse 1.75s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .drone-card.eco-processing .beam-object,
+.ecosystem-dock-body .drone-card.drone-active .beam-object {
+  animation: dock-drone-object-materialize 2.8s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .drone-card.eco-processing .materialization-ring,
+.ecosystem-dock-body .drone-card.drone-active .materialization-ring {
+  animation: dock-drone-ring-expand 1.8s ease-out infinite;
+}
+
+.ecosystem-dock-body .drone-card.eco-warning .drone-svg,
+.ecosystem-dock-body .drone-card.eco-error .drone-svg {
+  animation: dock-drone-alert-pulse 2.2s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .drone-card.eco-warning .drone-depth-image,
+.ecosystem-dock-body .drone-card.eco-error .drone-depth-image {
+  animation: eco-pulse 2.2s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .drone-card.eco-warning .drone-light,
+.ecosystem-dock-body .drone-card.eco-error .drone-light {
+  animation: dock-drone-alert-light 1.9s ease-in-out infinite;
+}
+
+@keyframes dock-drone-idle-hover {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-1px); }
+}
+
+@keyframes dock-drone-idle-thruster {
+  0%, 100% { opacity: 0.55; filter: drop-shadow(0 0 2px var(--glow-primary)); }
+  50% { opacity: 0.92; filter: drop-shadow(0 0 5px var(--glow-primary)); }
+}
+
+@keyframes dock-drone-processing-hover {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+@keyframes dock-drone-processing-image {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+@keyframes dock-drone-beam-pulse {
+  0%, 100% { opacity: 0.44; }
+  50% { opacity: 0.88; }
+}
+
+@keyframes dock-drone-beam-particle-fall {
+  0% { transform: translateY(0); opacity: 0; }
+  18% { opacity: 1; }
+  100% { transform: translateY(9px); opacity: 0; }
+}
+
+@keyframes dock-drone-target-pulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.65; transform: scale(1.12); }
+}
+
+@keyframes dock-drone-object-materialize {
+  0% { opacity: 0; transform: scale(0.3) rotate(0deg); }
+  24% { opacity: 1; transform: scale(1.18) rotate(120deg); }
+  62% { opacity: 1; transform: scale(1) rotate(220deg); }
+  100% { opacity: 0; transform: scale(0.45) rotate(360deg); }
+}
+
+@keyframes dock-drone-ring-expand {
+  0% { opacity: 0.85; transform: scale(0.6); }
+  100% { opacity: 0; transform: scale(1.8); }
+}
+
+@keyframes dock-drone-alert-pulse {
+  0%, 100% { opacity: 0.92; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(-1px); }
+}
+
+@keyframes dock-drone-alert-light {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.9; }
+}
+
+.ecosystem-dock-body .ecosystem-node-slot .xpod-svg {
+  width: 118px;
+  height: 68px;
+}
+
+.ecosystem-dock-body .xpod-card .xpod-svg {
+  margin-top: 18px;
+}
+
+.ecosystem-dock-body .xpod-card.eco-idle .xpod-depth-image {
+  animation: eco-float 5.4s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .xpod-card.eco-idle .xpod-depth-layer::before {
+  animation: eco-breathe 5s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .xpod-card.eco-idle .xpod-engine,
+.ecosystem-dock-body .xpod-card.eco-idle .xpod-light {
+  animation: eco-shimmer 2.8s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .xpod-card.eco-processing .xpod-depth-image {
+  animation: dock-xpod-processing-image 2.8s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .xpod-card.eco-processing .xpod-depth-layer::before {
+  animation: dock-xpod-processing-haze 2s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .xpod-card.eco-warning .xpod-depth-image,
+.ecosystem-dock-body .xpod-card.eco-error .xpod-depth-image {
+  animation: eco-pulse 2.4s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .wolf-card .wolf-depth-layer {
+  position: absolute;
+  inset: 22px 12px 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  pointer-events: none;
+  transform: none;
+  opacity: 0.9;
+  z-index: 1;
+}
+
+.ecosystem-dock-body .wolf-card .wolf-depth-layer::before,
+.ecosystem-dock-body .wolf-card .wolf-depth-layer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.ecosystem-dock-body .wolf-card .wolf-depth-layer::before {
+  z-index: 0;
+  background:
+    radial-gradient(58% 72% at 50% 60%, rgba(0, 242, 254, 0.16), rgba(0, 242, 254, 0) 72%),
+    radial-gradient(36% 44% at 32% 54%, rgba(0, 242, 254, 0.12), rgba(0, 242, 254, 0) 70%),
+    linear-gradient(115deg, rgba(255, 0, 127, 0) 18%, rgba(255, 0, 127, 0.08) 52%, rgba(255, 0, 127, 0) 82%);
+  filter: blur(10px);
+  opacity: 0.48;
+}
+
+.ecosystem-dock-body .wolf-card .wolf-depth-layer::after {
+  z-index: 2;
+  background:
+    radial-gradient(circle at 50% 52%, rgba(0, 255, 255, 0.2), rgba(0, 255, 255, 0) 72%),
+    radial-gradient(circle at 24% 44%, rgba(186, 240, 255, 0.6) 0 1px, transparent 2px),
+    radial-gradient(circle at 68% 28%, rgba(186, 240, 255, 0.48) 0 1px, transparent 2px),
+    radial-gradient(circle at 58% 68%, rgba(0, 242, 254, 0.4) 0 1px, transparent 2px);
+  mix-blend-mode: screen;
+  opacity: 0.3;
+}
+
+.ecosystem-dock-body .wolf-card .wolf-depth-image {
+  max-width: 210px;
+  max-height: 138px;
+  filter: contrast(1.24) brightness(1.16) saturate(1.26);
+  position: relative;
+  z-index: 1;
+  transform-origin: 50% 70%;
+}
+
+.ecosystem-dock-body .wolf-card .wolf-svg {
+  width: 52px;
+  height: 56px;
+  margin-top: 14px;
+}
+
+.ecosystem-dock-body .eco-card .eco-visual-layer {
+  display: none !important;
+}
+
+.ecosystem-dock-body .wolf-card .eco-meta {
+  position: relative;
+  z-index: 3;
+  background: linear-gradient(180deg, rgba(3, 10, 18, 0), rgba(3, 10, 18, 0.68));
+  border-radius: 4px;
+  padding-top: 8px;
+}
+
+.ecosystem-dock-body .wolf-card.eco-idle .wolf-depth-image {
+  animation: eco-float 5.6s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .wolf-card.eco-idle .wolf-depth-layer::before {
+  animation: eco-breathe 4.8s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .wolf-card.eco-idle .wolf-depth-layer::after {
+  animation: eco-shimmer 6.2s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .wolf-card.eco-processing .wolf-depth-image {
+  animation: dock-wolf-processing-lift 2.6s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .wolf-card.eco-processing .wolf-depth-layer::before {
+  animation: dock-wolf-processing-sweep 1.8s ease-in-out infinite;
+  opacity: 0.66;
+}
+
+.ecosystem-dock-body .wolf-card.eco-processing .wolf-depth-layer::after {
+  animation: dock-wolf-processing-particles 1.35s ease-in-out infinite;
+  opacity: 0.34;
+}
+
+.ecosystem-dock-body .wolf-card.eco-warning .wolf-depth-image,
+.ecosystem-dock-body .wolf-card.eco-error .wolf-depth-image {
+  animation: eco-pulse 2.4s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .wolf-card.eco-warning .wolf-depth-layer::before,
+.ecosystem-dock-body .wolf-card.eco-error .wolf-depth-layer::before {
+  animation: dock-wolf-alert-haze 2.1s ease-in-out infinite;
+}
+
+/* Shared dock motion: the visible card stack should feel alive even with SVG overlays hidden. */
+.ecosystem-dock-body .ecosystem-node-slot > .eco-card,
+.ecosystem-dock-body .eco-depth-layer img,
+.ecosystem-dock-body .eco-depth-layer::before,
+.ecosystem-dock-body .eco-depth-layer::after {
+  will-change: transform, opacity, filter;
+}
+
+.ecosystem-dock-body .ecosystem-node-slot:nth-child(1) > .eco-card {
+  animation: dock-card-float 4.2s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .ecosystem-node-slot:nth-child(2) > .eco-card {
+  animation: dock-card-float 4.2s ease-in-out infinite;
+  animation-delay: 1.3s;
+}
+
+.ecosystem-dock-body .ecosystem-node-slot:nth-child(3) > .eco-card {
+  animation: dock-card-float 4.2s ease-in-out infinite;
+  animation-delay: 2.6s;
+}
+
+.ecosystem-dock-body .drone-card .drone-depth-image,
+.ecosystem-dock-body .wolf-card .wolf-depth-image,
+.ecosystem-dock-body .xpod-card .xpod-depth-image {
+  animation: dock-depth-glow-pulse 4s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .ecosystem-node-slot:nth-child(1) .eco-depth-layer img {
+  animation-delay: 0s;
+}
+
+.ecosystem-dock-body .ecosystem-node-slot:nth-child(2) .eco-depth-layer img {
+  animation-delay: 1.3s;
+}
+
+.ecosystem-dock-body .ecosystem-node-slot:nth-child(3) .eco-depth-layer img {
+  animation-delay: 2.6s;
+}
+
+.ecosystem-dock-body .drone-card .drone-depth-layer::before,
+.ecosystem-dock-body .wolf-card .wolf-depth-layer::before,
+.ecosystem-dock-body .xpod-card .xpod-depth-layer::before {
+  animation: dock-aura-breathe 4s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .ecosystem-node-slot:nth-child(1) .eco-depth-layer::before {
+  animation-delay: 0s;
+}
+
+.ecosystem-dock-body .ecosystem-node-slot:nth-child(2) .eco-depth-layer::before {
+  animation-delay: 1.3s;
+}
+
+.ecosystem-dock-body .ecosystem-node-slot:nth-child(3) .eco-depth-layer::before {
+  animation-delay: 2.6s;
+}
+
+.ecosystem-dock-body .drone-card.eco-idle .drone-depth-layer::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  width: 34px;
+  height: 46px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, rgba(0, 255, 255, 0.22), rgba(0, 255, 255, 0) 85%);
+  filter: blur(6px);
+  opacity: 0.55;
+  pointer-events: none;
+  animation: dock-thruster-pulse 2.1s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .drone-card.eco-processing .drone-depth-image,
+.ecosystem-dock-body .drone-card.drone-active .drone-depth-image {
+  animation: dock-depth-glow-pulse-fast 2.2s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .drone-card.eco-processing .drone-depth-layer::after,
+.ecosystem-dock-body .drone-card.drone-active .drone-depth-layer::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  width: 38px;
+  height: 52px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, rgba(0, 255, 255, 0.34), rgba(0, 255, 255, 0.04) 38%, rgba(0, 255, 255, 0) 88%);
+  filter: blur(7px);
+  opacity: 0.92;
+  pointer-events: none;
+  animation: dock-thruster-pulse-fast 1.45s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .wolf-card.eco-idle .wolf-depth-layer::before {
+  animation: dock-wolf-aura 3.5s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .wolf-card.eco-processing .wolf-depth-image {
+  animation: dock-depth-glow-pulse-fast 2.5s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .wolf-card.eco-processing .wolf-depth-layer::before {
+  animation: dock-wolf-aura-fast 2s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .wolf-card.eco-processing .wolf-depth-layer::after {
+  background:
+    linear-gradient(90deg, rgba(0, 255, 255, 0) 0%, rgba(0, 255, 255, 0.22) 48%, rgba(0, 255, 255, 0) 100%),
+    radial-gradient(circle at 50% 52%, rgba(0, 255, 255, 0.22), rgba(0, 255, 255, 0) 72%),
+    radial-gradient(circle at 24% 44%, rgba(186, 240, 255, 0.6) 0 1px, transparent 2px),
+    radial-gradient(circle at 68% 28%, rgba(186, 240, 255, 0.48) 0 1px, transparent 2px),
+    radial-gradient(circle at 58% 68%, rgba(0, 242, 254, 0.4) 0 1px, transparent 2px);
+  animation: dock-wolf-processing-shimmer 3s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .xpod-card.eco-idle .xpod-depth-layer::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border: 1px solid rgba(0, 255, 255, 0.14);
+  border-radius: 50%;
+  opacity: 0.48;
+  pointer-events: none;
+  animation: dock-pod-pulse 3.8s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .xpod-card.eco-processing .xpod-depth-image {
+  animation: dock-depth-glow-pulse-fast 2.2s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .xpod-card.eco-processing .xpod-depth-layer::before {
+  animation: dock-pod-pulse-fast 1.8s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .xpod-card.eco-processing .xpod-depth-layer::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 120%;
+  height: 120%;
+  transform: translate(-50%, -50%);
+  border: 2px solid rgba(0, 255, 255, 0.24);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: dock-ring-rotate 4s linear infinite;
+}
+
+/* ── Depth image organic motion (dock only) ─────────────────── */
+
+.ecosystem-dock-body .eco-depth-layer .eco-depth-image {
+  animation: depth-breathe 4s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .eco-card.eco-processing .eco-depth-layer .eco-depth-image {
+  animation: depth-breathe-active 3s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .wolf-card .wolf-depth-image {
+  animation: depth-breathe 4s ease-in-out infinite, wolf-sway 6s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .wolf-card.eco-processing .wolf-depth-image {
+  animation: depth-breathe-active 3s ease-in-out infinite, wolf-sway 4s ease-in-out infinite;
+}
+
+@keyframes depth-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.01); }
+}
+
+@keyframes depth-breathe-active {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+@keyframes wolf-sway {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(-0.3deg) scale(1.005); }
+  75% { transform: rotate(0.3deg) scale(1.005); }
+}
+
+@keyframes eco-breathe {
+  0%, 100% { opacity: 0.42; transform: scale(0.98); }
+  50% { opacity: 0.58; transform: scale(1.02); }
+}
+
+@keyframes eco-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-1px); }
+}
+
+@keyframes eco-shimmer {
+  0%, 100% { opacity: 0.16; transform: translateY(0); }
+  50% { opacity: 0.28; transform: translateY(-1px); }
+}
+
+@keyframes eco-pulse {
+  0%, 100% { transform: translateY(0); opacity: 0.94; }
+  50% { transform: translateY(-1px); opacity: 1; }
+}
+
+@keyframes dock-wolf-processing-lift {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  32%, 68% { transform: translateY(-2px) rotate(-1.6deg); }
+}
+
+@keyframes dock-wolf-processing-sweep {
+  0% { opacity: 0.38; transform: translateX(-10px); }
+  50% { opacity: 0.82; transform: translateX(6px); }
+  100% { opacity: 0.38; transform: translateX(12px); }
+}
+
+@keyframes dock-wolf-processing-particles {
+  0%, 100% { opacity: 0.2; transform: translateY(0); }
+  50% { opacity: 0.42; transform: translateY(-2px); }
+}
+
+@keyframes dock-wolf-alert-haze {
+  0%, 100% { opacity: 0.34; }
+  50% { opacity: 0.56; }
+}
+
+@keyframes dock-card-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes dock-aura-breathe {
+  0%, 100% { opacity: 0.48; transform: scale(0.99); }
+  50% { opacity: 0.72; transform: scale(1.03); }
+}
+
+@keyframes dock-depth-glow-pulse {
+  0%, 100% {
+    filter: brightness(1.24) contrast(1.18) saturate(1.24) drop-shadow(0 0 8px rgba(0, 255, 255, 0.4));
+  }
+  50% {
+    filter: brightness(1.42) contrast(1.28) saturate(1.34) drop-shadow(0 0 16px rgba(0, 255, 255, 0.7));
+  }
+}
+
+@keyframes dock-depth-glow-pulse-fast {
+  0%, 100% {
+    filter: brightness(1.3) contrast(1.2) saturate(1.28) drop-shadow(0 0 10px rgba(0, 255, 255, 0.48));
+  }
+  50% {
+    filter: brightness(1.52) contrast(1.32) saturate(1.38) drop-shadow(0 0 18px rgba(0, 255, 255, 0.76));
+  }
+}
+
+@keyframes dock-thruster-pulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes dock-thruster-pulse-fast {
+  0%, 100% { opacity: 0.62; }
+  50% { opacity: 1; }
+}
+
+@keyframes dock-wolf-aura {
+  0%, 100% { opacity: 0.54; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.05); }
+}
+
+@keyframes dock-wolf-aura-fast {
+  0%, 100% { opacity: 0.62; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.06); }
+}
+
+@keyframes dock-wolf-processing-shimmer {
+  0% { opacity: 0.24; transform: translateX(-100%); }
+  50% { opacity: 0.46; }
+  100% { opacity: 0.24; transform: translateX(100%); }
+}
+
+@keyframes dock-pod-pulse {
+  0%, 100% { opacity: 0.44; transform: scale(1); }
+  50% { opacity: 0.82; transform: scale(1.03); }
+}
+
+@keyframes dock-pod-pulse-fast {
+  0%, 100% { opacity: 0.58; transform: scale(1); }
+  50% { opacity: 0.98; transform: scale(1.04); }
+}
+
+@keyframes dock-ring-rotate {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes dock-xpod-processing-image {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+@keyframes dock-xpod-processing-haze {
+  0% { opacity: 0.34; transform: translateX(-8px); }
+  50% { opacity: 0.64; transform: translateX(6px); }
+  100% { opacity: 0.34; transform: translateX(10px); }
+}
+
+@media (max-width: 900px) {
+  .ecosystem-dock-overlay {
+    padding: 82px 16px 16px;
+  }
+
+  .ecosystem-dock {
+    width: min(100vw - 32px, 720px);
+    padding: 16px;
+  }
+
+  .ecosystem-dock-body .ecosystem-status-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .ecosystem-dock-body .ecosystem-node-slot {
+    min-height: 196px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   KCx ECOSYSTEM PANEL — Wolf / K-Drone / X-Pod title bar nodes
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Outer panel container ─────────────────────────────────── */
+
+.kcx-ecosystem-panel {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 3px 5px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-bg-secondary) 97%, transparent),
+    color-mix(in srgb, var(--color-bg-primary) 97%, transparent)
+  );
+  border: 1px solid color-mix(in srgb, var(--color-accent-primary) 22%, transparent);
+  border-radius: 8px;
+  position: relative;
+}
+
+.kcx-ecosystem-panel::before,
+.kcx-ecosystem-panel::after {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  pointer-events: none;
+}
+
+.kcx-ecosystem-panel::before {
+  top: -1px;
+  left: -1px;
+  border-top: 1.5px solid color-mix(in srgb, var(--color-accent-primary) 72%, transparent);
+  border-left: 1.5px solid color-mix(in srgb, var(--color-accent-primary) 72%, transparent);
+}
+
+.kcx-ecosystem-panel::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 1.5px solid color-mix(in srgb, var(--color-accent-secondary) 62%, transparent);
+  border-right: 1.5px solid color-mix(in srgb, var(--color-accent-secondary) 62%, transparent);
+}
+
+.kcx-ecosystem-panel.eco-state-processing {
+  border-color: color-mix(in srgb, var(--color-accent-secondary) 35%, transparent);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--glow-secondary) 12%, transparent);
+}
+
+.kcx-ecosystem-panel.eco-state-warning {
+  border-color: color-mix(in srgb, var(--color-status-warning) 40%, transparent);
+}
+
+.kcx-ecosystem-panel.eco-state-error {
+  border-color: color-mix(in srgb, var(--color-status-error) 45%, transparent);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--color-status-error) 12%, transparent);
+}
+
+/* ── Shared eco-card (each node) ──────────────────────────── */
+
+.eco-card {
+  position: relative;
+  overflow: hidden;
+
+  /* HARD CONTAINMENT FIX */
+  max-width: 320px;
+  max-height: 240px;
+
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 5px 9px;
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, var(--color-accent-primary) 18%, transparent);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-bg-tertiary) 95%, transparent),
+    color-mix(in srgb, var(--color-bg-secondary) 95%, transparent)
+  );
+  min-width: 0;
+}
+
+.eco-idle,
+.eco-card.eco-idle {
+  color: var(--state-stable);
+  --current-state-color: var(--state-stable);
+}
+
+.eco-processing,
+.eco-card.eco-processing {
+  color: var(--state-active);
+  --current-state-color: var(--state-active);
+}
+
+.eco-warning,
+.eco-card.eco-warning {
+  color: var(--state-warning);
+  --current-state-color: var(--state-warning);
+}
+
+.eco-error,
+.eco-card.eco-error {
+  color: var(--state-error);
+  --current-state-color: var(--state-error);
+}
+
+.wolf-depth-layer {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  pointer-events: none;
+
+  /* PREVENT HERO EXPANSION */
+  transform: scale(0.6);
+  opacity: 0.9;
+}
+
+.wolf-depth-image {
+  max-width: 180px;
+  max-height: 180px;
+
+  width: auto;
+  height: auto;
+
+  object-fit: contain;
+
+  filter: contrast(1.2) brightness(0.9);
+}
+
+.eco-card::before,
+.eco-card::after {
+  content: "";
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  pointer-events: none;
+}
+
+.eco-card::before {
+  top: -1px;
+  left: -1px;
+  border-top: 1px solid color-mix(in srgb, var(--color-accent-primary) 58%, transparent);
+  border-left: 1px solid color-mix(in srgb, var(--color-accent-primary) 58%, transparent);
+}
+
+.eco-card::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-accent-secondary) 48%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--color-accent-secondary) 48%, transparent);
+}
+
+.eco-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background:
+    radial-gradient(circle at 30% 20%, rgba(0, 242, 254, 0.08), transparent 60%),
+    radial-gradient(circle at 70% 80%, rgba(255, 0, 127, 0.06), transparent 55%);
+
+  pointer-events: none;
+  z-index: 0;
+}
+
+.wolf-depth-layer,
+.eco-svg,
+.eco-meta {
+  position: relative;
+  z-index: 2;
+}
+
+.eco-card.eco-processing {
+  border-color: color-mix(in srgb, var(--color-accent-secondary) 28%, transparent);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-bg-primary) 97%, var(--color-accent-secondary) 3%),
+    color-mix(in srgb, var(--color-bg-primary) 97%, transparent)
+  );
+}
+
+.eco-card.eco-warning {
+  border-color: color-mix(in srgb, var(--color-status-warning) 28%, transparent);
+}
+
+.eco-card.eco-error {
+  border-color: color-mix(in srgb, var(--color-status-error) 35%, transparent);
+}
+
+/* ── SVG base ──────────────────────────────────────────────── */
+
+.eco-svg {
+  flex: 0 0 auto;
+  overflow: visible;
+}
+
+/* Smooth color transitions */
+.eco-card,
+.eco-svg,
+svg {
+  transition: color 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Smooth filter transitions */
+.eco-card svg,
+.eco-svg {
+  transition: filter 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Meta: stacked label + status ─────────────────────────── */
+
+.eco-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  line-height: 1.05;
+}
+
+.eco-label {
+  font-size: 0.54rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--color-text-label);
+  white-space: nowrap;
+}
+
+.eco-status {
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-accent-primary);
+  white-space: nowrap;
+}
+
+.eco-card.eco-processing .eco-status { color: var(--color-accent-secondary); }
+.eco-card.eco-warning    .eco-status { color: var(--color-status-warning); }
+.eco-card.eco-error      .eco-status { color: var(--color-status-error); }
+
+/* ── Divider between cards ─────────────────────────────────── */
+
+.eco-divider {
+  width: 1px;
+  height: 28px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    color-mix(in srgb, var(--color-accent-primary) 24%, transparent),
+    transparent
+  );
+  flex: 0 0 auto;
+  margin: 0 4px;
+}
+
+/* ══ Wolf Core SVG ═══════════════════════════════════════════ */
+
+.wolf-svg { width: 18px; height: 20px; }
+
+.wolf-ear {
+  fill: color-mix(in srgb, var(--color-accent-primary) 16%, transparent);
+  stroke: color-mix(in srgb, var(--color-accent-primary) 60%, transparent);
+  stroke-width: 0.85;
+  stroke-linejoin: round;
+}
+
+.wolf-face {
+  fill: color-mix(in srgb, var(--color-accent-primary) 9%, transparent);
+  stroke: color-mix(in srgb, var(--color-accent-primary) 62%, transparent);
+  stroke-width: 0.9;
+  stroke-linejoin: round;
+  animation: eco-wolf-breathe 2.8s ease-in-out infinite;
+}
+
+.wolf-eye {
+  fill: var(--color-accent-primary);
+  filter: drop-shadow(0 0 2px var(--glow-primary));
+}
+
+.wolf-nose {
+  fill: color-mix(in srgb, var(--color-accent-primary) 50%, transparent);
+}
+
+/* Wolf — processing */
+.eco-processing .wolf-ear,
+.eco-processing .wolf-face {
+  stroke: color-mix(in srgb, var(--color-accent-secondary) 60%, transparent);
+  animation: eco-wolf-sync 1.8s ease-in-out infinite;
+}
+.eco-processing .wolf-eye {
+  fill: var(--color-accent-secondary);
+  filter: drop-shadow(0 0 2.5px var(--glow-secondary));
+}
+
+/* Wolf — warning */
+.eco-warning .wolf-ear,
+.eco-warning .wolf-face {
+  stroke: color-mix(in srgb, var(--color-status-warning) 55%, transparent);
+}
+.eco-warning .wolf-eye { fill: var(--color-status-warning); filter: none; }
+
+/* Wolf — error */
+.eco-error .wolf-ear,
+.eco-error .wolf-face {
+  stroke: color-mix(in srgb, var(--color-status-error) 52%, transparent);
+  animation: eco-wolf-error 1.1s linear infinite;
+}
+.eco-error .wolf-eye {
+  fill: var(--color-status-error);
+  filter: drop-shadow(0 0 2px var(--color-status-error));
+}
+
+@keyframes eco-wolf-breathe {
+  0%, 100% { opacity: 0.72; }
+  50%       { opacity: 1; }
+}
+
+@keyframes eco-wolf-sync {
+  0%, 100% { opacity: 0.78; }
+  50%       { opacity: 1; }
+}
+
+@keyframes eco-wolf-error {
+  0%, 100% { opacity: 0.52; }
+  45%       { opacity: 1; }
+  60%       { opacity: 0.32; }
+}
+
+/* Wolf Howl - Head Tilt */
+@keyframes wolf-howl-tilt {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  30%, 70% { transform: rotate(-12deg) translateY(-2px); }
+}
+
+.wolf-card.eco-processing .wolf-svg,
+.wolf-card.eco-processing svg {
+  animation: wolf-howl-tilt 3s ease-in-out infinite;
+  transform-origin: 50% 65%;
+}
+
+/* Energy Waves */
+@keyframes howl-wave {
+  0% {
+    opacity: 0;
+    stroke-width: 0.5;
+    transform: translateY(0) scale(1);
+  }
+  30% { opacity: 0.8; }
+  100% {
+    opacity: 0;
+    stroke-width: 2;
+    transform: translateY(-12px) scale(1.5);
+  }
+}
+
+.howl-wave-1 { animation: howl-wave 2s ease-out infinite; }
+.howl-wave-2 { animation: howl-wave 2s ease-out 0.3s infinite; }
+.howl-wave-3 { animation: howl-wave 2s ease-out 0.6s infinite; }
+
+/* Particle Burst */
+@keyframes howl-particle-burst {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0);
+  }
+  20% { opacity: 1; }
+  100% {
+    opacity: 0;
+    transform: translate(var(--particle-x), var(--particle-y)) scale(2);
+  }
+}
+
+.howl-particle {
+  animation: howl-particle-burst 2s ease-out infinite;
+}
+
+/* Eye Glow Intensity */
+.wolf-card.eco-processing .wolf-eye {
+  animation: wolf-eye-howl 2s ease-in-out infinite;
+}
+
+@keyframes wolf-eye-howl {
+  0%, 100% {
+    filter: drop-shadow(0 0 2px currentColor);
+  }
+  50% {
+    filter: drop-shadow(0 0 8px currentColor);
+    opacity: 1;
+  }
+}
+
+/* ══ K-Drone SVG ═════════════════════════════════════════════ */
+
+.drone-svg { width: 42px; height: 26px; }
+
+.drone-wing {
+  fill: color-mix(in srgb, var(--color-accent-primary) 10%, transparent);
+  stroke: color-mix(in srgb, var(--color-accent-primary) 48%, transparent);
+  stroke-width: 0.75;
+  stroke-linejoin: round;
+}
+
+.drone-body {
+  fill: color-mix(in srgb, var(--color-accent-primary) 13%, transparent);
+  stroke: color-mix(in srgb, var(--color-accent-primary) 72%, transparent);
+  stroke-width: 0.9;
+  stroke-linejoin: round;
+}
+
+.drone-cockpit {
+  fill: color-mix(in srgb, var(--color-accent-primary) 8%, transparent);
+  stroke: color-mix(in srgb, var(--color-accent-primary) 50%, transparent);
+  stroke-width: 0.7;
+}
+
+.drone-eye   { fill: var(--color-accent-primary); }
+.drone-light { fill: var(--color-accent-primary); opacity: 0.65; }
+.drone-scan  { fill: var(--color-accent-secondary); opacity: 0.6; }
+
+/* Drone — active (during build) */
+.drone-active .drone-body {
+  stroke: color-mix(in srgb, var(--color-accent-secondary) 72%, transparent);
+  fill: color-mix(in srgb, var(--color-accent-secondary) 10%, transparent);
+}
+.drone-active .drone-wing  { stroke: color-mix(in srgb, var(--color-accent-secondary) 50%, transparent); }
+.drone-active .drone-eye   { fill: var(--color-accent-secondary); }
+.drone-active .drone-scan  { opacity: 1; animation: eco-scan-pulse 1.3s ease-in-out infinite; }
+.drone-active .drone-light { animation: eco-light-cycle 1.8s ease-in-out infinite; }
+
+/* Drone — processing state */
+.eco-processing .drone-body {
+  stroke: color-mix(in srgb, var(--color-accent-secondary) 68%, transparent);
+  fill: color-mix(in srgb, var(--color-accent-secondary) 10%, transparent);
+}
+.eco-processing .drone-wing { stroke: color-mix(in srgb, var(--color-accent-secondary) 50%, transparent); }
+
+/* Drone — warning / error */
+.eco-warning .drone-body { stroke: color-mix(in srgb, var(--color-status-warning) 60%, transparent); }
+.eco-error   .drone-body {
+  stroke: color-mix(in srgb, var(--color-status-error) 65%, transparent);
+  fill: color-mix(in srgb, var(--color-status-error) 8%, transparent);
+}
+.eco-error .drone-eye { fill: var(--color-status-error); }
+
+@keyframes eco-scan-pulse {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 1; }
+}
+
+@keyframes eco-light-cycle {
+  0%, 100% { opacity: 0.35; }
+  50%       { opacity: 1; }
+}
+
+/* Beam Pulse */
+@keyframes beam-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.9; }
+}
+
+.creation-beam {
+  animation: beam-pulse 2s ease-in-out infinite;
+}
+
+/* Beam Particles Falling */
+@keyframes beam-particle-fall {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  20% { opacity: 1; }
+  100% {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+}
+
+.beam-particle {
+  animation: beam-particle-fall 1.5s linear infinite;
+}
+
+/* Target Platform Pulse */
+@keyframes target-pulse {
+  0%, 100% {
+    r: 2;
+    opacity: 0.4;
+  }
+  50% {
+    r: 2.5;
+    opacity: 0.7;
+  }
+}
+
+.beam-target {
+  animation: target-pulse 2s ease-in-out infinite;
+}
+
+/* Object Materialization */
+@keyframes object-materialize {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+    filter: drop-shadow(0 0 0px currentColor);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1.3) rotate(180deg);
+    filter: drop-shadow(0 0 4px currentColor);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1) rotate(360deg);
+    filter: drop-shadow(0 0 6px currentColor);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.3) rotate(540deg);
+    filter: drop-shadow(0 0 0px currentColor);
+  }
+}
+
+.beam-object {
+  animation: object-materialize 4s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* Materialization Ring Expansion */
+@keyframes ring-expand {
+  0% {
+    r: 0.5;
+    opacity: 1;
+    stroke-width: 0.6;
+  }
+  100% {
+    r: 3;
+    opacity: 0;
+    stroke-width: 0.1;
+  }
+}
+
+.materialization-ring {
+  animation: ring-expand 2s ease-out infinite;
+}
+
+/* ══ X-Pod SVG ═══════════════════════════════════════════════ */
+
+.xpod-svg { width: 44px; height: 26px; }
+
+.xpod-ring {
+  fill: none;
+  stroke: color-mix(in srgb, var(--color-accent-primary) 30%, transparent);
+  stroke-width: 0.75;
+  stroke-dasharray: 4 2.5;
+}
+
+.xpod-body {
+  fill: color-mix(in srgb, var(--color-accent-primary) 12%, transparent);
+  stroke: color-mix(in srgb, var(--color-accent-primary) 70%, transparent);
+  stroke-width: 0.9;
+  stroke-linejoin: round;
+}
+
+.xpod-nose {
+  fill: color-mix(in srgb, var(--color-accent-primary) 18%, transparent);
+  stroke: color-mix(in srgb, var(--color-accent-primary) 58%, transparent);
+  stroke-width: 0.75;
+  stroke-linejoin: round;
+}
+
+.xpod-cockpit {
+  fill: color-mix(in srgb, var(--color-accent-primary) 8%, transparent);
+  stroke: color-mix(in srgb, var(--color-accent-primary) 48%, transparent);
+  stroke-width: 0.65;
+}
+
+.xpod-engine {
+  fill: var(--color-accent-primary);
+  opacity: 0.8;
+  filter: drop-shadow(0 0 2px var(--glow-primary));
+  animation: eco-engine-pulse 2s ease-in-out infinite;
+}
+
+.xpod-light { fill: var(--color-accent-primary); opacity: 0.55; }
+
+/* X-Pod — processing */
+.eco-processing .xpod-ring {
+  stroke: color-mix(in srgb, var(--color-accent-secondary) 40%, transparent);
+}
+.eco-processing .xpod-body {
+  stroke: color-mix(in srgb, var(--color-accent-secondary) 68%, transparent);
+  fill: color-mix(in srgb, var(--color-accent-secondary) 10%, transparent);
+}
+.eco-processing .xpod-engine {
+  fill: var(--color-accent-secondary);
+  filter: drop-shadow(0 0 3px var(--glow-secondary));
+  animation-duration: 0.75s;
+}
+
+/* X-Pod — warning */
+.eco-warning .xpod-body   { stroke: color-mix(in srgb, var(--color-status-warning) 62%, transparent); }
+.eco-warning .xpod-engine { fill: var(--color-status-warning); filter: none; }
+
+/* X-Pod — error */
+.eco-error .xpod-ring {
+  stroke: color-mix(in srgb, var(--color-status-error) 38%, transparent);
+}
+.eco-error .xpod-body {
+  stroke: color-mix(in srgb, var(--color-status-error) 65%, transparent);
+  fill: color-mix(in srgb, var(--color-status-error) 8%, transparent);
+}
+.eco-error .xpod-engine {
+  fill: var(--color-status-error);
+  filter: drop-shadow(0 0 2px var(--color-status-error));
+  animation: eco-wolf-error 1.1s linear infinite;
+}
+
+@keyframes eco-engine-pulse {
+  0%, 100% { opacity: 0.55; }
+  50%       { opacity: 1; }
+}
+
+/* Ring Rotation */
+@keyframes ring-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes ring-spin-reverse {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+/* Runner Orbital Motion (separate X and Y for elliptical path) */
+@keyframes runner-orbit-x {
+  0% { transform: translateX(12.5px) translateY(0px); }
+  25% { transform: translateX(0px) translateY(0px); }
+  50% { transform: translateX(-12.5px) translateY(0px); }
+  75% { transform: translateX(0px) translateY(0px); }
+  100% { transform: translateX(12.5px) translateY(0px); }
+}
+
+@keyframes runner-orbit-y {
+  0% { transform: translateX(0px) translateY(-5.5px); }
+  25% { transform: translateX(0px) translateY(0px); }
+  50% { transform: translateX(0px) translateY(5.5px); }
+  75% { transform: translateX(0px) translateY(0px); }
+  100% { transform: translateX(0px) translateY(-5.5px); }
+}
+
+/* Processing State - Ring Glow Pulse */
+.xpod-card.eco-processing .ring-outer {
+  animation:
+    ring-spin 3s linear infinite,
+    ring-glow-pulse 1.5s ease-in-out infinite !important;
+}
+
+.xpod-card.eco-processing .ring-middle {
+  animation:
+    ring-spin-reverse 4.5s linear infinite,
+    ring-glow-pulse 1.5s ease-in-out infinite !important;
+}
+
+.xpod-card.eco-processing .ring-inner {
+  animation:
+    ring-spin 1.95s linear infinite,
+    ring-glow-pulse 1.5s ease-in-out infinite !important;
+}
+
+@keyframes ring-glow-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 2px currentColor) blur(0.3px);
+  }
+  50% {
+    filter: drop-shadow(0 0 6px currentColor) blur(0.3px);
+  }
+}
+
+/* Pod Core Pulse */
+@keyframes pod-core-pulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.2); }
+}
+
+/* Error State - Stuttered Rotation */
+.xpod-card.eco-error .ring-outer {
+  animation: ring-spin-stutter 20s steps(8) infinite !important;
+}
+
+@keyframes ring-spin-stutter {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Track rail dash animation */
+@keyframes track-dash {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: 10; }
+}
+
+.orbital-track {
+  animation: track-dash 2s linear infinite;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ECOSYSTEM STATUS PANEL — Dashboard living entity display
+   ══════════════════════════════════════════════════════════════ */
+
+.ecosystem-status-panel {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 14px;
+}
+
+/* Each slot stretches the eco-card to fill */
+.ecosystem-node-slot {
+  display: flex;
+  min-height: 120px;
+}
+
+.ecosystem-node-slot > .eco-card {
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 10px 12px;
+  gap: 8px;
+  text-align: center;
+  /* Idle breathing glow on the card border */
+  animation: esn-glow-idle 3s ease-in-out infinite;
+}
+
+/* Re-center meta inside panel cards */
+.ecosystem-node-slot .eco-meta {
+  align-items: center;
+  gap: 3px;
+}
+
+.ecosystem-node-slot .eco-label {
+  font-size: 0.58rem;
+  letter-spacing: 0.09em;
+}
+
+.ecosystem-node-slot .eco-status {
+  font-size: 0.72rem;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+/* ── Larger SVGs in panel context ─────────────────────────── */
+
+.ecosystem-node-slot .wolf-svg  { width: 38px;  height: 42px; }
+.ecosystem-node-slot .drone-svg { width: 66px;  height: 40px; }
+.ecosystem-node-slot .xpod-svg  { width: 70px;  height: 40px; }
+
+/* ── Breathing glow animations ────────────────────────────── */
+
+@keyframes esn-glow-idle {
+  0%, 100% {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--color-accent-primary) 18%, transparent),
+      0 0 10px color-mix(in srgb, var(--glow-primary) 8%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--color-accent-primary) 40%, transparent),
+      0 0 20px color-mix(in srgb, var(--glow-primary) 18%, transparent);
+  }
+}
+
+.ecosystem-node-slot > .eco-card.eco-processing {
+  animation: esn-glow-active 1.5s ease-in-out infinite;
+}
+
+@keyframes esn-glow-active {
+  0%, 100% {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--color-accent-secondary) 22%, transparent),
+      0 0 12px color-mix(in srgb, var(--glow-secondary) 10%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--color-accent-secondary) 50%, transparent),
+      0 0 24px color-mix(in srgb, var(--glow-secondary) 24%, transparent);
+  }
+}
+
+.ecosystem-node-slot > .eco-card.eco-warning {
+  animation: esn-glow-warning 2s ease-in-out infinite;
+}
+
+@keyframes esn-glow-warning {
+  0%, 100% {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--color-status-warning) 22%, transparent),
+      0 0 10px color-mix(in srgb, var(--color-status-warning) 10%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--color-status-warning) 48%, transparent),
+      0 0 22px color-mix(in srgb, var(--color-status-warning) 22%, transparent);
+  }
+}
+
+.ecosystem-node-slot > .eco-card.eco-error {
+  animation: esn-glow-error 1.1s ease-in-out infinite;
+}
+
+@keyframes esn-glow-error {
+  0%, 100% {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--color-status-error) 22%, transparent),
+      0 0 10px color-mix(in srgb, var(--color-status-error) 10%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--color-status-error) 55%, transparent),
+      0 0 28px color-mix(in srgb, var(--color-status-error) 28%, transparent);
+  }
+}
+
+/* Header-only KCx cluster alignment: K left, Wolf Core center, X right */
+.content-header .kcx-ecosystem-panel {
+  display: grid;
+  grid-template-columns: 176px 1px 176px 1px 176px;
+  align-items: center;
+  justify-content: center;
+  column-gap: 10px;
+  padding: 6px 9px;
+  flex: 0 0 auto;
+}
+
+.content-header .kcx-ecosystem-panel > .eco-card {
+  position: relative;
+  overflow: hidden;
+  width: 176px;
+  height: 92px;
+  max-width: 176px;
+  max-height: 92px;
+  min-width: 0;
+  flex: 0 0 176px;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr auto;
+  align-items: stretch;
+  justify-content: stretch;
+  gap: 6px;
+  padding: 7px 10px 8px;
+  background:
+    linear-gradient(180deg, rgba(214, 249, 255, 0.14) 0%, rgba(214, 249, 255, 0.03) 18%, rgba(214, 249, 255, 0) 42%),
+    linear-gradient(165deg, rgba(255, 0, 127, 0.08), rgba(255, 0, 127, 0.02) 34%, rgba(255, 0, 127, 0) 62%),
+    linear-gradient(180deg, rgba(8, 15, 29, 0.995) 0%, rgba(5, 11, 22, 0.99) 50%, rgba(2, 7, 15, 0.995) 100%);
+  border: 1px solid color-mix(in srgb, var(--color-accent-primary) 34%, rgba(255, 255, 255, 0.12));
+  box-shadow:
+    inset 0 1px 0 rgba(212, 248, 255, 0.34),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.64),
+    inset 0 3px 6px rgba(0, 0, 0, 0.56),
+    inset 0 0 0 1px rgba(0, 242, 254, 0.14),
+    inset 0 0 0 2px rgba(0, 242, 254, 0.06),
+    0 8px 16px rgba(0, 0, 0, 0.52),
+    0 0 14px rgba(0, 242, 254, 0.2),
+    0 0 0 1px rgba(0, 242, 254, 0.18);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  transform: translateZ(0);
+}
+
+.content-header .kcx-ecosystem-panel > .eco-card::before,
+.content-header .kcx-ecosystem-panel > .eco-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.content-header .kcx-ecosystem-panel > .eco-card::before {
+  background:
+    linear-gradient(180deg, rgba(224, 251, 255, 0.17) 0%, rgba(224, 251, 255, 0.04) 24%, rgba(224, 251, 255, 0) 42%),
+    radial-gradient(138% 84% at 50% -8%, rgba(0, 242, 254, 0.2), rgba(0, 242, 254, 0.03) 34%, rgba(0, 242, 254, 0) 64%);
+  opacity: 0.96;
+  z-index: 0;
+  animation: header-breathe 4s ease-in-out infinite;
+}
+
+.content-header .kcx-ecosystem-panel > .eco-card::after {
+  inset: 1px;
+  border-radius: inherit;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.02),
+    inset 0 -10px 18px rgba(0, 0, 0, 0.14);
+  z-index: 0;
+}
+
+.content-header .kcx-ecosystem-panel > .drone-card {
+  grid-template-columns: 1fr;
+  background:
+    radial-gradient(90% 82% at 24% 52%, rgba(0, 242, 254, 0.26), rgba(0, 242, 254, 0.06) 32%, rgba(0, 242, 254, 0) 62%),
+    linear-gradient(180deg, rgba(196, 243, 255, 0.08) 0%, rgba(196, 243, 255, 0.02) 22%, rgba(196, 243, 255, 0) 46%),
+    linear-gradient(180deg, rgba(9, 18, 32, 0.98) 0%, rgba(6, 14, 26, 0.97) 56%, rgba(3, 10, 20, 0.98) 100%);
+}
+
+.content-header .kcx-ecosystem-panel > .wolf-card {
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr auto;
+  justify-items: center;
+  align-items: center;
+  background:
+    linear-gradient(180deg, rgba(186, 240, 255, 0.11), rgba(186, 240, 255, 0) 36%),
+    radial-gradient(118% 92% at 50% 22%, rgba(0, 242, 254, 0.24), rgba(0, 242, 254, 0.05) 34%, rgba(0, 242, 254, 0) 66%),
+    radial-gradient(86% 90% at 50% 54%, rgba(0, 242, 254, 0.16), rgba(0, 242, 254, 0.03) 34%, rgba(0, 242, 254, 0) 66%),
+    linear-gradient(165deg, rgba(255, 0, 127, 0.06), rgba(255, 0, 127, 0) 50%),
+    linear-gradient(180deg, rgba(8, 18, 33, 0.97), rgba(5, 12, 23, 0.97));
+  border-color: color-mix(in srgb, var(--color-accent-primary) 28%, rgba(255, 255, 255, 0.1));
+  box-shadow:
+    inset 0 1px 0 rgba(193, 244, 255, 0.28),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.48),
+    inset 0 1px 2px rgba(0, 0, 0, 0.52),
+    inset 0 0 0 1px rgba(0, 242, 254, 0.12),
+    0 4px 12px rgba(0, 242, 254, 0.14),
+    0 3px 10px rgba(0, 0, 0, 0.36);
+}
+
+/* Main header Wolf card: label top, full-body image center, status bottom. */
+.content-header .kcx-ecosystem-panel > .wolf-card .wolf-depth-layer {
+  position: relative;
+  top: auto;
+  bottom: auto;
+  left: auto;
+  width: 100%;
+  height: 58px;
+  transform: none;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.content-header .kcx-ecosystem-panel > .wolf-card .eco-svg,
+.content-header .kcx-ecosystem-panel > .wolf-card .eco-meta {
+  position: relative;
+  z-index: 2;
+}
+
+.content-header .kcx-ecosystem-panel > .wolf-card .eco-svg {
+  display: none !important;
+}
+
+.content-header .kcx-ecosystem-panel > .wolf-card .eco-meta {
+  grid-column: 1;
+  grid-row: 2;
+  width: 100%;
+  height: auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  justify-self: stretch;
+  align-self: end;
+  text-align: center;
+  padding: 0 2px;
+  border-radius: 4px;
+  background: none;
+  pointer-events: none;
+}
+
+.content-header .kcx-ecosystem-panel > .wolf-card .eco-label {
+  justify-self: center;
+}
+
+.content-header .kcx-ecosystem-panel > .wolf-card .eco-status {
+  justify-self: center;
+}
+
+.content-header .kcx-ecosystem-panel > .wolf-card .wolf-depth-layer::before,
+.content-header .kcx-ecosystem-panel > .wolf-card .wolf-depth-layer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.content-header .kcx-ecosystem-panel > .wolf-card .wolf-depth-layer::before {
+  z-index: 0;
+  background:
+    radial-gradient(55% 70% at 50% 58%, rgba(0, 242, 254, 0.16), rgba(0, 242, 254, 0) 72%),
+    radial-gradient(42% 48% at 36% 50%, rgba(0, 242, 254, 0.14), rgba(0, 242, 254, 0) 70%),
+    linear-gradient(110deg, rgba(255, 0, 127, 0) 18%, rgba(255, 0, 127, 0.08) 52%, rgba(255, 0, 127, 0) 82%);
+  filter: blur(7px);
+  opacity: 0.52;
+}
+
+.content-header .kcx-ecosystem-panel > .wolf-card .wolf-depth-layer::after {
+  z-index: 2;
+  background:
+    radial-gradient(circle at 22% 44%, rgba(185, 235, 255, 0.7) 0 0.7px, transparent 1.6px),
+    radial-gradient(circle at 72% 30%, rgba(185, 235, 255, 0.55) 0 0.7px, transparent 1.5px),
+    radial-gradient(circle at 61% 67%, rgba(0, 242, 254, 0.45) 0 0.8px, transparent 1.7px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(186, 240, 255, 0.12) 48%, rgba(255, 255, 255, 0) 100%);
+  mix-blend-mode: screen;
+  opacity: 0.3;
+}
+
+.content-header .kcx-ecosystem-panel > .xpod-card {
+  grid-template-columns: 1fr;
+  background:
+    radial-gradient(90% 82% at 26% 52%, rgba(0, 242, 254, 0.24), rgba(0, 242, 254, 0.06) 34%, rgba(0, 242, 254, 0) 62%),
+    linear-gradient(180deg, rgba(196, 243, 255, 0.08) 0%, rgba(196, 243, 255, 0.02) 22%, rgba(196, 243, 255, 0) 46%),
+    linear-gradient(180deg, rgba(9, 18, 32, 0.98) 0%, rgba(6, 14, 26, 0.97) 56%, rgba(3, 10, 20, 0.98) 100%);
+}
+
+.content-header .kcx-ecosystem-panel > .eco-divider {
+  width: 1px;
+  height: 36px;
+  margin: 0;
+  justify-self: center;
+}
+
+.content-header .kcx-ecosystem-panel .eco-svg {
+  position: relative;
+  z-index: 1;
+  justify-self: center;
+  align-self: center;
+  max-width: 100%;
+  filter:
+    drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45))
+    drop-shadow(0 0 7px rgba(0, 242, 254, 0.44))
+    drop-shadow(0 2px 10px rgba(0, 242, 254, 0.28));
+  transform: translateZ(0);
+}
+
+/* Header cluster: depth-image first composition (mini dock preview). */
+.content-header .kcx-ecosystem-panel > .eco-card .eco-visual-layer,
+.content-header .kcx-ecosystem-panel > .eco-card .eco-visual-layer * {
+  display: none !important;
+}
+
+.content-header .kcx-ecosystem-panel > .eco-card .eco-depth-layer {
+  display: flex !important;
+  grid-column: 1;
+  grid-row: 1;
+  position: relative !important;
+  inset: auto !important;
+  width: 100%;
+  height: 58px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+  animation: header-float 4s ease-in-out infinite;
+}
+
+.content-header .kcx-ecosystem-panel > .drone-card .eco-depth-layer { animation-delay: 0s; }
+.content-header .kcx-ecosystem-panel > .wolf-card .eco-depth-layer { animation-delay: 0.8s; }
+.content-header .kcx-ecosystem-panel > .xpod-card .eco-depth-layer { animation-delay: 1.6s; }
+
+.content-header .kcx-ecosystem-panel > .eco-card .eco-depth-layer img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter:
+    brightness(1.2)
+    contrast(1.12)
+    saturate(1.15)
+    drop-shadow(0 0 8px rgba(0, 255, 255, 0.45));
+  animation: header-glow-pulse 4s ease-in-out infinite;
+}
+
+.content-header .kcx-ecosystem-panel > .drone-card .eco-depth-layer img { animation-delay: 0s; }
+.content-header .kcx-ecosystem-panel > .wolf-card .eco-depth-layer img { animation-delay: 0.8s; }
+.content-header .kcx-ecosystem-panel > .xpod-card .eco-depth-layer img { animation-delay: 1.6s; }
+
+.content-header .kcx-ecosystem-panel > .eco-card .eco-meta {
+  grid-column: 1;
+  grid-row: 2;
+  z-index: 3;
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin-top: 0;
+  line-height: 1.05;
+  text-align: center;
+}
+
+.content-header .kcx-ecosystem-panel > .eco-card.eco-processing .eco-depth-layer,
+.content-header .kcx-ecosystem-panel > .eco-card.eco-processing .eco-depth-layer img,
+.content-header .kcx-ecosystem-panel > .drone-card.drone-active .eco-depth-layer,
+.content-header .kcx-ecosystem-panel > .drone-card.drone-active .eco-depth-layer img {
+  animation-duration: 2.8s;
+}
+
+.content-header .kcx-ecosystem-panel .eco-meta {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+  align-items: flex-start;
+  gap: 3px;
+  line-height: 1.1;
+  overflow: hidden;
+}
+
+.content-header .kcx-ecosystem-panel .eco-label,
+.content-header .kcx-ecosystem-panel .eco-status {
+  display: block;
+  max-width: 100%;
+  line-height: 1.05;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.82);
+}
+
+.content-header .kcx-ecosystem-panel .eco-status {
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.84),
+    0 0 7px rgba(0, 242, 254, 0.34);
+}
+
+.content-header .kcx-ecosystem-panel .wolf-depth-layer {
+  opacity: 0.98;
+}
+
+.content-header .kcx-ecosystem-panel .wolf-depth-image {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter:
+    contrast(1.2)
+    brightness(1.04)
+    saturate(1.12)
+    drop-shadow(0 0 12px rgba(0, 242, 254, 0.76))
+    drop-shadow(0 2px 10px rgba(0, 242, 254, 0.26));
+  position: relative;
+  z-index: 1;
+  transform-origin: 50% 66%;
+  animation: header-wolf-breathe 4.4s ease-in-out infinite, header-wolf-drift 10s ease-in-out infinite;
+}
+
+.content-header .kcx-ecosystem-panel > .drone-card .drone-svg {
+  filter:
+    drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45))
+    drop-shadow(0 0 10px rgba(0, 255, 255, 0.7))
+    drop-shadow(0 2px 10px rgba(0, 242, 254, 0.34));
+}
+
+.content-header .kcx-ecosystem-panel > .xpod-card .xpod-svg {
+  filter:
+    drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45))
+    drop-shadow(0 0 10px rgba(0, 255, 255, 0.68))
+    drop-shadow(0 2px 10px rgba(0, 242, 254, 0.34));
+}
+
+.content-header .kcx-ecosystem-panel > .xpod-card .xpod-ring {
+  filter: drop-shadow(0 0 8px rgba(0, 242, 254, 0.46));
+}
+
+.content-header .kcx-ecosystem-panel > .wolf-card .eco-meta {
+  z-index: 3;
+}
+
+.content-header .kcx-ecosystem-panel > .wolf-card.eco-idle .wolf-depth-layer::before,
+.content-header .kcx-ecosystem-panel > .wolf-card.eco-idle .wolf-depth-layer::after {
+  animation: header-wolf-haze-idle 5.6s ease-in-out infinite;
+}
+
+.content-header .kcx-ecosystem-panel > .wolf-card.eco-processing .wolf-depth-image {
+  animation: header-wolf-processing-lift 2.8s ease-in-out infinite, header-wolf-processing-drift 1.8s ease-in-out infinite;
+}
+
+.content-header .kcx-ecosystem-panel > .wolf-card.eco-processing .wolf-depth-layer::before {
+  animation: header-wolf-energy-sweep 1.9s ease-in-out infinite;
+  opacity: 0.72;
+}
+
+.content-header .kcx-ecosystem-panel > .wolf-card.eco-processing .wolf-depth-layer::after {
+  animation: header-wolf-particle-pulse 1.45s ease-in-out infinite;
+  opacity: 0.42;
+}
+
+.content-header .kcx-ecosystem-panel > .wolf-card.eco-warning .wolf-depth-image,
+.content-header .kcx-ecosystem-panel > .wolf-card.eco-error .wolf-depth-image {
+  animation: header-wolf-alert-pulse 2.4s ease-in-out infinite;
+}
+
+.content-header .kcx-ecosystem-panel > .wolf-card.eco-warning .wolf-depth-layer::before,
+.content-header .kcx-ecosystem-panel > .wolf-card.eco-error .wolf-depth-layer::before {
+  animation: header-wolf-alert-haze 2.2s ease-in-out infinite;
+}
+
+.content-header .kcx-ecosystem-panel,
+.content-header .kcx-ecosystem-panel > .eco-card,
+.content-header .kcx-ecosystem-panel .eco-svg,
+.content-header .kcx-ecosystem-panel .wolf-depth-image,
+.content-header .kcx-ecosystem-panel .wolf-depth-layer::before,
+.content-header .kcx-ecosystem-panel .wolf-depth-layer::after,
+.content-header .kcx-ecosystem-panel .drone-light,
+.content-header .kcx-ecosystem-panel .drone-eye,
+.content-header .kcx-ecosystem-panel .drone-scan,
+.content-header .kcx-ecosystem-panel .xpod-engine,
+.content-header .kcx-ecosystem-panel .xpod-light,
+.content-header .kcx-ecosystem-panel .orbital-system {
+  will-change: transform, opacity;
+}
+
+.content-header .ecosystem-dock-trigger {
+  position: relative;
+}
+
+.content-header .ecosystem-dock-trigger .kcx-ecosystem-panel,
+.content-header .ecosystem-dock-trigger .kcx-ecosystem-panel > .eco-card {
+  transition:
+    transform 180ms ease-in-out,
+    opacity 180ms ease-in-out,
+    box-shadow 180ms ease-in-out,
+    border-color 180ms ease-in-out,
+    background 180ms ease-in-out;
+}
+
+.content-header .ecosystem-dock-trigger:hover .kcx-ecosystem-panel > .eco-card,
+.content-header .ecosystem-dock-trigger:focus-visible .kcx-ecosystem-panel > .eco-card {
+  border-color: color-mix(in srgb, var(--color-accent-primary) 28%, rgba(255, 255, 255, 0.12));
+  box-shadow:
+    inset 0 1px 0 rgba(198, 244, 255, 0.28),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.46),
+    inset 0 0 0 1px rgba(0, 242, 254, 0.12),
+    0 4px 14px rgba(0, 0, 0, 0.42),
+    0 0 14px rgba(0, 242, 254, 0.2);
+}
+
+.content-header .ecosystem-dock-trigger:hover .kcx-ecosystem-panel > .eco-card {
+  background:
+    linear-gradient(180deg, rgba(186, 240, 255, 0.09), rgba(186, 240, 255, 0) 36%),
+    linear-gradient(165deg, rgba(255, 0, 127, 0.06), rgba(255, 0, 127, 0) 48%),
+    linear-gradient(180deg, rgba(8, 18, 32, 0.98), rgba(5, 12, 23, 0.98));
+  transform: translateY(-2px) translateZ(0);
+}
+
+.content-header .ecosystem-dock-trigger:hover .kcx-ecosystem-panel .drone-light,
+.content-header .ecosystem-dock-trigger:hover .kcx-ecosystem-panel .drone-eye,
+.content-header .ecosystem-dock-trigger:hover .kcx-ecosystem-panel .drone-scan,
+.content-header .ecosystem-dock-trigger:hover .kcx-ecosystem-panel .xpod-engine,
+.content-header .ecosystem-dock-trigger:hover .kcx-ecosystem-panel .xpod-light,
+.content-header .ecosystem-dock-trigger:hover .kcx-ecosystem-panel > .wolf-card .wolf-depth-layer::before,
+.content-header .ecosystem-dock-trigger:hover .kcx-ecosystem-panel > .wolf-card .wolf-depth-layer::after,
+.content-header .ecosystem-dock-trigger:focus-visible .kcx-ecosystem-panel .drone-light,
+.content-header .ecosystem-dock-trigger:focus-visible .kcx-ecosystem-panel .drone-eye,
+.content-header .ecosystem-dock-trigger:focus-visible .kcx-ecosystem-panel .drone-scan,
+.content-header .ecosystem-dock-trigger:focus-visible .kcx-ecosystem-panel .xpod-engine,
+.content-header .ecosystem-dock-trigger:focus-visible .kcx-ecosystem-panel .xpod-light,
+.content-header .ecosystem-dock-trigger:focus-visible .kcx-ecosystem-panel > .wolf-card .wolf-depth-layer::before,
+.content-header .ecosystem-dock-trigger:focus-visible .kcx-ecosystem-panel > .wolf-card .wolf-depth-layer::after {
+  opacity: 1;
+}
+
+.content-header .ecosystem-dock-trigger:active .kcx-ecosystem-panel {
+  animation: header-cluster-click 180ms ease-in-out 1;
+}
+
+.content-header .ecosystem-dock-trigger:active .kcx-ecosystem-panel > .eco-card {
+  box-shadow:
+    inset 0 1px 0 rgba(205, 246, 255, 0.3),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.48),
+    inset 0 0 0 1px rgba(0, 242, 254, 0.16),
+    0 2px 12px rgba(0, 242, 254, 0.12);
+}
+
+.content-header .kcx-ecosystem-panel > .drone-card .drone-svg {
+  animation: header-float 3.5s ease-in-out infinite;
+  animation-delay: 0s;
+  transform-origin: 50% 55%;
+}
+
+.content-header .kcx-ecosystem-panel > .drone-card .drone-light,
+.content-header .kcx-ecosystem-panel > .drone-card .drone-eye,
+.content-header .kcx-ecosystem-panel > .drone-card .drone-scan {
+  animation: header-glow-pulse 4s ease-in-out infinite;
+  animation-delay: 0.15s;
+  opacity: 0.78;
+  filter: drop-shadow(0 0 6px rgba(0, 242, 254, 0.4));
+}
+
+.content-header .kcx-ecosystem-panel > .drone-card.drone-active .drone-light,
+.content-header .kcx-ecosystem-panel > .drone-card.drone-active .drone-eye,
+.content-header .kcx-ecosystem-panel > .drone-card.drone-active .drone-scan,
+.content-header .kcx-ecosystem-panel > .drone-card.eco-processing .drone-light,
+.content-header .kcx-ecosystem-panel > .drone-card.eco-processing .drone-eye,
+.content-header .kcx-ecosystem-panel > .drone-card.eco-processing .drone-scan {
+  animation-duration: 3.6s;
+  opacity: 0.82;
+}
+
+.content-header .kcx-ecosystem-panel > .drone-card.eco-warning .drone-light,
+.content-header .kcx-ecosystem-panel > .drone-card.eco-warning .drone-eye,
+.content-header .kcx-ecosystem-panel > .drone-card.eco-warning .drone-scan,
+.content-header .kcx-ecosystem-panel > .drone-card.eco-error .drone-light,
+.content-header .kcx-ecosystem-panel > .drone-card.eco-error .drone-eye,
+.content-header .kcx-ecosystem-panel > .drone-card.eco-error .drone-scan {
+  animation: header-alert-pulse 2.8s ease-in-out infinite;
+}
+
+.content-header .kcx-ecosystem-panel > .wolf-card .wolf-depth-image {
+  animation-delay: 0.8s, 1.2s;
+}
+
+.content-header .kcx-ecosystem-panel > .wolf-card .wolf-depth-layer::before {
+  animation-delay: 0.8s;
+}
+
+.content-header .kcx-ecosystem-panel > .wolf-card .wolf-depth-layer::after {
+  animation: header-shimmer 5s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+.content-header .kcx-ecosystem-panel > .wolf-card.eco-idle .wolf-depth-image,
+.content-header .kcx-ecosystem-panel > .wolf-card.eco-idle .wolf-depth-layer::before,
+.content-header .kcx-ecosystem-panel > .wolf-card.eco-idle .wolf-depth-layer::after {
+  opacity: 0.92;
+}
+
+.content-header .kcx-ecosystem-panel > .wolf-card.eco-processing .wolf-depth-layer::after {
+  animation-duration: 4.2s;
+  opacity: 0.52;
+}
+
+.content-header .kcx-ecosystem-panel > .xpod-card .xpod-svg {
+  animation: header-float 4.2s ease-in-out infinite;
+  animation-delay: 1.6s;
+  transform-origin: 50% 52%;
+}
+
+.content-header .kcx-ecosystem-panel > .xpod-card .xpod-engine,
+.content-header .kcx-ecosystem-panel > .xpod-card .xpod-light,
+.content-header .kcx-ecosystem-panel > .xpod-card .orbital-system {
+  animation: header-glow-pulse 4.2s ease-in-out infinite;
+  animation-delay: 1.6s;
+  opacity: 0.76;
+  filter: drop-shadow(0 0 6px rgba(0, 242, 254, 0.38));
+}
+
+.content-header .kcx-ecosystem-panel > .xpod-card.eco-processing .xpod-engine,
+.content-header .kcx-ecosystem-panel > .xpod-card.eco-processing .xpod-light,
+.content-header .kcx-ecosystem-panel > .xpod-card.eco-processing .orbital-system {
+  animation-duration: 3.78s;
+  opacity: 0.84;
+}
+
+.content-header .kcx-ecosystem-panel > .xpod-card.eco-warning .xpod-engine,
+.content-header .kcx-ecosystem-panel > .xpod-card.eco-warning .xpod-light,
+.content-header .kcx-ecosystem-panel > .xpod-card.eco-warning .orbital-system,
+.content-header .kcx-ecosystem-panel > .xpod-card.eco-error .xpod-engine,
+.content-header .kcx-ecosystem-panel > .xpod-card.eco-error .xpod-light,
+.content-header .kcx-ecosystem-panel > .xpod-card.eco-error .orbital-system {
+  animation: header-alert-pulse 2.9s ease-in-out infinite;
+}
+
+@keyframes header-wolf-breathe {
+  0%, 100% { transform: translateY(0); filter: contrast(1.2) brightness(1.02) saturate(1.08); }
+  50% { transform: translateY(-1px); filter: contrast(1.22) brightness(1.05) saturate(1.1); }
+}
+
+@keyframes header-wolf-drift {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 1px -1px; }
+}
+
+@keyframes header-wolf-haze-idle {
+  0%, 100% { opacity: 0.48; transform: translateX(0); }
+  50% { opacity: 0.6; transform: translateX(1px); }
+}
+
+@keyframes header-wolf-processing-lift {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  32%, 68% { transform: translateY(-2px) rotate(-1.8deg); }
+}
+
+@keyframes header-wolf-processing-drift {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 1px -1px; }
+}
+
+@keyframes header-wolf-energy-sweep {
+  0% { opacity: 0.42; transform: translateX(-8px); }
+  50% { opacity: 0.82; transform: translateX(4px); }
+  100% { opacity: 0.42; transform: translateX(10px); }
+}
+
+@keyframes header-wolf-particle-pulse {
+  0%, 100% { opacity: 0.24; transform: translateY(0); }
+  50% { opacity: 0.5; transform: translateY(-1px); }
+}
+
+@keyframes header-wolf-alert-pulse {
+  0%, 100% { transform: translateY(0); opacity: 0.94; }
+  50% { transform: translateY(-1px); opacity: 1; }
+}
+
+@keyframes header-wolf-alert-haze {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes header-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-1px); }
+}
+
+@keyframes header-glow-pulse {
+  0%, 100% { opacity: 0.62; }
+  50% { opacity: 0.82; }
+}
+
+@keyframes header-breathe {
+  0%, 100% { opacity: 0.86; }
+  50% { opacity: 1; }
+}
+
+@keyframes header-shimmer {
+  0%, 100% { opacity: 0.22; transform: translateX(0); }
+  50% { opacity: 0.34; transform: translateX(1px); }
+}
+
+@keyframes header-alert-pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 0.92; }
+}
+
+@keyframes header-cluster-click {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+/* Thematic ecosystem motion: Dock spectacle plus scaled header preview. */
+.ecosystem-dock-body .eco-depth-layer,
+.content-header .kcx-ecosystem-panel > .eco-card .eco-depth-layer {
+  position: relative;
+  overflow: visible;
+}
+
+.ecosystem-dock-body .eco-depth-layer img,
+.content-header .kcx-ecosystem-panel > .eco-card .eco-depth-layer img {
+  will-change: transform, filter;
+}
+
+.ecosystem-dock-body .wolf-card.eco-idle .wolf-depth-image {
+  animation: wolf-breathe 4s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .wolf-card.eco-processing .wolf-depth-image {
+  animation: wolf-howl 3s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .wolf-card.eco-processing .wolf-depth-layer::after {
+  content: "";
+  position: absolute;
+  top: 16%;
+  left: 50%;
+  width: 108px;
+  height: 108px;
+  border: 2px solid rgba(0, 255, 255, 0.58);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(0, 255, 255, 0.16), rgba(0, 255, 255, 0) 64%),
+    linear-gradient(90deg, transparent 0%, rgba(0, 255, 255, 0.24) 50%, transparent 100%);
+  pointer-events: none;
+  animation: wolf-energy-wave 3s ease-out infinite;
+}
+
+.ecosystem-dock-body .drone-card.eco-idle .drone-depth-image:not(.x) {
+  animation: drone-hover 3.5s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .drone-card.eco-processing .drone-depth-image,
+.ecosystem-dock-body .drone-card.drone-active .drone-depth-image {
+  animation: drone-deploy-hover 2.5s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .drone-card.eco-processing .drone-depth-layer::before,
+.ecosystem-dock-body .drone-card.drone-active .drone-depth-layer::before {
+  content: "";
+  position: absolute;
+  top: 58%;
+  left: 50%;
+  width: 42px;
+  height: 86px;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 255, 255, 0.78) 0%,
+    rgba(0, 255, 255, 0.48) 48%,
+    rgba(0, 255, 255, 0.16) 100%
+  );
+  filter: blur(3px);
+  opacity: 0.78;
+  pointer-events: none;
+  z-index: 0;
+  animation: drone-beam-pulse 2s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .drone-card.eco-processing .drone-depth-layer::after,
+.ecosystem-dock-body .drone-card.drone-active .drone-depth-layer::after {
+  content: "";
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: rgba(0, 255, 255, 1);
+  box-shadow:
+    0 20px 0 rgba(0, 255, 255, 0.78),
+    0 40px 0 rgba(0, 255, 255, 0.56),
+    0 60px 0 rgba(0, 255, 255, 0.36);
+  pointer-events: none;
+  z-index: 2;
+  animation: drone-particles 1.5s linear infinite;
+}
+
+.ecosystem-dock-body .drone-card.eco-processing .eco-meta,
+.ecosystem-dock-body .drone-card.drone-active .eco-meta {
+  position: relative;
+}
+
+.ecosystem-dock-body .drone-card.eco-processing .eco-meta::before,
+.ecosystem-dock-body .drone-card.drone-active .eco-meta::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  width: 28px;
+  height: 28px;
+  transform: translateX(-50%);
+  border: 2px solid rgba(0, 255, 255, 0.62);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+  pointer-events: none;
+  animation: drone-materialize 3s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .xpod-card.eco-idle .xpod-depth-image {
+  animation: pod-idle-pulse 4s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .xpod-card.eco-processing .xpod-depth-image {
+  animation: pod-active-cycle 3s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .xpod-card.eco-processing .xpod-depth-layer::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 48px;
+  height: 48px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(0, 255, 255, 0.74), rgba(0, 255, 255, 0) 70%);
+  pointer-events: none;
+  z-index: 0;
+  animation: portal-pulse 2s ease-in-out infinite;
+}
+
+.ecosystem-dock-body .xpod-card.eco-processing .xpod-depth-layer::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 9px;
+  height: 9px;
+  background: rgba(0, 255, 255, 1);
+  border-radius: 50%;
+  box-shadow: 0 0 12px rgba(0, 255, 255, 0.62);
+  pointer-events: none;
+  z-index: 2;
+  animation: pod-object-cycle 2.5s linear infinite;
+}
+
+.content-header .kcx-ecosystem-panel > .wolf-card.eco-idle .wolf-depth-image {
+  animation: wolf-breathe-header 4s ease-in-out infinite;
+}
+
+.content-header .kcx-ecosystem-panel > .wolf-card.eco-processing .wolf-depth-image {
+  animation: wolf-howl-header 3s ease-in-out infinite;
+}
+
+.content-header .kcx-ecosystem-panel > .wolf-card.eco-processing .wolf-depth-layer::after {
+  content: "";
+  position: absolute;
+  top: 16%;
+  left: 50%;
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(0, 255, 255, 0.54);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 255, 255, 0.14), rgba(0, 255, 255, 0) 66%);
+  pointer-events: none;
+  animation: wolf-energy-wave-header 3s ease-out infinite;
+}
+
+.content-header .kcx-ecosystem-panel > .drone-card.eco-idle .drone-depth-image {
+  animation: drone-hover-header 3.5s ease-in-out infinite;
+}
+
+.content-header .kcx-ecosystem-panel > .drone-card.eco-processing .drone-depth-image,
+.content-header .kcx-ecosystem-panel > .drone-card.drone-active .drone-depth-image {
+  animation: drone-deploy-hover-header 2.5s ease-in-out infinite;
+}
+
+.content-header .kcx-ecosystem-panel > .drone-card.eco-processing .eco-depth-layer::before,
+.content-header .kcx-ecosystem-panel > .drone-card.drone-active .eco-depth-layer::before {
+  content: "";
+  position: absolute;
+  top: 62%;
+  left: 50%;
+  width: 20px;
+  height: 38px;
+  transform: translateX(-50%);
+  background: linear-gradient(to bottom, rgba(0, 255, 255, 0.62), rgba(0, 255, 255, 0));
+  filter: blur(2px);
+  pointer-events: none;
+  z-index: 0;
+  animation: drone-beam-pulse 2s ease-in-out infinite;
+}
+
+.content-header .kcx-ecosystem-panel > .drone-card.eco-processing .eco-depth-layer::after,
+.content-header .kcx-ecosystem-panel > .drone-card.drone-active .eco-depth-layer::after {
+  content: "";
+  position: absolute;
+  top: 62%;
+  left: 50%;
+  width: 3px;
+  height: 3px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: rgba(0, 255, 255, 1);
+  box-shadow:
+    0 10px 0 rgba(0, 255, 255, 0.72),
+    0 20px 0 rgba(0, 255, 255, 0.46),
+    0 30px 0 rgba(0, 255, 255, 0.28);
+  pointer-events: none;
+  z-index: 2;
+  animation: drone-particles-header 1.5s linear infinite;
+}
+
+.content-header .kcx-ecosystem-panel > .xpod-card.eco-idle .xpod-depth-image {
+  animation: pod-idle-pulse-header 4s ease-in-out infinite;
+}
+
+.content-header .kcx-ecosystem-panel > .xpod-card.eco-processing .xpod-depth-image {
+  animation: pod-active-cycle-header 3s ease-in-out infinite;
+}
+
+.content-header .kcx-ecosystem-panel > .xpod-card.eco-processing .eco-depth-layer::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 26px;
+  height: 26px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(0, 255, 255, 0.7), rgba(0, 255, 255, 0) 70%);
+  pointer-events: none;
+  z-index: 0;
+  animation: portal-pulse-header 2s ease-in-out infinite;
+}
+
+.content-header .kcx-ecosystem-panel > .xpod-card.eco-processing .eco-depth-layer::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(0, 255, 255, 1);
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.56);
+  pointer-events: none;
+  z-index: 2;
+  animation: pod-object-cycle-header 2.5s linear infinite;
+}
+
+@keyframes wolf-breathe {
+  0%, 100% {
+    transform: scale(1);
+    filter: brightness(1.2) contrast(1.16) saturate(1.2) drop-shadow(0 0 8px rgba(0, 255, 255, 0.4));
+  }
+  50% {
+    transform: scale(1.02);
+    filter: brightness(1.34) contrast(1.22) saturate(1.28) drop-shadow(0 0 12px rgba(0, 255, 255, 0.6));
+  }
+}
+
+@keyframes wolf-howl {
+  0%, 100% {
+    transform: scale(1) translateY(0) rotate(0deg);
+    filter: brightness(1.24) contrast(1.18) saturate(1.24) drop-shadow(0 0 10px rgba(0, 255, 255, 0.5));
+  }
+  30%, 70% {
+    transform: scale(1.05) translateY(-8px) rotate(-3deg);
+    filter: brightness(1.5) contrast(1.25) saturate(1.34) drop-shadow(0 -10px 20px rgba(0, 255, 255, 0.78));
+  }
+  50% {
+    transform: scale(1.06) translateY(-10px) rotate(-5deg);
+    filter: brightness(1.62) contrast(1.32) saturate(1.42) drop-shadow(0 -15px 25px rgba(0, 255, 255, 0.88));
+  }
+}
+
+@keyframes wolf-energy-wave {
+  0% { opacity: 0; transform: translateX(-50%) scale(0.45); }
+  46% { opacity: 0.75; transform: translateX(-50%) scale(1.45); }
+  100% { opacity: 0; transform: translateX(-50%) scale(2.35); }
+}
+
+@keyframes drone-hover {
+  0%, 100% {
+    transform: translateY(0);
+    filter: brightness(1.18) contrast(1.12) saturate(1.18) drop-shadow(0 4px 8px rgba(0, 255, 255, 0.4));
+  }
+  50% {
+    transform: translateY(-3px);
+    filter: brightness(1.3) contrast(1.18) saturate(1.24) drop-shadow(0 6px 12px rgba(0, 255, 255, 0.52));
+  }
+}
+
+@keyframes drone-deploy-hover {
+  0%, 100% {
+    transform: translateY(-5px);
+    filter: brightness(1.4) contrast(1.2) saturate(1.28) drop-shadow(0 8px 16px rgba(0, 255, 255, 0.68));
+  }
+  50% {
+    transform: translateY(-8px);
+    filter: brightness(1.52) contrast(1.3) saturate(1.36) drop-shadow(0 10px 20px rgba(0, 255, 255, 0.82));
+  }
+}
+
+@keyframes drone-beam-pulse {
+  0%, 100% { opacity: 0.58; }
+  50% { opacity: 1; }
+}
+
+@keyframes drone-particles {
+  0% { transform: translateX(-50%) translateY(0); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateX(-50%) translateY(80px); opacity: 0; }
+}
+
+@keyframes drone-materialize {
+  0% { opacity: 0; transform: translateX(-50%) scale(0) rotate(0deg); }
+  30% { opacity: 0.8; transform: translateX(-50%) scale(0.8) rotate(180deg); }
+  60% { opacity: 1; transform: translateX(-50%) scale(1) rotate(360deg); }
+  100% { opacity: 0; transform: translateX(-50%) scale(1.2) rotate(360deg); }
+}
+
+@keyframes pod-idle-pulse {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+    filter: brightness(1.22) contrast(1.12) saturate(1.18) drop-shadow(0 0 10px rgba(0, 255, 255, 0.5));
+  }
+  50% {
+    transform: scale(1.03) rotate(1deg);
+    filter: brightness(1.42) contrast(1.22) saturate(1.28) drop-shadow(0 0 15px rgba(0, 255, 255, 0.7));
+  }
+}
+
+@keyframes pod-active-cycle {
+  0%, 100% {
+    transform: scale(1) rotate(-2deg);
+    filter: brightness(1.42) contrast(1.24) saturate(1.32) drop-shadow(0 0 15px rgba(0, 255, 255, 0.78));
+  }
+  50% {
+    transform: scale(1.08) rotate(2deg);
+    filter: brightness(1.58) contrast(1.32) saturate(1.4) drop-shadow(0 0 22px rgba(0, 255, 255, 0.9));
+  }
+}
+
+@keyframes portal-pulse {
+  0%, 100% { opacity: 0.48; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+}
+
+@keyframes pod-object-cycle {
+  0% { transform: translate(-50%, -50%) translateX(-60px) scale(0.3); opacity: 0; }
+  25% { transform: translate(-50%, -50%) translateX(-30px) scale(0.7); opacity: 1; }
+  50% { transform: translate(-50%, -50%) translateX(0) scale(1); opacity: 1; }
+  75% { transform: translate(-50%, -50%) translateX(30px) scale(0.7); opacity: 1; }
+  100% { transform: translate(-50%, -50%) translateX(60px) scale(0.3); opacity: 0; }
+}
+
+@keyframes wolf-breathe-header {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+@keyframes wolf-howl-header {
+  0%, 100% { transform: scale(1) translateY(0) rotate(0deg); }
+  50% { transform: scale(1.05) translateY(-3px) rotate(-2deg); }
+}
+
+@keyframes wolf-energy-wave-header {
+  0% { opacity: 0; transform: translateX(-50%) scale(0.45); }
+  48% { opacity: 0.7; transform: translateX(-50%) scale(1.25); }
+  100% { opacity: 0; transform: translateX(-50%) scale(1.9); }
+}
+
+@keyframes drone-hover-header {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+@keyframes drone-deploy-hover-header {
+  0%, 100% { transform: translateY(-2px); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes drone-particles-header {
+  0% { transform: translateX(-50%) translateY(0); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateX(-50%) translateY(38px); opacity: 0; }
+}
+
+@keyframes pod-idle-pulse-header {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.03) rotate(1deg); }
+}
+
+@keyframes pod-active-cycle-header {
+  0%, 100% { transform: scale(1) rotate(-1deg); }
+  50% { transform: scale(1.06) rotate(2deg); }
+}
+
+@keyframes portal-pulse-header {
+  0%, 100% { opacity: 0.48; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 0.95; transform: translate(-50%, -50%) scale(1.18); }
+}
+
+@keyframes pod-object-cycle-header {
+  0% { transform: translate(-50%, -50%) translateX(-28px) scale(0.3); opacity: 0; }
+  25% { transform: translate(-50%, -50%) translateX(-14px) scale(0.7); opacity: 1; }
+  50% { transform: translate(-50%, -50%) translateX(0) scale(1); opacity: 1; }
+  75% { transform: translate(-50%, -50%) translateX(14px) scale(0.7); opacity: 1; }
+  100% { transform: translate(-50%, -50%) translateX(28px) scale(0.3); opacity: 0; }
+}
+
+/* KCx ecosystem color states: cyan idle, magenta active, red warning/error. */
+.ecosystem-dock-body .eco-card.eco-idle .eco-depth-layer img,
+.ecosystem-dock-body .eco-node-card.eco-idle .eco-depth-layer img {
+  filter: brightness(1.22) contrast(1.12) saturate(1.16) drop-shadow(0 0 12px var(--eco-cyan-glow));
+}
+
+.ecosystem-dock-body .eco-card.eco-processing .eco-depth-layer img,
+.ecosystem-dock-body .eco-card.drone-active .eco-depth-layer img,
+.ecosystem-dock-body .eco-node-card.eco-processing .eco-depth-layer img,
+.ecosystem-dock-body .eco-node-card.drone-active .eco-depth-layer img {
+  filter:
+    brightness(1.4)
+    hue-rotate(270deg)
+    saturate(1.6)
+    drop-shadow(0 0 20px var(--eco-magenta-glow)) !important;
+}
+
+.ecosystem-dock-body .eco-card.eco-processing .eco-meta,
+.ecosystem-dock-body .eco-card.drone-active .eco-meta,
+.ecosystem-dock-body .eco-node-card.eco-processing .eco-meta,
+.ecosystem-dock-body .eco-node-card.drone-active .eco-meta {
+  color: var(--eco-magenta);
+  text-shadow: 0 0 8px var(--eco-magenta-glow);
+}
+
+.ecosystem-dock-body .eco-card.eco-processing .eco-depth-layer::before,
+.ecosystem-dock-body .eco-card.drone-active .eco-depth-layer::before,
+.ecosystem-dock-body .eco-node-card.eco-processing .eco-depth-layer::before,
+.ecosystem-dock-body .eco-node-card.drone-active .eco-depth-layer::before {
+  background: radial-gradient(circle, var(--eco-magenta-glow), transparent 70%) !important;
+}
+
+.ecosystem-dock-body .drone-card.eco-processing .eco-depth-layer::before,
+.ecosystem-dock-body .drone-card.drone-active .eco-depth-layer::before {
+  background: linear-gradient(
+    to bottom,
+    var(--eco-magenta-glow) 0%,
+    rgba(255, 0, 255, 0.6) 50%,
+    transparent 100%
+  ) !important;
+}
+
+.ecosystem-dock-body .drone-card.eco-processing .eco-depth-layer::after,
+.ecosystem-dock-body .drone-card.drone-active .eco-depth-layer::after {
+  background: var(--eco-magenta) !important;
+  box-shadow:
+    0 20px 0 rgba(255, 0, 255, 0.78),
+    0 40px 0 rgba(255, 0, 255, 0.56),
+    0 60px 0 rgba(255, 0, 255, 0.36),
+    0 0 10px var(--eco-magenta-glow) !important;
+}
+
+.ecosystem-dock-body .wolf-card.eco-processing .eco-depth-layer::after {
+  border-color: var(--eco-magenta) !important;
+  box-shadow: 0 0 15px var(--eco-magenta-glow) !important;
+}
+
+.ecosystem-dock-body .xpod-card.eco-processing .eco-depth-layer::before {
+  background: radial-gradient(circle, var(--eco-magenta-glow), transparent 70%) !important;
+}
+
+.ecosystem-dock-body .xpod-card.eco-processing .eco-depth-layer::after {
+  background: var(--eco-magenta) !important;
+  border-color: var(--eco-magenta) !important;
+  box-shadow: 0 0 10px var(--eco-magenta-glow) !important;
+}
+
+.ecosystem-dock-body .eco-card.eco-error .eco-depth-layer img,
+.ecosystem-dock-body .eco-card.eco-warning .eco-depth-layer img,
+.ecosystem-dock-body .eco-node-card.eco-error .eco-depth-layer img,
+.ecosystem-dock-body .eco-node-card.eco-warning .eco-depth-layer img {
+  filter:
+    brightness(1.3)
+    hue-rotate(330deg)
+    saturate(1.8)
+    drop-shadow(0 0 15px var(--eco-red-glow)) !important;
+  animation: none !important;
+}
+
+.ecosystem-dock-body .eco-card.eco-error .eco-meta,
+.ecosystem-dock-body .eco-card.eco-warning .eco-meta,
+.ecosystem-dock-body .eco-node-card.eco-error .eco-meta,
+.ecosystem-dock-body .eco-node-card.eco-warning .eco-meta {
+  color: var(--eco-red);
+  text-shadow: 0 0 8px var(--eco-red-glow);
+}
+
+.ecosystem-dock-body .eco-card.eco-error .eco-depth-layer::before,
+.ecosystem-dock-body .eco-card.eco-warning .eco-depth-layer::before,
+.ecosystem-dock-body .eco-node-card.eco-error .eco-depth-layer::before,
+.ecosystem-dock-body .eco-node-card.eco-warning .eco-depth-layer::before {
+  background: radial-gradient(circle, var(--eco-red-glow), transparent 70%) !important;
+  animation: error-pulse 1.5s ease-in-out infinite !important;
+}
+
+.ecosystem-dock-body .eco-card.eco-error .eco-meta::after,
+.ecosystem-dock-body .eco-card.eco-warning .eco-meta::after,
+.ecosystem-dock-body .eco-node-card.eco-error .eco-meta::after,
+.ecosystem-dock-body .eco-node-card.eco-warning .eco-meta::after {
+  content: "\26A0";
+  position: absolute;
+  top: -166px;
+  right: 2px;
+  font-size: 28px;
+  color: var(--eco-red);
+  text-shadow: 0 0 12px var(--eco-red-glow);
+  animation: warning-flash 1s ease-in-out infinite;
+  z-index: 10;
+}
+
+.content-header .kcx-ecosystem-panel > .eco-card.eco-idle,
+.content-header .kcx-ecosystem-panel > .eco-node-card.eco-idle {
+  border-color: var(--eco-cyan);
+  box-shadow:
+    inset 0 1px 0 rgba(212, 248, 255, 0.34),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.64),
+    inset 0 3px 6px rgba(0, 0, 0, 0.56),
+    inset 0 0 0 1px rgba(0, 242, 254, 0.14),
+    0 0 10px var(--eco-cyan-glow);
+}
+
+.content-header .kcx-ecosystem-panel > .eco-card.eco-processing,
+.content-header .kcx-ecosystem-panel > .eco-card.drone-active,
+.content-header .kcx-ecosystem-panel > .eco-node-card.eco-processing,
+.content-header .kcx-ecosystem-panel > .eco-node-card.drone-active {
+  border-color: var(--eco-magenta) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 210, 255, 0.32),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.62),
+    inset 0 0 0 1px rgba(255, 0, 255, 0.16),
+    0 0 15px var(--eco-magenta-glow) !important;
+}
+
+.content-header .kcx-ecosystem-panel > .eco-card.eco-processing .eco-depth-layer img,
+.content-header .kcx-ecosystem-panel > .eco-card.drone-active .eco-depth-layer img,
+.content-header .kcx-ecosystem-panel > .eco-node-card.eco-processing .eco-depth-layer img,
+.content-header .kcx-ecosystem-panel > .eco-node-card.drone-active .eco-depth-layer img {
+  filter:
+    brightness(1.4)
+    hue-rotate(270deg)
+    saturate(1.6)
+    drop-shadow(0 0 12px var(--eco-magenta-glow)) !important;
+}
+
+.content-header .kcx-ecosystem-panel > .eco-card.eco-processing .eco-meta,
+.content-header .kcx-ecosystem-panel > .eco-card.drone-active .eco-meta,
+.content-header .kcx-ecosystem-panel > .eco-node-card.eco-processing .eco-meta,
+.content-header .kcx-ecosystem-panel > .eco-node-card.drone-active .eco-meta {
+  color: var(--eco-magenta);
+  text-shadow: 0 0 6px var(--eco-magenta-glow);
+}
+
+.content-header .kcx-ecosystem-panel > .eco-card.eco-processing .eco-depth-layer::before,
+.content-header .kcx-ecosystem-panel > .eco-card.drone-active .eco-depth-layer::before {
+  background: radial-gradient(circle, var(--eco-magenta-glow), transparent 70%) !important;
+}
+
+.content-header .kcx-ecosystem-panel > .drone-card.eco-processing .eco-depth-layer::before,
+.content-header .kcx-ecosystem-panel > .drone-card.drone-active .eco-depth-layer::before {
+  background: linear-gradient(to bottom, var(--eco-magenta-glow), transparent) !important;
+}
+
+.content-header .kcx-ecosystem-panel > .drone-card.eco-processing .eco-depth-layer::after,
+.content-header .kcx-ecosystem-panel > .drone-card.drone-active .eco-depth-layer::after {
+  background: var(--eco-magenta) !important;
+  box-shadow:
+    0 10px 0 rgba(255, 0, 255, 0.72),
+    0 20px 0 rgba(255, 0, 255, 0.46),
+    0 30px 0 rgba(255, 0, 255, 0.28),
+    0 0 8px var(--eco-magenta-glow) !important;
+}
+
+.content-header .kcx-ecosystem-panel > .wolf-card.eco-processing .eco-depth-layer::after {
+  border-color: var(--eco-magenta) !important;
+  box-shadow: 0 0 10px var(--eco-magenta-glow) !important;
+}
+
+.content-header .kcx-ecosystem-panel > .xpod-card.eco-processing .eco-depth-layer::before {
+  background: radial-gradient(circle, var(--eco-magenta-glow), transparent 70%) !important;
+}
+
+.content-header .kcx-ecosystem-panel > .xpod-card.eco-processing .eco-depth-layer::after {
+  background: var(--eco-magenta) !important;
+  box-shadow: 0 0 8px var(--eco-magenta-glow) !important;
+}
+
+.content-header .kcx-ecosystem-panel > .eco-card.eco-error,
+.content-header .kcx-ecosystem-panel > .eco-card.eco-warning,
+.content-header .kcx-ecosystem-panel > .eco-node-card.eco-error,
+.content-header .kcx-ecosystem-panel > .eco-node-card.eco-warning {
+  border-color: var(--eco-red) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 200, 200, 0.28),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.62),
+    inset 0 0 0 1px rgba(255, 0, 0, 0.16),
+    0 0 12px var(--eco-red-glow) !important;
+  animation: header-error-pulse 1.5s ease-in-out infinite !important;
+}
+
+.content-header .kcx-ecosystem-panel > .eco-card.eco-error .eco-depth-layer img,
+.content-header .kcx-ecosystem-panel > .eco-card.eco-warning .eco-depth-layer img,
+.content-header .kcx-ecosystem-panel > .eco-node-card.eco-error .eco-depth-layer img,
+.content-header .kcx-ecosystem-panel > .eco-node-card.eco-warning .eco-depth-layer img {
+  filter:
+    brightness(1.3)
+    hue-rotate(330deg)
+    saturate(1.8)
+    drop-shadow(0 0 10px var(--eco-red-glow)) !important;
+}
+
+.content-header .kcx-ecosystem-panel > .eco-card.eco-error .eco-meta,
+.content-header .kcx-ecosystem-panel > .eco-card.eco-warning .eco-meta,
+.content-header .kcx-ecosystem-panel > .eco-node-card.eco-error .eco-meta,
+.content-header .kcx-ecosystem-panel > .eco-node-card.eco-warning .eco-meta {
+  color: var(--eco-red);
+  text-shadow: 0 0 6px var(--eco-red-glow);
+}
+
+.content-header .kcx-ecosystem-panel > .eco-card.eco-error .eco-meta::after,
+.content-header .kcx-ecosystem-panel > .eco-card.eco-warning .eco-meta::after,
+.content-header .kcx-ecosystem-panel > .eco-node-card.eco-error .eco-meta::after,
+.content-header .kcx-ecosystem-panel > .eco-node-card.eco-warning .eco-meta::after {
+  content: "\26A0";
+  position: absolute;
+  top: -62px;
+  right: 2px;
+  font-size: 16px;
+  color: var(--eco-red);
+  text-shadow: 0 0 8px var(--eco-red-glow);
+  animation: warning-flash 1s ease-in-out infinite;
+}
+
+@keyframes error-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@keyframes warning-flash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes header-error-pulse {
+  0%, 100% { box-shadow: 0 0 8px var(--eco-red-glow); }
+  50% { box-shadow: 0 0 16px var(--eco-red-glow); }
+}
+
+/* Final idle activation layer: keep every ecosystem node alive by default. */
+.ecosystem-dock-body .ecosystem-node-slot > .eco-card,
+.ecosystem-dock-body .eco-node-card {
+  animation: eco-float-active 4s ease-in-out infinite !important;
+}
+
+.ecosystem-dock-body .ecosystem-node-slot:nth-child(1) > .eco-card,
+.ecosystem-dock-body .eco-node-card:nth-child(1) {
+  animation-delay: 0s !important;
+}
+
+.ecosystem-dock-body .ecosystem-node-slot:nth-child(2) > .eco-card,
+.ecosystem-dock-body .eco-node-card:nth-child(2) {
+  animation-delay: 1.3s !important;
+}
+
+.ecosystem-dock-body .ecosystem-node-slot:nth-child(3) > .eco-card,
+.ecosystem-dock-body .eco-node-card:nth-child(3) {
+  animation-delay: 2.6s !important;
+}
+
+.ecosystem-dock-body .eco-depth-layer {
+  position: relative;
+}
+
+.ecosystem-dock-body .eco-depth-layer img {
+  position: relative;
+  z-index: 1;
+  animation: eco-glow-pulse-active 4s ease-in-out infinite !important;
+  will-change: transform, filter;
+}
+
+.ecosystem-dock-body .eco-depth-layer::before {
+  content: "";
+  position: absolute;
+  inset: -12px;
+  background: radial-gradient(circle, rgba(0, 255, 255, 0.2), transparent 70%);
+  animation: eco-breathe-active 4s ease-in-out infinite !important;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ecosystem-dock-body .ecosystem-node-slot:nth-child(1) .eco-depth-layer img,
+.ecosystem-dock-body .ecosystem-node-slot:nth-child(1) .eco-depth-layer::before {
+  animation-delay: 0s !important;
+}
+
+.ecosystem-dock-body .ecosystem-node-slot:nth-child(2) .eco-depth-layer img,
+.ecosystem-dock-body .ecosystem-node-slot:nth-child(2) .eco-depth-layer::before {
+  animation-delay: 1.3s !important;
+}
+
+.ecosystem-dock-body .ecosystem-node-slot:nth-child(3) .eco-depth-layer img,
+.ecosystem-dock-body .ecosystem-node-slot:nth-child(3) .eco-depth-layer::before {
+  animation-delay: 2.6s !important;
+}
+
+.ecosystem-dock-body .wolf-card.eco-processing .eco-depth-layer img {
+  animation: wolf-howl 3s ease-in-out infinite !important;
+}
+
+.ecosystem-dock-body .drone-card.eco-processing .eco-depth-layer img,
+.ecosystem-dock-body .drone-card.drone-active .eco-depth-layer img,
+.ecosystem-dock-body .kdrone-card.eco-processing .eco-depth-layer img,
+.ecosystem-dock-body .kdrone-card.drone-active .eco-depth-layer img {
+  animation: drone-deploy-hover 2.5s ease-in-out infinite !important;
+}
+
+.ecosystem-dock-body .xpod-card.eco-processing .eco-depth-layer img {
+  animation: pod-portal-spin 4s linear infinite !important;
+}
+
+.content-header .kcx-ecosystem-panel > .eco-card,
+.content-header .eco-node-card {
+  animation: header-float-active 4s ease-in-out infinite;
+}
+
+.content-header .kcx-ecosystem-panel > .eco-card .eco-depth-layer,
+.content-header .eco-node-card .eco-depth-layer {
+  position: relative;
+}
+
+.content-header .kcx-ecosystem-panel > .eco-card .eco-depth-layer img,
+.content-header .eco-node-card .eco-depth-layer img {
+  animation: header-glow-active 4s ease-in-out infinite !important;
+  will-change: transform, filter;
+}
+
+.content-header .kcx-ecosystem-panel > .eco-card .eco-depth-layer::before,
+.content-header .eco-node-card .eco-depth-layer::before {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  background: radial-gradient(circle, rgba(0, 255, 255, 0.15), transparent 70%);
+  animation: header-breathe-active 4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.content-header .kcx-ecosystem-panel > .wolf-card.eco-processing .eco-depth-layer img {
+  animation: wolf-howl-header 3s ease-in-out infinite !important;
+}
+
+.content-header .kcx-ecosystem-panel > .drone-card.eco-processing .eco-depth-layer img,
+.content-header .kcx-ecosystem-panel > .drone-card.drone-active .eco-depth-layer img,
+.content-header .kcx-ecosystem-panel > .kdrone-card.eco-processing .eco-depth-layer img,
+.content-header .kcx-ecosystem-panel > .kdrone-card.drone-active .eco-depth-layer img {
+  animation: drone-deploy-hover-header 2.5s ease-in-out infinite !important;
+}
+
+.content-header .kcx-ecosystem-panel > .xpod-card.eco-processing .eco-depth-layer img {
+  animation: pod-portal-spin-header 4s linear infinite !important;
+}
+
+@keyframes eco-float-active {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes eco-glow-pulse-active {
+  0%, 100% {
+    filter: brightness(1.2) drop-shadow(0 0 10px rgba(0, 255, 255, 0.5));
+  }
+  50% {
+    filter: brightness(1.5) drop-shadow(0 0 16px rgba(0, 255, 255, 0.7));
+  }
+}
+
+@keyframes eco-breathe-active {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@keyframes header-float-active {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+@keyframes header-glow-active {
+  0%, 100% {
+    filter: brightness(1.2) drop-shadow(0 0 6px rgba(0, 255, 255, 0.5));
+  }
+  50% {
+    filter: brightness(1.4) drop-shadow(0 0 10px rgba(0, 255, 255, 0.7));
+  }
+}
+
+@keyframes header-breathe-active {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes pod-portal-spin {
+  0% {
+    transform: rotate(0deg) scale(1.02);
+    filter: brightness(1.42) drop-shadow(0 0 15px rgba(0, 255, 255, 0.78));
+  }
+  100% {
+    transform: rotate(360deg) scale(1.02);
+    filter: brightness(1.42) drop-shadow(0 0 15px rgba(0, 255, 255, 0.78));
+  }
+}
+
+@keyframes pod-portal-spin-header {
+  from { transform: rotate(0deg) scale(1.02); }
+  to { transform: rotate(360deg) scale(1.02); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ecosystem-dock-body .ecosystem-node-slot > .eco-card,
+  .ecosystem-dock-body .eco-depth-layer img,
+  .ecosystem-dock-body .eco-depth-layer::before,
+  .ecosystem-dock-body .eco-depth-layer::after,
+  .ecosystem-dock-body .eco-meta::before,
+  .content-header .kcx-ecosystem-panel > .eco-card .eco-depth-layer,
+  .content-header .kcx-ecosystem-panel > .eco-card .eco-depth-layer img,
+  .content-header .kcx-ecosystem-panel > .eco-card .eco-depth-layer::before,
+  .content-header .kcx-ecosystem-panel > .eco-card .eco-depth-layer::after,
+  .content-header .kcx-ecosystem-panel .eco-svg,
+  .content-header .kcx-ecosystem-panel .wolf-depth-image,
+  .content-header .kcx-ecosystem-panel .wolf-depth-layer::before,
+  .content-header .kcx-ecosystem-panel .wolf-depth-layer::after,
+  .content-header .kcx-ecosystem-panel .drone-light,
+  .content-header .kcx-ecosystem-panel .drone-eye,
+  .content-header .kcx-ecosystem-panel .drone-scan,
+  .content-header .kcx-ecosystem-panel .xpod-engine,
+  .content-header .kcx-ecosystem-panel .xpod-light,
+  .content-header .kcx-ecosystem-panel .orbital-system,
+  .content-header .ecosystem-dock-trigger:active .kcx-ecosystem-panel {
+    animation: none !important;
+    transition-duration: 0ms !important;
+  }
+}
+
+@media (max-width: 1280px) {
+  .content-header .kcx-ecosystem-panel {
+    grid-template-columns: 152px 1px 152px 1px 152px;
+    column-gap: 8px;
+  }
+
+  .content-header .kcx-ecosystem-panel > .eco-card {
+    width: 152px;
+    height: 82px;
+    max-width: 152px;
+    max-height: 82px;
+    flex-basis: 152px;
+    padding: 6px 9px;
+  }
+
+  .content-header .kcx-ecosystem-panel > .eco-card .eco-depth-layer {
+    height: 50px;
+  }
+
+  .content-header .kcx-ecosystem-panel .eco-label {
+    font-size: 0.5rem;
+  }
+
+  .content-header .kcx-ecosystem-panel .eco-status {
+    font-size: 0.6rem;
+  }
+}
+
+.wolf-depth-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+  pointer-events: none;
+  filter:
+    brightness(0.95)
+    contrast(1.08)
+    saturate(1.05);
+}
+
+.ecosystem-dock-body .wolf-card.eco-processing .eco-depth-layer .wolf-depth-video,
+.content-header .kcx-ecosystem-panel > .wolf-card.eco-processing .eco-depth-layer .wolf-depth-video {
+  animation: none !important;
+  transform: none !important;
+}
+
+.drone-depth-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.ecosystem-dock-body .drone-card.eco-processing .eco-depth-layer .drone-depth-video,
+.ecosystem-dock-body .drone-card.drone-active .eco-depth-layer .drone-depth-video,
+.content-header .kcx-ecosystem-panel > .drone-card.eco-processing .eco-depth-layer .drone-depth-video,
+.content-header .kcx-ecosystem-panel > .drone-card.drone-active .eco-depth-layer .drone-depth-video {
+  animation: none !important;
+  transform: none !important;
+}
+
+.xpod-depth-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.ecosystem-dock-body .xpod-card.eco-processing .eco-depth-layer .xpod-depth-video,
+.content-header .kcx-ecosystem-panel > .xpod-card.eco-processing .eco-depth-layer .xpod-depth-video {
+  animation: none !important;
+  transform: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   VIDEO MODE — Remove pseudo-element overlay artifacts in dock.
+   MP4 videos supply all visual motion; CSS overlays are removed.
+   Header cluster (.content-header) is unaffected by these rules.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Wolf: magenta circular ring behind wolf in processing state */
+.ecosystem-dock-body .wolf-card.eco-processing .wolf-depth-layer::after {
+  display: none !important;
+}
+
+/* Drone: magenta beam overlay (processing / active) */
+.ecosystem-dock-body .drone-card.eco-processing .drone-depth-layer::before,
+.ecosystem-dock-body .drone-card.drone-active .drone-depth-layer::before {
+  display: none !important;
+}
+
+/* Drone: magenta particle dots (processing / active) */
+.ecosystem-dock-body .drone-card.eco-processing .drone-depth-layer::after,
+.ecosystem-dock-body .drone-card.drone-active .drone-depth-layer::after {
+  display: none !important;
+}
+
+/* Drone: blue/pink square materialize box near beam */
+.ecosystem-dock-body .drone-card.eco-processing .eco-meta::before,
+.ecosystem-dock-body .drone-card.drone-active .eco-meta::before {
+  display: none !important;
+}
+
+/* X-Pod: magenta portal glow (processing) */
+.ecosystem-dock-body .xpod-card.eco-processing .xpod-depth-layer::before {
+  display: none !important;
+}
+
+/* X-Pod: magenta centered orb dot (processing) */
+.ecosystem-dock-body .xpod-card.eco-processing .xpod-depth-layer::after {
+  display: none !important;
+}
+
+/* All cards: eco-depth-layer aura — becomes magenta ring in processing,
+   extends outside card boundary via inset:-12px, most visible artifact */
+.ecosystem-dock-body .eco-depth-layer::before {
+  display: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   VIDEO MODE — Remove pseudo-element overlay artifacts in header.
+   Mirrors the dock suppression block above.
+   Key difference: the header cluster's depth overlays all use
+   .eco-depth-layer rather than card-specific class names.
+   Only processing/active states are suppressed so the subtle idle
+   cyan aura on static PNG cards is preserved.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Wolf: magenta ring (processing) */
+.content-header .kcx-ecosystem-panel > .wolf-card.eco-processing .wolf-depth-layer::after {
+  display: none !important;
+}
+
+/* Drone: magenta beam (processing / active) */
+.content-header .kcx-ecosystem-panel > .drone-card.eco-processing .eco-depth-layer::before,
+.content-header .kcx-ecosystem-panel > .drone-card.drone-active .eco-depth-layer::before {
+  display: none !important;
+}
+
+/* Drone: magenta particle dots (processing / active) */
+.content-header .kcx-ecosystem-panel > .drone-card.eco-processing .eco-depth-layer::after,
+.content-header .kcx-ecosystem-panel > .drone-card.drone-active .eco-depth-layer::after {
+  display: none !important;
+}
+
+/* X-Pod: magenta portal glow (processing) */
+.content-header .kcx-ecosystem-panel > .xpod-card.eco-processing .eco-depth-layer::before {
+  display: none !important;
+}
+
+/* X-Pod: magenta centered orb (processing) */
+.content-header .kcx-ecosystem-panel > .xpod-card.eco-processing .eco-depth-layer::after {
+  display: none !important;
+}
+
+/* All cards: eco-depth-layer aura turns magenta in processing —
+   suppress only for processing/active; idle cyan aura is kept */
+.content-header .kcx-ecosystem-panel > .eco-card.eco-processing .eco-depth-layer::before,
+.content-header .kcx-ecosystem-panel > .eco-card.drone-active .eco-depth-layer::before {
+  display: none !important;
+}
+
+/* ── Unified video layout in Ecosystem Dock ─────────────────── */
+/* Normalizes alignment across Wolf / Drone / X-Pod cards.
+   translateZ(0) serves dual purpose: GPU compositing layer +
+   locks out any CSS transform animations (!important wins). */
+.ecosystem-dock-body .eco-card video,
+.ecosystem-dock-body .eco-depth-layer video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+  margin: 0;
+  padding: 0;
+  animation: none !important;
+  transform: translateZ(0) !important;
+  transition: none !important;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}

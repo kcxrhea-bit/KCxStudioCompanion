@@ -1,0 +1,17 @@
+# Install Guide
+
+## Windows Installer
+
+1. Download `KCx Studio Companion-0.9.0-beta.1-win-x64.exe`.
+2. Run the installer.
+3. Choose the installation directory if prompted.
+4. Launch KCx Studio Companion from Start Menu or desktop shortcut.
+
+## Portable
+
+1. Download the portable EXE from the release package.
+2. Place it in a folder you control.
+3. Run it directly.
+
+Local workspace state is stored in Electron userData. Uninstalling does not delete app data by default.
+
