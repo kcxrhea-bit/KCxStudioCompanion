@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import ReactFlow, { Background, Controls, Edge, MiniMap, Node, NodeMouseHandler, OnMove } from "reactflow";
 import "reactflow/dist/style.css";
 
@@ -51,9 +51,11 @@ const edges: Edge[] = [
 ];
 
 export function ForgeCanvas({ selectedSystemId, selectedRegionId, operationalOverlay, focusMode, onSelectSystem, onSelectRegion, onViewportMove }: ForgeCanvasProps) {
+  const panelRef = useRef<HTMLElement | null>(null);
   const [lastFocusRegion, setLastFocusRegion] = useState<string | null>(null);
   const [isNavigating, setIsNavigating] = useState(false);
   const [zoomBand, setZoomBand] = useState<"near" | "mid" | "far">("mid");
+  const [isCanvasReady, setIsCanvasReady] = useState(false);
   const lastMoveLogAtRef = useRef(0);
   const lastMoveMessageRef = useRef("");
   const active = systems.find((s) => s.id === selectedSystemId) ?? null;
@@ -99,7 +101,28 @@ export function ForgeCanvas({ selectedSystemId, selectedRegionId, operationalOve
       lastMoveMessageRef.current = message;
     }
   };
-  return <section className={panelClass} style={{ height: "100%", minHeight: 0 }}>
+  useEffect(() => {
+    const panel = panelRef.current;
+    if (!panel) return;
+
+    const updateReady = () => {
+      const { width, height } = panel.getBoundingClientRect();
+      setIsCanvasReady(width > 0 && height > 0);
+    };
+
+    updateReady();
+
+    if (typeof ResizeObserver === "undefined") {
+      const timeout = window.setTimeout(updateReady, 0);
+      return () => window.clearTimeout(timeout);
+    }
+
+    const observer = new ResizeObserver(() => updateReady());
+    observer.observe(panel);
+    return () => observer.disconnect();
+  }, []);
+
+  return <section ref={panelRef} className={panelClass} style={{ height: "100%", minHeight: 0 }}>
     <div className="forge-depth-layer forge-structures" /><div className="forge-depth-layer forge-depth-fog" />
     <div className="ambient-event ambient-flare" /><div className="ambient-event ambient-ripple" /><div className="ambient-event ambient-dim-flare" /><div className="ambient-event ambient-resonance-wave" />
     <div aria-hidden="true" role="presentation" className={`forge-zone zone-creation zone-state-active stage-1 ${selectedRegionId === "creation" ? "zone-selected" : ""}`} /><span className="zone-label zone-label-creation">CREATION FORGE</span>
@@ -109,10 +132,14 @@ export function ForgeCanvas({ selectedSystemId, selectedRegionId, operationalOve
     <div aria-hidden="true" role="presentation" className={`forge-zone zone-device zone-state-warning stage-3 ${selectedRegionId === "device" ? "zone-selected" : ""}`} /><span className="zone-label zone-label-device">DEVICE GRID</span>
     <div aria-hidden="true" role="presentation" className={`forge-zone zone-cortex zone-state-locked stage-6 ${selectedRegionId === "cortex" ? "zone-selected" : ""}`} /><span className="zone-label zone-label-cortex">CORTEX CORE - LOCKED</span>
     <div className="forge-atmos-layer forge-smoke" /><div className="forge-atmos-layer forge-haze" /><div className="forge-atmos-layer forge-vignette" /><div className="forge-embers" />
-    <ReactFlow nodes={nodes} edges={edges} fitView fitViewOptions={{ padding: 0.18, duration: 980, minZoom: 0.3, maxZoom: 1.0 }} minZoom={0.28} maxZoom={1.65} defaultViewport={{ x: 0, y: 0, zoom: 0.65 }} nodesDraggable={false} nodesConnectable={false} elementsSelectable={true} panOnDrag={true} panOnScroll zoomOnScroll zoomOnPinch selectionOnDrag={false} onPaneClick={() => { onSelectSystem(null); onSelectRegion(null); }} onNodeClick={onNodeClick} onMoveStart={onMoveStart} onMove={(_, viewport) => { const now = Date.now(); const message = `Canvas move: x ${viewport.x.toFixed(0)}, y ${viewport.y.toFixed(0)}, zoom ${viewport.zoom.toFixed(2)}`; if (now - lastMoveLogAtRef.current > 1200 && message !== lastMoveMessageRef.current) { onViewportMove(message); lastMoveLogAtRef.current = now; lastMoveMessageRef.current = message; } }} onMoveEnd={onMoveEnd} nodeDragThreshold={1} translateExtent={[[-900, -700], [2300, 1700]]} proOptions={{ hideAttribution: true }}>
-      <Background color="rgba(255,122,26,0.06)" gap={56} size={1} />
-      <MiniMap zoomable pannable nodeColor="#3A404C" maskColor="rgba(9, 11, 16, 0.72)" />
-      <Controls showInteractive={false} />
-    </ReactFlow>
+    {!isCanvasReady ? (
+      <div className="forge-canvas-loading" aria-live="polite">Forge map initializing...</div>
+    ) : (
+      <ReactFlow nodes={nodes} edges={edges} fitView fitViewOptions={{ padding: 0.18, duration: 980, minZoom: 0.3, maxZoom: 1.0 }} minZoom={0.28} maxZoom={1.65} defaultViewport={{ x: 0, y: 0, zoom: 0.65 }} nodesDraggable={false} nodesConnectable={false} elementsSelectable={true} panOnDrag={true} panOnScroll zoomOnScroll zoomOnPinch selectionOnDrag={false} onPaneClick={() => { onSelectSystem(null); onSelectRegion(null); }} onNodeClick={onNodeClick} onMoveStart={onMoveStart} onMove={(_, viewport) => { const now = Date.now(); const message = `Canvas move: x ${viewport.x.toFixed(0)}, y ${viewport.y.toFixed(0)}, zoom ${viewport.zoom.toFixed(2)}`; if (now - lastMoveLogAtRef.current > 1200 && message !== lastMoveMessageRef.current) { onViewportMove(message); lastMoveLogAtRef.current = now; lastMoveMessageRef.current = message; } }} onMoveEnd={onMoveEnd} nodeDragThreshold={1} translateExtent={[[-900, -700], [2300, 1700]]} proOptions={{ hideAttribution: true }}>
+        <Background color="rgba(255,122,26,0.06)" gap={56} size={1} />
+        <MiniMap zoomable pannable nodeColor="#3A404C" maskColor="rgba(9, 11, 16, 0.72)" />
+        <Controls showInteractive={false} />
+      </ReactFlow>
+    )}
   </section>;
 }
