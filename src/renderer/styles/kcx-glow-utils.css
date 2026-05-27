@@ -1,0 +1,165 @@
+/**
+ * KCx Theme Engine - Glow Utilities & Animations
+ * Phase 1: Design Token Foundation
+ *
+ * Reusable glow classes and pulse keyframes.
+ * No hardcoded values—all use CSS variables from kcx-theme.css.
+ * Production-ready for UI components throughout the ecosystem.
+ */
+
+/* === PULSE ANIMATION === */
+@keyframes kcx-pulse-cycle {
+  0% {
+    transform: scale(0.96);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.04);
+    opacity: 1;
+  }
+}
+
+/* === TEXT GLOW UTILITIES === */
+
+/**
+ * Cyan glow text effect.
+ * Layered box-shadow for depth and intensity control.
+ */
+.kcx-text-glow-cyan {
+  color: var(--kcx-cyan-pulse);
+  text-shadow:
+    0 0 var(--kcx-glow-blur-sm) var(--kcx-cyan-pulse),
+    0 0 var(--kcx-glow-blur-md) var(--kcx-cyan-pulse),
+    0 0 var(--kcx-glow-blur-lg) rgba(59, 231, 255, 0.5);
+}
+
+/**
+ * Magenta glow text effect.
+ */
+.kcx-text-glow-magenta {
+  color: var(--kcx-neon-magenta);
+  text-shadow:
+    0 0 var(--kcx-glow-blur-sm) var(--kcx-neon-magenta),
+    0 0 var(--kcx-glow-blur-md) var(--kcx-neon-magenta),
+    0 0 var(--kcx-glow-blur-lg) rgba(255, 77, 178, 0.5);
+}
+
+/**
+ * Orange glow text effect.
+ */
+.kcx-text-glow-orange {
+  color: var(--kcx-molten-ember-orange);
+  text-shadow:
+    0 0 var(--kcx-glow-blur-sm) var(--kcx-molten-ember-orange),
+    0 0 var(--kcx-glow-blur-md) var(--kcx-molten-ember-orange),
+    0 0 var(--kcx-glow-blur-lg) rgba(255, 122, 26, 0.5);
+}
+
+/**
+ * Green (BioPulse) glow text effect.
+ */
+.kcx-text-glow-green {
+  color: var(--kcx-bio-pulse);
+  text-shadow:
+    0 0 var(--kcx-glow-blur-sm) var(--kcx-bio-pulse),
+    0 0 var(--kcx-glow-blur-md) var(--kcx-bio-pulse),
+    0 0 var(--kcx-glow-blur-lg) rgba(0, 255, 102, 0.5);
+}
+
+/* === BORDER GLOW UTILITIES === */
+
+/**
+ * Cyan glow border effect.
+ * Layered box-shadow with inset and outset for dimensional effect.
+ */
+.kcx-border-glow-cyan {
+  border: 1px solid var(--kcx-cyan-pulse);
+  box-shadow:
+    inset 0 0 var(--kcx-glow-blur-sm) rgba(59, 231, 255, 0.2),
+    0 0 var(--kcx-glow-blur-md) var(--kcx-cyan-pulse),
+    0 0 var(--kcx-glow-blur-lg) rgba(59, 231, 255, 0.3);
+}
+
+/**
+ * Magenta glow border effect.
+ */
+.kcx-border-glow-magenta {
+  border: 1px solid var(--kcx-neon-magenta);
+  box-shadow:
+    inset 0 0 var(--kcx-glow-blur-sm) rgba(255, 77, 178, 0.2),
+    0 0 var(--kcx-glow-blur-md) var(--kcx-neon-magenta),
+    0 0 var(--kcx-glow-blur-lg) rgba(255, 77, 178, 0.3);
+}
+
+/**
+ * Orange glow border effect.
+ */
+.kcx-border-glow-orange {
+  border: 1px solid var(--kcx-molten-ember-orange);
+  box-shadow:
+    inset 0 0 var(--kcx-glow-blur-sm) rgba(255, 122, 26, 0.2),
+    0 0 var(--kcx-glow-blur-md) var(--kcx-molten-ember-orange),
+    0 0 var(--kcx-glow-blur-lg) rgba(255, 122, 26, 0.3);
+}
+
+/* === BUTTON & INTERACTIVE UTILITIES === */
+
+/**
+ * Cyan pulse button effect.
+ * Combines pulse animation with glow for interactive elements.
+ */
+.kcx-btn-pulse-cyan {
+  color: var(--kcx-cyan-pulse);
+  border: 1px solid var(--kcx-cyan-pulse);
+  background-color: rgba(59, 231, 255, 0.05);
+  animation: kcx-pulse-cycle 2s ease-in-out infinite;
+  box-shadow:
+    inset 0 0 var(--kcx-glow-blur-sm) rgba(59, 231, 255, 0.1),
+    0 0 var(--kcx-glow-blur-md) var(--kcx-cyan-pulse),
+    0 0 var(--kcx-glow-blur-lg) rgba(59, 231, 255, 0.2);
+}
+
+.kcx-btn-pulse-cyan:hover {
+  background-color: rgba(59, 231, 255, 0.12);
+  box-shadow:
+    inset 0 0 var(--kcx-glow-blur-sm) rgba(59, 231, 255, 0.15),
+    0 0 var(--kcx-glow-blur-md) var(--kcx-cyan-pulse),
+    0 0 var(--kcx-glow-blur-lg) rgba(59, 231, 255, 0.4);
+}
+
+/* === NODE & STATE UTILITIES === */
+
+/**
+ * Active node indicator with BioPulse green.
+ * Layered box-shadow for strong visual emphasis.
+ */
+.kcx-node-active-green {
+  border: 2px solid var(--kcx-bio-pulse);
+  box-shadow:
+    inset 0 0 var(--kcx-glow-blur-sm) rgba(0, 255, 102, 0.3),
+    0 0 var(--kcx-glow-blur-md) var(--kcx-bio-pulse),
+    0 0 var(--kcx-glow-blur-lg) rgba(0, 255, 102, 0.4),
+    0 0 calc(var(--kcx-glow-blur-lg) * 1.5) rgba(0, 255, 102, 0.2);
+}
+
+/* === RESPONSIVE ADJUSTMENTS === */
+
+/**
+ * On smaller screens, reduce glow intensity slightly
+ * to prevent UI overload on mobile devices.
+ */
+@media (max-width: 768px) {
+  :root {
+    --kcx-glow-blur-sm: 3px;
+    --kcx-glow-blur-md: 8px;
+    --kcx-glow-blur-lg: 16px;
+  }
+
+  .kcx-btn-pulse-cyan {
+    animation: kcx-pulse-cycle 2.5s ease-in-out infinite;
+  }
+}

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ReactFlow, { Background, Controls, Edge, MiniMap, Node, NodeMouseHandler, OnMove } from "reactflow";
 import "reactflow/dist/style.css";
 
@@ -35,7 +35,7 @@ export const systems: ForgeSystemMeta[] = [
   { id: "local-ai", name: "Local AI", systemType: "Local Inference", runtimeStatus: "Awaiting", classification: "AI Systems", state: "synchronizing", systemClass: "AI Infrastructure", region: "AI Systems", notes: "Local inference channel warming under guard.", syncLevel: "73%", containmentLevel: "Medium", metrics: "Kernel Warm | Relay Latent", lore: "On-device intelligence path held below full pressure." },
   { id: "cloud-ai", name: "Cloud AI", systemType: "Remote Inference", runtimeStatus: "Offline", classification: "AI Systems", state: "dormant", systemClass: "AI Infrastructure", region: "AI Systems", notes: "External relay held dormant at the boundary.", syncLevel: "21%", containmentLevel: "Medium", metrics: "Relay Inactive | Handshake Deferred", lore: "Long-range intelligence route held in reserve." },
   { id: "robot", name: "Robot Buddy", systemType: "Companion Unit", runtimeStatus: "Attention", classification: "Memory Vault", state: "warning", systemClass: "Device Node", region: "Memory Vault", notes: "Embodied endpoint with minor link variance.", syncLevel: "47%", containmentLevel: "N/A", metrics: "Actuator Watch | Link Jitter 4%", lore: "Physical interface point within the memory vault circuit." },
-  { id: "cortex", name: "KCx Cortex", systemType: "Intelligence Core", runtimeStatus: "Locked", classification: "Cortex Core", state: "locked", systemClass: "Reactor Core", region: "Cortex Core", notes: "Restricted intelligence core under full containment.", syncLevel: "11%", containmentLevel: "Maximum", metrics: "Containment Field Stable | Pressure Harmonics Rising", lore: "Protected reactor mass below operational access." }
+  { id: "cortex", name: "KCx Cortex", systemType: "Intelligence Core", runtimeStatus: "Contained", classification: "Cortex Core", state: "dormant", systemClass: "Reactor Core", region: "Cortex Core", notes: "Intelligence core held in deep containment. Awaiting activation.", syncLevel: "11%", containmentLevel: "Maximum", metrics: "Containment Field Stable | Pressure Harmonics Rising", lore: "A restrained reactor intelligence. Not yet operational. Not yet free." }
 ];
 
 const positions: Record<string, { x: number; y: number }> = { companion: { x: 190, y: 220 }, valhalla: { x: 420, y: 285 }, mode: { x: 760, y: 190 }, messenger: { x: 960, y: 300 }, "local-ai": { x: 760, y: 610 }, "cloud-ai": { x: 1015, y: 635 }, robot: { x: 300, y: 690 }, cortex: { x: 1320, y: 360 } };
@@ -74,13 +74,28 @@ export function ForgeCanvas({ selectedSystemId, selectedRegionId, operationalOve
     lastFocusRegion ? `memory-${lastFocusRegion.toLowerCase().replace(/\s+/g, "-")}` : ""
   ].filter(Boolean).join(" ");
 
+  const focusMatchesSystem = useCallback((system: ForgeSystemMeta) => {
+    if (focusMode === "systems") return true;
+    if (focusMode === "forge") return ["companion", "valhalla"].includes(system.id);
+    if (focusMode === "runtime") return ["mode", "messenger"].includes(system.id);
+    if (focusMode === "memory") return ["robot"].includes(system.id);
+    if (focusMode === "ai") return ["local-ai", "cloud-ai"].includes(system.id);
+    if (focusMode === "devices") return system.id === "robot";
+    return false;
+  }, [focusMode]);
   const nodes = useMemo<Node[]>(() => systems.map((system) => {
     const isSelected = selectedSystemId === system.id;
+    const isFocusMatch = focusMatchesSystem(system);
     const sympathy = selectedSystemId ? related[selectedSystemId]?.includes(system.id) : selectedRegionId ? system.region.toLowerCase().includes(selectedRegionId) : false;
-    const isDimmed = Boolean((selectedSystemId && !isSelected && !sympathy) || (selectedRegionId && !sympathy));
+    const shouldApplyFocusFilter = ["forge", "systems", "runtime", "memory", "ai", "devices"].includes(focusMode);
+    const isDimmed = Boolean(
+      shouldApplyFocusFilter
+        ? !isFocusMatch && !isSelected
+        : (selectedSystemId && !isSelected && !sympathy) || (selectedRegionId && !sympathy)
+    );
     const classTone = `class-${system.systemClass.toLowerCase().replace(/\s+/g, "-")}`;
-    return { id: system.id, position: positions[system.id], data: { label: system.name }, type: "default", draggable: false, className: ["forge-node", `state-${system.state}`, classTone, `boot-${system.id}`, isSelected ? "is-selected" : "", isDimmed ? "is-dimmed" : "", sympathy ? "is-related" : ""].filter(Boolean).join(" ") };
-  }), [selectedSystemId, selectedRegionId]);
+    return { id: system.id, position: positions[system.id], data: { label: system.name }, type: "default", draggable: false, className: ["forge-node", `state-${system.state}`, classTone, `boot-${system.id}`, isSelected ? "is-selected" : "", isDimmed ? "is-dimmed" : "", sympathy ? "is-related" : "", isFocusMatch ? "is-focus-match" : ""].filter(Boolean).join(" ") };
+  }), [focusMatchesSystem, focusMode, selectedSystemId, selectedRegionId]);
 
   const onNodeClick: NodeMouseHandler = (_, node) => {
     const found = systems.find((s) => s.id === node.id) ?? null;
@@ -130,7 +145,7 @@ export function ForgeCanvas({ selectedSystemId, selectedRegionId, operationalOve
     <div aria-hidden="true" role="presentation" className={`forge-zone zone-memory zone-state-dormant stage-5 ${selectedRegionId === "memory" ? "zone-selected" : ""}`} /><span className="zone-label zone-label-memory">MEMORY VAULT</span>
     <div aria-hidden="true" role="presentation" className={`forge-zone zone-ai zone-state-sync stage-4 ${selectedRegionId === "ai" ? "zone-selected" : ""}`} /><span className="zone-label zone-label-ai">AI SYSTEMS</span>
     <div aria-hidden="true" role="presentation" className={`forge-zone zone-device zone-state-warning stage-3 ${selectedRegionId === "device" ? "zone-selected" : ""}`} /><span className="zone-label zone-label-device">DEVICE GRID</span>
-    <div aria-hidden="true" role="presentation" className={`forge-zone zone-cortex zone-state-locked stage-6 ${selectedRegionId === "cortex" ? "zone-selected" : ""}`} /><span className="zone-label zone-label-cortex">CORTEX CORE - LOCKED</span>
+    <div aria-hidden="true" role="presentation" className={`forge-zone zone-cortex zone-state-locked stage-6 ${selectedRegionId === "cortex" ? "zone-selected" : ""}`} /><span className="zone-label zone-label-cortex">CORTEX CORE</span>
     <div className="forge-atmos-layer forge-smoke" /><div className="forge-atmos-layer forge-haze" /><div className="forge-atmos-layer forge-vignette" /><div className="forge-embers" />
     {!isCanvasReady ? (
       <div className="forge-canvas-loading" aria-live="polite">Forge map initializing...</div>

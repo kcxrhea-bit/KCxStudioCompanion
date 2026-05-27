@@ -10,3 +10,30 @@ coverage/
 .vscode/
 
 *.zip
+# KCx local browser/temp profiles
+.tmp-chrome-valhalla/
+.tmp-edge-valhalla/
+
+# Crash/browser runtime junk
+Crashpad/
+*.pma
+Variations
+
+# Build outputs
+dist/
+release/
+out/
+*.exe
+*.msi
+*.blockmap
+
+# Dependencies/cache
+node_modules/
+.vite/
+.cache/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

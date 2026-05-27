@@ -18,6 +18,10 @@
 @keyframes emberDrift { 0% { background-position: 0 100%, 30% 90%, 70% 100%, 90% 95%; } 100% { background-position: 0 -10%, 30% -5%, 70% -8%, 90% -12%; } }
 @keyframes parallaxDrift { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(1.5%, -1%, 0); } }
 @keyframes edgeFlow { to { stroke-dashoffset: -16; } }
+@keyframes cortexBreath {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 0.82; }
+}
 
 .valhalla-root { height: 100vh; display: flex; flex-direction: column; background: radial-gradient(980px 560px at 54% 42%, rgba(217, 71, 43, 0.08), transparent 66%), linear-gradient(170deg, #0d1015 0%, #0f1115 44%, #141820 100%); color: var(--vh-text); overflow: hidden; }
 .valhalla-awake { animation: forgeEntry 1.2s ease-out both; }
@@ -1033,6 +1037,16 @@
 .valhalla-root .forge-canvas-panel .react-flow__node.forge-node.is-dimmed {
   opacity: 0.40 !important;
 }
+.valhalla-root .forge-canvas-panel .react-flow__node.forge-node.is-focus-match {
+  opacity: 1 !important;
+  filter: saturate(1.08) brightness(1.08) !important;
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.6), 0 0 16px rgba(255, 130, 40, 0.2) !important;
+}
+.valhalla-root .forge-canvas-panel .forge-zone.zone-selected {
+  box-shadow: 0 0 64px rgba(255, 140, 52, 0.22) !important;
+  border-color: rgba(255, 150, 70, 0.34) !important;
+  opacity: 0.95 !important;
+}
 
 /* === PHASE 16 POINTER AND LAYER OVERRIDE === */
 .forge-zone {
@@ -1096,4 +1110,136 @@
 }
 .forge-canvas-panel .react-flow__minimap-mask {
   fill: rgba(9, 11, 16, 0.75) !important;
+}
+
+.valhalla-cortex-chamber {
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid rgba(217, 71, 43, 0.25);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(30, 12, 10, 0.85), rgba(15, 8, 8, 0.92));
+}
+
+.cortex-chamber-status {
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  color: rgba(217, 71, 43, 0.7);
+  text-transform: uppercase;
+  margin: 0 0 10px 0;
+}
+
+.cortex-chamber-detail {
+  font-size: 0.82rem;
+  color: rgba(180, 160, 150, 0.65);
+  margin: 6px 0;
+}
+
+.cortex-activate-btn {
+  margin-top: 14px;
+  padding: 8px 16px;
+  border: 1px solid rgba(217, 71, 43, 0.35);
+  border-radius: 8px;
+  background: rgba(217, 71, 43, 0.08);
+  color: rgba(217, 71, 43, 0.75);
+  font-size: 0.82rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 200ms ease;
+}
+
+.cortex-activate-btn:hover {
+  background: rgba(217, 71, 43, 0.15);
+  border-color: rgba(217, 71, 43, 0.55);
+  color: rgba(255, 120, 80, 0.9);
+}
+
+.zone-cortex {
+  animation: cortexBreath 6s ease-in-out infinite;
+}
+
+.forge-canvas-panel .react-flow__node.forge-node.state-dormant.class-reactor-core {
+  border-color: rgba(124, 116, 178, 0.5) !important;
+  box-shadow: 0 14px 26px rgba(0, 0, 0, 0.58), 0 0 10px rgba(124, 116, 178, 0.2), 0 0 12px rgba(84, 182, 206, 0.12) !important;
+  filter: saturate(0.94) brightness(0.96);
+}
+
+.cortex-chamber {
+  margin-top: 12px;
+  border: 1px solid rgba(122, 132, 178, 0.28);
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(17, 19, 25, 0.92), rgba(10, 12, 17, 0.96));
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: inset 0 0 0 1px rgba(115, 132, 186, 0.1), 0 0 22px rgba(84, 182, 206, 0.08);
+}
+
+.cortex-chamber-header h3 {
+  margin: 0;
+  font-size: 0.94rem;
+}
+
+.cortex-chamber-header p {
+  margin: 4px 0 0;
+  color: rgba(205, 211, 221, 0.76);
+  font-size: 0.8rem;
+}
+
+.cortex-contained-badge {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(124, 116, 178, 0.42);
+  color: rgba(172, 188, 238, 0.9);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cortex-status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.cortex-status-card {
+  border: 1px solid rgba(88, 97, 126, 0.44);
+  border-radius: 9px;
+  padding: 8px;
+  background: linear-gradient(180deg, rgba(26, 30, 42, 0.65), rgba(14, 16, 22, 0.8));
+}
+
+.cortex-status-card p {
+  margin: 0;
+  text-transform: uppercase;
+  font-size: 0.64rem;
+  letter-spacing: 0.08em;
+  color: rgba(146, 158, 188, 0.82);
+}
+
+.cortex-status-card strong {
+  color: rgba(214, 223, 238, 0.9);
+  font-size: 0.8rem;
+}
+
+.cortex-bridge-list h4 {
+  margin: 10px 0 4px;
+  font-size: 0.74rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(168, 193, 221, 0.84);
+}
+
+.cortex-bridge-list ul {
+  margin: 0;
+  padding-left: 18px;
+  color: rgba(191, 197, 208, 0.84);
+}
+
+@media (max-width: 760px) {
+  .cortex-status-grid {
+    grid-template-columns: 1fr;
+  }
 }

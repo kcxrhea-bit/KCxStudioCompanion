@@ -1,0 +1,103 @@
+/**
+ * KCx Theme Engine - CSS Variables
+ * Phase 1: Design Token Foundation
+ *
+ * Defines all KCx color tokens and glow utilities as CSS custom properties.
+ * Safe for use in any CSS/SCSS/styled-components across the app.
+ * No framework dependencies—pure CSS variables.
+ */
+
+:root {
+  /* === CYAN & ELECTRIC PRIMARY === */
+  --kcx-non-pulse: #7DFDFE;
+  --kcx-cyan-grid: #18CAE6;
+  --kcx-data-stream: #0B718A;
+  --kcx-code-bleed: #FF410D;
+  --kcx-solar-flare: #F4AF2D;
+
+  /* === NEUTRAL & LIGHT === */
+  --kcx-white-light: #FFFFFE;
+  --kcx-abyss: #090D10;
+  --kcx-obsidian-grid: #193F4A;
+
+  /* === BIO & NEON === */
+  --kcx-bio-pulse: #00FF66;
+  --kcx-quantum-violet: #A500FF;
+  --kcx-system-glitch: #E1F02A;
+
+  /* === DEEP TONES === */
+  --kcx-deep-bronze: #4A3B2C;
+  --kcx-data-link: #7A8B99;
+  --kcx-black-anvil-metal: #0F1115;
+  --kcx-dark-forge-charcoal: #1A1D24;
+  --kcx-ember-ash-gray: #2A2F38;
+  --kcx-steel-smoke: #3A404C;
+
+  /* === MOLTEN ORANGE & FIRE === */
+  --kcx-molten-ember-orange: #FF7A1A;
+  --kcx-forgefire-orange: #FF9A3C;
+  --kcx-lava-core-red: #D9472B;
+  --kcx-heated-steel-glow: rgba(255, 122, 26, 0.18);
+
+  /* === DEEP RUNTIME BLACKS === */
+  --kcx-deep-runtime-black: #090B10;
+  --kcx-tactical-charcoal: #141922;
+  --kcx-dark-chrome: #1E2530;
+  --kcx-runtime-steel: #2B3442;
+
+  /* === MAGENTA CORE === */
+  --kcx-magenta-core: #FF2D9A;
+  --kcx-neon-magenta: #FF4DB2;
+
+  /* === CYAN ELECTRIC === */
+  --kcx-cyan-pulse: #3BE7FF;
+  --kcx-electric-cyan: #7AF2FF;
+
+  /* === PURPLE & VIOLET === */
+  --kcx-reactor-purple: #8A5CFF;
+  --kcx-guardian-cyan: #5FE3FF;
+  --kcx-adaptive-blue: #4DA3FF;
+
+  /* === GLASS & TRANSPARENCY === */
+  --kcx-calm-glass: rgba(255, 255, 255, 0.06);
+
+  /* === PRIVACY & MEMORY === */
+  --kcx-privacy-blue: #3A8DFF;
+  --kcx-memory-cyan: #63D9FF;
+
+  /* === COMPANION & WARM === */
+  --kcx-companion-glow: #FFD36A;
+  --kcx-pixar-orange: #FFB347;
+
+  /* === REACTOR & SYSTEM === */
+  --kcx-soft-reactor-blue: #5CC8FF;
+  --kcx-cortex-core-cyan: #59F3FF;
+  --kcx-containment-blue: #1B6B8A;
+  --kcx-intelligence-violet: #7C4DFF;
+  --kcx-reactor-containment: #12161D;
+
+  /* === WARNING & STEEL === */
+  --kcx-warning-amber: #FFB000;
+  --kcx-neutral-steel: #6E7684;
+  --kcx-shadow-carbon: #05070A;
+
+  /* === GLOW & ANIMATION UTILITIES === */
+  --kcx-glow-blur-sm: 4px;
+  --kcx-glow-blur-md: 12px;
+  --kcx-glow-blur-lg: 24px;
+}
+
+/**
+ * Reset and baseline styles using KCx tokens.
+ * Ensures consistent dark theme foundation.
+ */
+html,
+body {
+  background-color: var(--kcx-abyss);
+  color: var(--kcx-white-light);
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
