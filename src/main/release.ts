@@ -70,6 +70,18 @@ export const appendDiagnosticLog = (message: string): void => {
   }
 };
 
+export const clearDiagnosticLogs = (): { ok: boolean; error?: string } => {
+  try {
+    const ready = ensureUserDataReady();
+    if (!ready.ok) return { ok: false, error: ready.message };
+    const runtimeLogPath = path.join(ready.diagnosticsPath, "runtime.log");
+    if (fs.existsSync(runtimeLogPath)) fs.writeFileSync(runtimeLogPath, "", "utf8");
+    return { ok: true };
+  } catch (error) {
+    return { ok: false, error: error instanceof Error ? error.message : String(error) };
+  }
+};
+
 export const showSafeFailureDialog = (title: string, detail: string): void => {
   dialog.showMessageBox({
     type: "warning",

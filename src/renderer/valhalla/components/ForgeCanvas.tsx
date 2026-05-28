@@ -7,12 +7,14 @@ export type SystemClass = "Forge System" | "Runtime System" | "Memory System" | 
 export type ForgeSystemMeta = { id: string; name: string; systemType: string; runtimeStatus: string; classification: string; state: ActivityState; systemClass: SystemClass; region: string; notes: string; syncLevel: string; containmentLevel: string; metrics: string; lore: string; };
 export type ForgeRegionMeta = { id: string; name: string; role: string; systems: number; sync: string; atmosphere: string; summary: string; lore: string; };
 export type ValhallaFocusMode = "infrastructure" | "synchronization" | "region" | "containment" | "runtime" | "forge" | "systems" | "memory" | "ai" | "devices";
+export type ForgeSystemState = "idle" | "processing" | "warning" | "error";
 
 type ForgeCanvasProps = {
   selectedSystemId: string | null;
   selectedRegionId: string | null;
   operationalOverlay: boolean;
   focusMode: ValhallaFocusMode;
+  systemState?: ForgeSystemState;
   onSelectSystem: (system: ForgeSystemMeta | null) => void;
   onSelectRegion: (region: ForgeRegionMeta | null) => void;
   onViewportMove: (message: string) => void;
@@ -24,7 +26,8 @@ export const regions: ForgeRegionMeta[] = [
   { id: "memory", name: "Memory Vault", role: "Low-frequency archival and recall infrastructure.", systems: 0, sync: "Low", atmosphere: "Heavy archival stillness", summary: "Trace systems remain quiet and watchful.", lore: "Long-horizon storage field preserving prior system shape." },
   { id: "ai", name: "AI Systems", role: "Guarded inference and relay structure.", systems: 2, sync: "Rising", atmosphere: "Warm signal haze", summary: "Inference pathways are warming under restraint.", lore: "Constrained intelligence channels held below the forge surface." },
   { id: "device", name: "Device Grid", role: "Peripheral interface and embodiment layer.", systems: 1, sync: "Variable", atmosphere: "Sparse forge static", summary: "Edge constructs remain tethered to core pressure.", lore: "Mechanical endpoints translating forge state into physical action." },
-  { id: "cortex", name: "Cortex Core", role: "Restricted intelligence reactor.", systems: 1, sync: "Suppressed", atmosphere: "Deep reactor containment", summary: "The core remains locked beneath controlled pressure.", lore: "Protected intelligence mass held below operational access." }
+  { id: "cortex", name: "Cortex Core", role: "Restricted intelligence reactor.", systems: 1, sync: "Suppressed", atmosphere: "Deep reactor containment", summary: "The core remains locked beneath controlled pressure.", lore: "Protected intelligence mass held below operational access." },
+  { id: "godzilla", name: "GodzillaMode", role: "Personal health layer for the KCx ecosystem.", systems: 1, sync: "Embedded", atmosphere: "Quiet recovery field integrated into the Cortex fallback layer", summary: "GodzillaMode AI brain is embedded inside Studio Companion as a local fallback intelligence module. No external app required.", lore: "A personal health intelligence now living inside the Cortex containment shell, ready to assist when primary providers are unavailable." }
 ];
 
 export const systems: ForgeSystemMeta[] = [
@@ -35,11 +38,12 @@ export const systems: ForgeSystemMeta[] = [
   { id: "local-ai", name: "Local AI", systemType: "Local Inference", runtimeStatus: "Awaiting", classification: "AI Systems", state: "synchronizing", systemClass: "AI Infrastructure", region: "AI Systems", notes: "Local inference channel warming under guard.", syncLevel: "73%", containmentLevel: "Medium", metrics: "Kernel Warm | Relay Latent", lore: "On-device intelligence path held below full pressure." },
   { id: "cloud-ai", name: "Cloud AI", systemType: "Remote Inference", runtimeStatus: "Offline", classification: "AI Systems", state: "dormant", systemClass: "AI Infrastructure", region: "AI Systems", notes: "External relay held dormant at the boundary.", syncLevel: "21%", containmentLevel: "Medium", metrics: "Relay Inactive | Handshake Deferred", lore: "Long-range intelligence route held in reserve." },
   { id: "robot", name: "Robot Buddy", systemType: "Companion Unit", runtimeStatus: "Attention", classification: "Memory Vault", state: "warning", systemClass: "Device Node", region: "Memory Vault", notes: "Embodied endpoint with minor link variance.", syncLevel: "47%", containmentLevel: "N/A", metrics: "Actuator Watch | Link Jitter 4%", lore: "Physical interface point within the memory vault circuit." },
-  { id: "cortex", name: "KCx Cortex", systemType: "Intelligence Core", runtimeStatus: "Contained", classification: "Cortex Core", state: "dormant", systemClass: "Reactor Core", region: "Cortex Core", notes: "Intelligence core held in deep containment. Awaiting activation.", syncLevel: "11%", containmentLevel: "Maximum", metrics: "Containment Field Stable | Pressure Harmonics Rising", lore: "A restrained reactor intelligence. Not yet operational. Not yet free." }
+  { id: "cortex", name: "KCx Cortex", systemType: "Intelligence Core", runtimeStatus: "Contained", classification: "Cortex Core", state: "dormant", systemClass: "Reactor Core", region: "Cortex Core", notes: "Intelligence core held in deep containment. Awaiting activation.", syncLevel: "11%", containmentLevel: "Maximum", metrics: "Containment Field Stable | Pressure Harmonics Rising", lore: "A restrained reactor intelligence. Not yet operational. Not yet free." },
+  { id: "godzilla-ai", name: "GodzillaMode AI", systemType: "Embedded Local Brain", runtimeStatus: "Integrated", classification: "GodzillaMode", state: "monitoring", systemClass: "Embedded Intelligence", region: "GodzillaMode", notes: "KCxModeAI brain is embedded as a local fallback intelligence module inside Studio Companion. It supports Cortex when Ollama is unavailable. No external app launch required.", syncLevel: "72%", containmentLevel: "Cortex Containment", metrics: "Local Brain Ready | Cortex Fallback Active", lore: "No longer dormant. The health intelligence lives inside the forge now, woven into the Cortex fallback layer." }
 ];
 
-const positions: Record<string, { x: number; y: number }> = { companion: { x: 190, y: 220 }, valhalla: { x: 420, y: 285 }, mode: { x: 760, y: 190 }, messenger: { x: 960, y: 300 }, "local-ai": { x: 760, y: 610 }, "cloud-ai": { x: 1015, y: 635 }, robot: { x: 300, y: 690 }, cortex: { x: 1320, y: 360 } };
-const related: Record<string, string[]> = { companion: ["valhalla", "mode", "robot"], valhalla: ["companion", "mode", "messenger"], mode: ["valhalla", "messenger", "local-ai"], messenger: ["mode", "cloud-ai"], "local-ai": ["mode", "cloud-ai"], "cloud-ai": ["messenger", "cortex"], robot: ["companion"], cortex: ["cloud-ai"] };
+const positions: Record<string, { x: number; y: number }> = { companion: { x: 190, y: 220 }, valhalla: { x: 420, y: 285 }, mode: { x: 760, y: 190 }, messenger: { x: 960, y: 300 }, "local-ai": { x: 760, y: 610 }, "cloud-ai": { x: 1015, y: 635 }, robot: { x: 300, y: 690 }, cortex: { x: 1320, y: 360 }, "godzilla-ai": { x: 1320, y: 620 } };
+const related: Record<string, string[]> = { companion: ["valhalla", "mode", "robot"], valhalla: ["companion", "mode", "messenger"], mode: ["valhalla", "messenger", "local-ai"], messenger: ["mode", "cloud-ai"], "local-ai": ["mode", "cloud-ai"], "cloud-ai": ["messenger", "cortex"], robot: ["companion"], cortex: ["cloud-ai"], "godzilla-ai": ["cortex"] };
 const edges: Edge[] = [
   { id: "e-companion-valhalla", source: "companion", target: "valhalla", className: "forge-edge edge-creation flow-strong", animated: true },
   { id: "e-valhalla-mode", source: "valhalla", target: "mode", className: "forge-edge edge-runtime", animated: true },
@@ -47,10 +51,11 @@ const edges: Edge[] = [
   { id: "e-mode-local", source: "mode", target: "local-ai", className: "forge-edge edge-ai flow-strong", animated: true },
   { id: "e-messenger-cloud", source: "messenger", target: "cloud-ai", className: "forge-edge edge-ai", animated: true },
   { id: "e-companion-robot", source: "companion", target: "robot", className: "forge-edge edge-device", animated: true },
-  { id: "e-cloud-cortex", source: "cloud-ai", target: "cortex", className: "forge-edge edge-cortex", animated: true }
+  { id: "e-cloud-cortex", source: "cloud-ai", target: "cortex", className: "forge-edge edge-cortex", animated: true },
+  { id: "e-cortex-godzilla", source: "cortex", target: "godzilla-ai", className: "forge-edge edge-experimental", animated: false }
 ];
 
-export function ForgeCanvas({ selectedSystemId, selectedRegionId, operationalOverlay, focusMode, onSelectSystem, onSelectRegion, onViewportMove }: ForgeCanvasProps) {
+export function ForgeCanvas({ selectedSystemId, selectedRegionId, operationalOverlay, focusMode, systemState = "idle", onSelectSystem, onSelectRegion, onViewportMove }: ForgeCanvasProps) {
   const panelRef = useRef<HTMLElement | null>(null);
   const [lastFocusRegion, setLastFocusRegion] = useState<string | null>(null);
   const [isNavigating, setIsNavigating] = useState(false);
@@ -67,6 +72,7 @@ export function ForgeCanvas({ selectedSystemId, selectedRegionId, operationalOve
     mood,
     operationalOverlay ? "operational-overlay-on" : "operational-overlay-off",
     `mode-${focusMode}`,
+    `forge-system-${systemState}`,
     isNavigating ? "realm-navigating" : "",
     `zoom-${zoomBand}`,
     activeRegion ? "realm-focused" : "realm-unfocused",

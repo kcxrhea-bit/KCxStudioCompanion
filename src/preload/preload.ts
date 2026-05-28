@@ -4,7 +4,10 @@ contextBridge.exposeInMainWorld("kcxApi", {
   getState: () => ipcRenderer.invoke("state:get"),
   saveState: (nextState: unknown) => ipcRenderer.invoke("state:save", nextState),
   getReleaseInfo: () => ipcRenderer.invoke("app:releaseInfo"),
+  clearDiagnosticLogs: () => ipcRenderer.invoke("diagnostics:clear-logs"),
   runCommand: (request: unknown) => ipcRenderer.invoke("cmd:run", request),
+  startOllama: () => ipcRenderer.invoke("ollama:start"),
+  stopOllama: () => ipcRenderer.invoke("ollama:stop"),
   scanProject: (rootPath: string) => {
     console.log("[preload] scanProject called", rootPath);
     return ipcRenderer.invoke("project:scan", rootPath);

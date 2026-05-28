@@ -55,6 +55,10 @@ error TS2345: Argument of type 'string' is not assignable to parameter of type '
 const KOTLIN_ERROR_LOG = `e: app/src/main/kotlin/com/kcx/MainViewModel.kt:42:10 Unresolved reference: BuildRepo
 e: app/src/main/kotlin/com/kcx/MainViewModel.kt:55:3 Unresolved reference: inject`;
 
+const KOTLIN_SYNTAX_ERROR_LOG = `> Task :app:compileDebugKotlin FAILED
+e: file:///C:/Users/right/AndroidStudioProjects/EasyLauncher/app/src/main/java/com/easylauncher/MainActivity.kt:123:45 Syntax error: Expecting an expression
+BUILD FAILED in 2s`;
+
 const GRADLE_ERROR_LOG = `Execution failed for task ':app:compileDebugKotlin'.
 > Compilation error. See log for more details`;
 
@@ -114,12 +118,28 @@ describe('parseBuildIntel', () => {
 describe('analyzeHeuristic', () => {
   test('detects Kotlin unresolved reference with file, line, column', () => {
     const results = analyzeHeuristic(KOTLIN_ERROR_LOG);
-    expect(results[0].detectedType).toBe('unresolved reference');
+    expect(results[0].detectedType).toBe('Kotlin compile error');
     expect(results[0].severity).toBe('high');
+    expect(results[0].confidence).toBe(0.95);
     expect(results[0].likelySymbols).toContain('BuildRepo');
     expect(results[0].file).toBe('app/src/main/kotlin/com/kcx/MainViewModel.kt');
+    expect(results[0].fileName).toBe('MainViewModel.kt');
     expect(results[0].line).toBe(42);
     expect(results[0].column).toBe(10);
+    expect(results[0].message).toContain('Unresolved reference: BuildRepo');
+  });
+
+  test('detects deliberate Kotlin syntax typo in MainActivity.kt without generic spam', () => {
+    const results = analyzeHeuristic(KOTLIN_SYNTAX_ERROR_LOG);
+    expect(results[0].detectedType).toBe('Kotlin compile error');
+    expect(results[0].severity).toBe('high');
+    expect(results[0].confidence).toBe(0.95);
+    expect(results[0].fileName).toBe('MainActivity.kt');
+    expect(results[0].line).toBe(123);
+    expect(results[0].column).toBe(45);
+    expect(results[0].message).toMatch(/Expecting an expression|Syntax error/i);
+    expect(results.some((r) => r.detectedType === 'Room/KSP failures')).toBe(false);
+    expect(results.some((r) => r.detectedType === 'Compose compiler issues')).toBe(false);
   });
 
   test('detects TypeScript missing symbol with file location', () => {
@@ -138,9 +158,14 @@ describe('analyzeHeuristic', () => {
   });
 
   test('detects Room/KSP failures', () => {
-    const results = analyzeHeuristic('ksp: error processing Room annotations, AppDatabase_Impl not generated');
+    const results = analyzeHeuristic('KspTask failed: RoomProcessor error processing androidx.room Entity annotation, AppDatabase_Impl not generated');
     expect(results[0].detectedType).toBe('Room/KSP failures');
     expect(results[0].severity).toBe('high');
+  });
+
+  test('does not classify generic Kotlin compile failure as Room/KSP', () => {
+    const results = analyzeHeuristic('Execution failed for task :app:compileDebugKotlin.\n> Compilation error. See log for more details');
+    expect(results.some((r) => r.detectedType === 'Room/KSP failures')).toBe(false);
   });
 
   test('detects Gradle task failures', () => {
@@ -152,6 +177,23 @@ describe('analyzeHeuristic', () => {
   test('detects Compose compiler issues', () => {
     const results = analyzeHeuristic('@Composable function called from non-composable context');
     expect(results[0].detectedType).toBe('Compose compiler issues');
+  });
+
+  test('does not classify generic Kotlin compile failure as Compose', () => {
+    const results = analyzeHeuristic('Execution failed for task :app:compileDebugKotlin.\n> Compilation error. See log for more details');
+    expect(results.some((r) => r.detectedType === 'Compose compiler issues')).toBe(false);
+  });
+
+  test('deduplicates repeated fallback issue spam', () => {
+    const noisyLog = Array.from({ length: 20 }, () => 'Execution failed for task :app:compileDebugKotlin.').join('\n');
+    const results = analyzeHeuristic(noisyLog);
+    expect(results.filter((r) => r.detectedType === 'Gradle task failures')).toHaveLength(1);
+  });
+
+  test('deduplicates repeated Kotlin compiler locations', () => {
+    const repeated = Array.from({ length: 5 }, () => 'e: file:///C:/project/app/src/main/java/MainActivity.kt:12:3 Expecting an expression').join('\n');
+    const results = analyzeHeuristic(repeated);
+    expect(results.filter((r) => r.detectedType === 'Kotlin compile error')).toHaveLength(1);
   });
 
   test('detects Electron/Vite/npm failures', () => {
@@ -179,7 +221,7 @@ describe('analyzeHeuristic', () => {
   });
 
   test('higher-confidence issue ranked first over lower-confidence', () => {
-    // unresolved reference (0.9) should beat Electron/Vite (0.75)
+    // Kotlin compile error (0.95) should beat Electron/Vite (0.75)
     const mixed = [KOTLIN_ERROR_LOG, 'vite: error during build'].join('\n');
     const results = analyzeHeuristic(mixed);
     expect(results[0].confidence).toBeGreaterThanOrEqual(0.87);
@@ -194,7 +236,7 @@ describe('summarizeAnalysis', () => {
   test('summary contains the detected type', () => {
     const results = analyzeHeuristic(KOTLIN_ERROR_LOG);
     const summary = summarizeAnalysis(results);
-    expect(summary).toContain('unresolved reference');
+    expect(summary).toMatch(/unresolved reference/i);
   });
 
   test('summary contains symbol name', () => {
@@ -266,7 +308,7 @@ describe('Fix Prompt approval item structure', () => {
 
     expect(approval.chainId).toBe(chainId);
     expect(approval.promptType).toBe('Fix');
-    expect(approval.issueType).toBe('unresolved reference');
+    expect(approval.issueType).toBe('Kotlin compile error');
     expect(approval.status).toBe('pending');
     expect(approval.payload).toContain('Safety rules');
     expect(approval.contextKey).toContain('BuildRepo');

@@ -3855,3 +3855,499 @@ svg {
   will-change: transform, opacity;
   backface-visibility: hidden;
 }
+
+/* Settings log cleanup controls */
+.settings-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.clear-all-logs-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--color-status-error) 46%, var(--color-border-default));
+  border-radius: 8px;
+  background:
+    linear-gradient(145deg, color-mix(in srgb, #111827 82%, var(--color-status-error) 18%), rgba(8, 12, 18, 0.92)),
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--color-status-warning) 16%, transparent), transparent 42%);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--color-status-warning) 12%, transparent),
+    0 0 18px color-mix(in srgb, var(--color-status-error) 12%, transparent);
+}
+
+.clear-all-logs-card h3 {
+  color: color-mix(in srgb, var(--color-status-warning) 72%, #fff 28%);
+}
+
+.btn-clear-all-logs {
+  border-color: color-mix(in srgb, var(--color-status-error) 72%, var(--color-status-warning));
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--color-status-error) 28%, transparent), color-mix(in srgb, var(--color-status-warning) 12%, transparent));
+  color: color-mix(in srgb, var(--color-status-error) 82%, #fff 18%);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--color-status-error) 24%, transparent),
+    0 0 14px color-mix(in srgb, var(--color-status-error) 16%, transparent);
+}
+
+.btn-clear-all-logs:hover {
+  border-color: color-mix(in srgb, var(--color-status-error) 86%, #fff 14%);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--color-status-error) 36%, transparent),
+    0 0 22px color-mix(in srgb, var(--color-status-error) 28%, transparent);
+}
+
+.system-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(2, 6, 12, 0.78);
+  backdrop-filter: blur(8px);
+}
+
+.system-confirm-modal {
+  width: min(520px, calc(100vw - 2rem));
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--color-status-error) 52%, var(--color-border-default));
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(22, 28, 38, 0.98), rgba(8, 12, 18, 0.98)),
+    radial-gradient(circle at 0% 0%, color-mix(in srgb, var(--color-status-warning) 18%, transparent), transparent 36%);
+  box-shadow:
+    0 24px 72px rgba(0, 0, 0, 0.6),
+    0 0 26px color-mix(in srgb, var(--color-status-error) 18%, transparent);
+  padding: 1.1rem;
+}
+
+.system-confirm-modal h2 {
+  margin: 0;
+  color: color-mix(in srgb, var(--color-status-warning) 68%, #fff 32%);
+  font-size: 1rem;
+}
+
+.system-confirm-modal p {
+  margin: 0;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--color-text-primary) 78%, #fff 22%);
+}
+
+.system-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+/* ==========================================
+   PRESET TILE PANEL
+   ========================================== */
+
+.preset-panel-wrapper {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.command-preset-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.command-preset-label {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.preset-trigger-btn {
+  padding: 5px 14px;
+  background: transparent;
+  border: 1px solid rgba(0, 242, 254, 0.4);
+  border-radius: 4px;
+  color: rgba(0, 242, 254, 0.8);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.preset-trigger-btn:hover:not(:disabled) {
+  border-color: rgba(0, 242, 254, 0.7);
+  color: rgba(0, 242, 254, 1);
+  box-shadow: 0 0 8px rgba(0, 242, 254, 0.18);
+}
+
+.preset-trigger-btn.is-active {
+  background: rgba(0, 242, 254, 0.12);
+  border-color: rgba(0, 242, 254, 0.8);
+  color: rgba(0, 242, 254, 1);
+  box-shadow: 0 0 10px rgba(0, 242, 254, 0.25);
+}
+
+.preset-trigger-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.preset-panel {
+  position: fixed;
+  top: auto;
+  left: auto;
+  z-index: 9999;
+  min-width: 380px;
+  max-width: 480px;
+  padding: 14px 16px;
+  background: rgba(10, 12, 20, 0.97);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s linear 0.15s;
+}
+
+.preset-panel.is-open {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s linear 0s;
+}
+
+.preset-tabs {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.preset-tab {
+  padding: 4px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 11px;
+  text-transform: uppercase;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.5);
+  transition: all 0.12s ease;
+  letter-spacing: 0.05em;
+}
+
+.preset-tab:hover {
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.8);
+}
+
+.preset-tab-android.is-active {
+  background: rgba(255,140,0,0.20);
+  color: #ff8c00;
+  border-color: rgba(255,140,0,0.4);
+}
+
+.preset-tab-node.is-active {
+  background: rgba(0,200,255,0.20);
+  color: #00c8ff;
+  border-color: rgba(0,200,255,0.4);
+}
+
+.preset-tab-electron.is-active {
+  background: rgba(160,100,255,0.20);
+  color: #a064ff;
+  border-color: rgba(160,100,255,0.4);
+}
+
+.preset-tab-root.is-active {
+  background: rgba(255,0,200,0.20);
+  color: #ff00c8;
+  border-color: rgba(255,0,200,0.4);
+}
+
+.preset-tab-adb.is-active {
+  background: rgba(0,200,100,0.20);
+  color: #00c864;
+  border-color: rgba(0,200,100,0.4);
+}
+
+.preset-tab-git.is-active {
+  background: rgba(255,80,50,0.20);
+  color: #ff5032;
+  border-color: rgba(255,80,50,0.4);
+}
+
+.preset-tab-tools.is-active {
+  background: rgba(0,180,180,0.20);
+  color: #00b4b4;
+  border-color: rgba(0,180,180,0.4);
+}
+
+.preset-tab-reset.is-active {
+  background: rgba(150,150,150,0.20);
+  color: #969696;
+  border-color: rgba(150,150,150,0.4);
+}
+
+.preset-tab-content {
+  min-height: 60px;
+}
+
+.preset-section {
+  margin-bottom: 14px;
+}
+
+.preset-section:last-child {
+  margin-bottom: 0;
+}
+
+.preset-section-header {
+  margin: 0 0 7px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.preset-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.preset-tile {
+  padding: 5px 12px;
+  border-radius: 14px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  background: transparent;
+  letter-spacing: 0.02em;
+}
+
+.preset-tile-android {
+  border: 1px solid rgba(255, 140, 0, 0.5);
+  color: rgba(255, 140, 0, 0.85);
+}
+
+.preset-tile-android:hover {
+  border-color: rgba(255, 140, 0, 0.85);
+  color: rgba(255, 160, 20, 1);
+  box-shadow: 0 0 8px rgba(255, 140, 0, 0.25);
+  background: rgba(255, 140, 0, 0.08);
+}
+
+.preset-tile-android.is-selected {
+  background: rgba(255, 140, 0, 0.22);
+  border-color: rgba(255, 140, 0, 0.9);
+  color: rgba(255, 165, 30, 1);
+  box-shadow: 0 0 10px rgba(255, 140, 0, 0.3);
+}
+
+.preset-tile-android-test {
+  border: 1px solid rgba(255, 200, 0, 0.5);
+  color: rgba(255, 200, 0, 0.85);
+}
+
+.preset-tile-android-test:hover {
+  border-color: rgba(255, 200, 0, 0.85);
+  color: rgba(255, 215, 35, 1);
+  box-shadow: 0 0 8px rgba(255, 200, 0, 0.25);
+  background: rgba(255, 200, 0, 0.08);
+}
+
+.preset-tile-android-test.is-selected {
+  background: rgba(255, 200, 0, 0.2);
+  border-color: rgba(255, 200, 0, 0.9);
+  color: rgba(255, 220, 45, 1);
+  box-shadow: 0 0 10px rgba(255, 200, 0, 0.3);
+}
+
+.preset-tile-android-install {
+  border: 1px solid rgba(0, 200, 100, 0.5);
+  color: rgba(0, 200, 100, 0.85);
+}
+
+.preset-tile-android-install:hover {
+  border-color: rgba(0, 200, 100, 0.85);
+  color: rgba(25, 220, 125, 1);
+  box-shadow: 0 0 8px rgba(0, 200, 100, 0.25);
+  background: rgba(0, 200, 100, 0.08);
+}
+
+.preset-tile-android-install.is-selected {
+  background: rgba(0, 200, 100, 0.2);
+  border-color: rgba(0, 200, 100, 0.9);
+  color: rgba(35, 230, 135, 1);
+  box-shadow: 0 0 10px rgba(0, 200, 100, 0.3);
+}
+
+.preset-tile-android-info {
+  border: 1px solid rgba(100, 150, 255, 0.5);
+  color: rgba(100, 150, 255, 0.85);
+}
+
+.preset-tile-android-info:hover {
+  border-color: rgba(100, 150, 255, 0.85);
+  color: rgba(125, 170, 255, 1);
+  box-shadow: 0 0 8px rgba(100, 150, 255, 0.25);
+  background: rgba(100, 150, 255, 0.08);
+}
+
+.preset-tile-android-info.is-selected {
+  background: rgba(100, 150, 255, 0.2);
+  border-color: rgba(100, 150, 255, 0.9);
+  color: rgba(135, 180, 255, 1);
+  box-shadow: 0 0 10px rgba(100, 150, 255, 0.3);
+}
+
+.preset-tile-node {
+  border: 1px solid rgba(0, 200, 255, 0.5);
+  color: rgba(0, 200, 255, 0.85);
+}
+
+.preset-tile-node:hover {
+  border-color: rgba(0, 200, 255, 0.85);
+  color: rgba(20, 210, 255, 1);
+  box-shadow: 0 0 8px rgba(0, 200, 255, 0.25);
+  background: rgba(0, 200, 255, 0.08);
+}
+
+.preset-tile-node.is-selected {
+  background: rgba(0, 200, 255, 0.2);
+  border-color: rgba(0, 200, 255, 0.9);
+  color: rgba(30, 215, 255, 1);
+  box-shadow: 0 0 10px rgba(0, 200, 255, 0.3);
+}
+
+.preset-tile-electron {
+  border: 1px solid rgba(160, 100, 255, 0.5);
+  color: rgba(160, 100, 255, 0.85);
+}
+
+.preset-tile-electron:hover {
+  border-color: rgba(160, 100, 255, 0.85);
+  color: rgba(180, 125, 255, 1);
+  box-shadow: 0 0 8px rgba(160, 100, 255, 0.25);
+  background: rgba(160, 100, 255, 0.08);
+}
+
+.preset-tile-electron.is-selected {
+  background: rgba(160, 100, 255, 0.2);
+  border-color: rgba(160, 100, 255, 0.9);
+  color: rgba(190, 135, 255, 1);
+  box-shadow: 0 0 10px rgba(160, 100, 255, 0.3);
+}
+
+.preset-tile-root {
+  border: 1px solid rgba(255, 0, 200, 0.5);
+  color: rgba(255, 0, 200, 0.85);
+}
+
+.preset-tile-root:hover {
+  border-color: rgba(255, 0, 200, 0.85);
+  color: rgba(255, 30, 215, 1);
+  box-shadow: 0 0 8px rgba(255, 0, 200, 0.25);
+  background: rgba(255, 0, 200, 0.08);
+}
+
+.preset-tile-root.is-selected {
+  background: rgba(255, 0, 200, 0.18);
+  border-color: rgba(255, 0, 200, 0.9);
+  color: rgba(255, 40, 220, 1);
+  box-shadow: 0 0 10px rgba(255, 0, 200, 0.3);
+}
+
+.preset-tile-adb {
+  border: 1px solid rgba(0,200,100,0.4);
+  color: rgba(0,200,100,0.9);
+  background: rgba(0,200,100,0.06);
+}
+
+.preset-tile-adb:hover {
+  background: rgba(0,200,100,0.18);
+}
+
+.preset-tile-adb.is-selected {
+  background: rgba(0,200,100,0.22);
+}
+
+.preset-tile-git {
+  border: 1px solid rgba(255,80,50,0.4);
+  color: rgba(255,80,50,0.9);
+  background: rgba(255,80,50,0.06);
+}
+
+.preset-tile-git:hover {
+  background: rgba(255,80,50,0.18);
+}
+
+.preset-tile-git.is-selected {
+  background: rgba(255,80,50,0.22);
+}
+
+.preset-tile-tools {
+  border: 1px solid rgba(0,180,180,0.4);
+  color: rgba(0,180,180,0.9);
+  background: rgba(0,180,180,0.06);
+}
+
+.preset-tile-tools:hover {
+  background: rgba(0,180,180,0.18);
+}
+
+.preset-tile-tools.is-selected {
+  background: rgba(0,180,180,0.22);
+}
+
+.preset-tile-reset {
+  border: 1px solid rgba(150, 150, 150, 0.45);
+  color: rgba(150, 150, 150, 0.8);
+}
+
+.preset-tile-reset:hover {
+  border-color: rgba(180, 180, 180, 0.7);
+  color: rgba(180, 180, 180, 1);
+  background: rgba(150, 150, 150, 0.08);
+}
+
+.preset-tile-reset.is-selected {
+  background: rgba(150, 150, 150, 0.15);
+  border-color: rgba(180, 180, 180, 0.7);
+  color: rgba(200, 200, 200, 1);
+}
+
+.command-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.build-command-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  text-overflow: clip;
+  white-space: nowrap;
+}

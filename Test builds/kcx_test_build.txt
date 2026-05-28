@@ -1,0 +1,23 @@
+> Task :app:compileDebugKotlin FAILED
+
+e: src/main/java/com/kcx/app/MainActivity.kt:24:5 Unresolved reference: KCxBridge
+e: src/main/java/com/kcx/app/MainActivity.kt:31:12 Unresolved reference: cortexRuntime
+e: src/main/java/com/kcx/app/MainActivity.kt:47:8 Unresolved reference: ValhallaNode
+
+> Task :app:kaptDebugKotlin FAILED
+
+e: [ksp] src/main/java/com/kcx/app/data/AppDatabase.kt:12:1 Cannot find implementation for AppDatabase. AppDatabase_Impl does not exist.
+
+error: Execution failed for task ':app:compileDebugKotlin'.
+> Compilation error. See log for more details.
+
+* What went wrong:
+Execution failed for task ':app:compileDebugKotlin'.
+> Compilation error. See log for more details.
+
+* Try:
+Run with --stacktrace option to get the stack trace.
+Run with --info or --debug option to get more output.
+
+BUILD FAILED in 6s
+4 actionable tasks: 4 executed

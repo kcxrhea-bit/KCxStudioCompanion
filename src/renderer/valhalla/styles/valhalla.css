@@ -773,12 +773,31 @@
   z-index: 20;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   padding: 28px;
   background:
     radial-gradient(560px 340px at 52% 54%, rgba(255, 122, 26, 0.06), transparent 74%),
     rgba(6, 8, 11, 0.74);
   backdrop-filter: blur(4px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.valhalla-chamber-overlay-scroll {
+  position: fixed;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 3rem 1.25rem;
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.valhalla-chamber-overlay-scroll > * {
+  width: min(920px, 100%);
+  margin: 0 auto;
 }
 
 .valhalla-chamber-shell {
@@ -1114,10 +1133,10 @@
 
 .valhalla-cortex-chamber {
   margin-top: 20px;
-  padding: 16px;
-  border: 1px solid rgba(217, 71, 43, 0.25);
+  padding: 12px;
+  border: 1px solid rgba(217, 71, 43, 0.2);
   border-radius: 10px;
-  background: linear-gradient(180deg, rgba(30, 12, 10, 0.85), rgba(15, 8, 8, 0.92));
+  background: linear-gradient(180deg, rgba(28, 14, 13, 0.72), rgba(13, 9, 10, 0.88));
 }
 
 .cortex-chamber-status {
@@ -1135,9 +1154,9 @@
 }
 
 .cortex-activate-btn {
-  margin-top: 14px;
-  padding: 8px 16px;
-  border: 1px solid rgba(217, 71, 43, 0.35);
+  margin-top: 8px;
+  padding: 6px 12px;
+  border: 1px solid rgba(217, 71, 43, 0.3);
   border-radius: 8px;
   background: rgba(217, 71, 43, 0.08);
   color: rgba(217, 71, 43, 0.75);
@@ -1151,6 +1170,24 @@
   background: rgba(217, 71, 43, 0.15);
   border-color: rgba(217, 71, 43, 0.55);
   color: rgba(255, 120, 80, 0.9);
+}
+
+/* Forge world system state reactions */
+.forge-canvas-panel.forge-system-processing .forge-embers {
+  animation-duration: 0.8s;
+  opacity: 0.9;
+}
+
+.forge-canvas-panel.forge-system-error .forge-haze {
+  background: rgba(220, 40, 40, 0.08);
+}
+
+.forge-canvas-panel.forge-system-warning .forge-haze {
+  background: rgba(220, 160, 0, 0.08);
+}
+
+.forge-canvas-panel.forge-system-idle .forge-haze {
+  background: transparent;
 }
 
 .zone-cortex {
@@ -1171,8 +1208,49 @@
   padding: 14px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  max-height: none;
+  overflow: hidden;
+  gap: 12px;
   box-shadow: inset 0 0 0 1px rgba(115, 132, 186, 0.1), 0 0 22px rgba(84, 182, 206, 0.08);
+}
+
+.cortex-chamber-scroll {
+  overflow-y: auto;
+  padding-right: 0.3rem;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cortex-chamber-sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  padding: 10px 12px;
+  border: 1px solid rgba(93, 105, 136, 0.25);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(18, 21, 28, 0.9), rgba(14, 16, 22, 0.86));
+  backdrop-filter: blur(6px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.26);
+}
+
+.cortex-chamber-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.cortex-chamber-scroll::-webkit-scrollbar-track {
+  background: rgba(5, 10, 14, 0.7);
+  border-radius: 999px;
+}
+
+.cortex-chamber-scroll::-webkit-scrollbar-thumb {
+  background: rgba(24, 202, 230, 0.45);
+  border-radius: 999px;
+}
+
+.cortex-chamber-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(125, 253, 254, 0.65);
 }
 
 .cortex-chamber-header h3 {
@@ -1225,7 +1303,7 @@
 }
 
 .cortex-bridge-list h4 {
-  margin: 10px 0 4px;
+  margin: 0 0 4px;
   font-size: 0.74rem;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -1238,8 +1316,1883 @@
   color: rgba(191, 197, 208, 0.84);
 }
 
+.cortex-section {
+  border: 1px solid rgba(76, 88, 117, 0.32);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(18, 21, 28, 0.8), rgba(10, 13, 18, 0.88));
+}
+
+.cortex-section-header {
+  padding: 6px;
+}
+
+.cortex-section-toggle {
+  width: 100%;
+  border: 1px solid rgba(74, 88, 116, 0.45);
+  border-radius: 8px;
+  background: rgba(22, 26, 35, 0.72);
+  color: rgba(224, 229, 238, 0.9);
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.7rem;
+}
+
+.cortex-section-toggle-meta {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.cortex-chip {
+  border: 1px solid rgba(100, 115, 148, 0.52);
+  border-radius: 999px;
+  padding: 2px 7px;
+  font-size: 0.62rem;
+  color: rgba(184, 199, 235, 0.92);
+}
+
+.cortex-section-body {
+  padding: 0 10px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cortex-workspace {
+  display: grid;
+  grid-template-columns: 168px minmax(0, 1fr) 168px;
+  gap: 10px;
+  align-items: start;
+}
+
+.cortex-workspace-nav,
+.cortex-dock-pane {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.cortex-workspace-main {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cortex-nav-rail {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  border: 1px solid rgba(82, 97, 130, 0.34);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(16, 20, 28, 0.9), rgba(11, 14, 20, 0.9));
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.cortex-nav-header {
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(191, 208, 236, 0.82);
+}
+
+.cortex-nav-status-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.cortex-nav-status-pill {
+  border: 1px solid rgba(99, 118, 156, 0.46);
+  border-radius: 999px;
+  padding: 2px 7px;
+  font-size: 0.62rem;
+  color: rgba(193, 207, 231, 0.9);
+  background: rgba(19, 25, 35, 0.82);
+}
+
+.cortex-nav-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.cortex-nav-item {
+  border: 1px solid rgba(86, 102, 135, 0.42);
+  border-radius: 999px;
+  background: rgba(20, 25, 35, 0.82);
+  color: rgba(184, 198, 220, 0.86);
+  padding: 4px 9px;
+  font-size: 0.64rem;
+}
+
+.cortex-nav-item-active {
+  border-color: rgba(124, 141, 188, 0.56);
+  color: rgba(214, 223, 239, 0.94);
+  background: rgba(30, 38, 55, 0.86);
+}
+
+.cortex-command-trigger {
+  border: 1px solid rgba(107, 124, 162, 0.52);
+  border-radius: 8px;
+  background: rgba(20, 25, 36, 0.84);
+  color: rgba(206, 218, 238, 0.94);
+  padding: 6px 9px;
+  font-size: 0.68rem;
+}
+
+.cortex-section-anchor {
+  scroll-margin-top: 112px;
+}
+
+.cortex-layout-zone {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cortex-section-focused {
+  border-radius: 10px;
+  outline: 1px solid rgba(111, 132, 180, 0.38);
+  outline-offset: 2px;
+}
+
+.cortex-focus-pulse {
+  animation: cortexFocusPulse 900ms ease-out 1;
+}
+
+@keyframes cortexFocusPulse {
+  from { box-shadow: 0 0 0 rgba(84, 182, 206, 0); }
+  45% { box-shadow: 0 0 18px rgba(84, 182, 206, 0.13); }
+  to { box-shadow: 0 0 0 rgba(84, 182, 206, 0); }
+}
+
+.cortex-diagnostics {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cortex-diagnostic-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.cortex-diagnostic-tab,
+.cortex-diagnostic-action {
+  border: 1px solid rgba(87, 104, 141, 0.46);
+  border-radius: 999px;
+  background: rgba(18, 24, 34, 0.78);
+  color: rgba(196, 210, 233, 0.9);
+  padding: 4px 9px;
+  font-size: 0.64rem;
+}
+
+.cortex-diagnostic-tab-active {
+  border-color: rgba(124, 141, 188, 0.58);
+  background: rgba(31, 39, 55, 0.86);
+  color: rgba(224, 231, 243, 0.96);
+}
+
+.cortex-diagnostic-subview {
+  border: 1px solid rgba(85, 100, 132, 0.36);
+  border-radius: 8px;
+  background: rgba(14, 19, 27, 0.82);
+  padding: 8px;
+}
+
+.cortex-diagnostics-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.cortex-status-pill {
+  border: 1px solid rgba(105, 124, 163, 0.48);
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 0.64rem;
+  letter-spacing: 0.04em;
+  color: rgba(197, 214, 238, 0.92);
+  background: rgba(18, 24, 34, 0.74);
+}
+
+.cortex-diagnostics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.cortex-diagnostics-card {
+  border: 1px solid rgba(92, 108, 142, 0.4);
+  border-radius: 8px;
+  background: rgba(17, 21, 29, 0.78);
+  padding: 8px;
+}
+
+.cortex-diagnostics-card p {
+  margin: 0 0 4px;
+  font-size: 0.64rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgba(160, 176, 203, 0.8);
+}
+
+.cortex-diagnostics-card strong {
+  font-size: 0.76rem;
+  color: rgba(220, 229, 241, 0.92);
+}
+
+.cortex-readiness-bar {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(24, 30, 42, 0.92);
+  border: 1px solid rgba(74, 89, 120, 0.4);
+  overflow: hidden;
+}
+
+.cortex-readiness-fill {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(105, 130, 185, 0.75), rgba(84, 182, 206, 0.82));
+}
+
+.cortex-warning-row,
+.cortex-alert-row {
+  border: 1px solid rgba(77, 91, 121, 0.4);
+  border-radius: 8px;
+  background: rgba(16, 20, 27, 0.8);
+  padding: 6px 8px;
+  font-size: 0.72rem;
+  color: rgba(190, 202, 222, 0.88);
+}
+
 @media (max-width: 760px) {
   .cortex-status-grid {
     grid-template-columns: 1fr;
   }
+}
+
+.cortex-runtime-viewer {
+  margin-top: 10px;
+  border: 1px solid rgba(93, 145, 170, 0.26);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(14, 18, 24, 0.9), rgba(10, 13, 18, 0.95));
+  padding: 10px;
+}
+
+.cortex-runtime-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 8px 0 10px;
+}
+
+.cortex-runtime-card {
+  border: 1px solid rgba(95, 108, 142, 0.42);
+  border-radius: 8px;
+  padding: 8px;
+  background: rgba(20, 24, 32, 0.74);
+}
+
+.cortex-runtime-card p {
+  margin: 0;
+  font-size: 0.64rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgba(166, 182, 205, 0.78);
+}
+
+.cortex-runtime-card strong {
+  font-size: 0.8rem;
+  color: rgba(223, 230, 238, 0.92);
+}
+
+.cortex-runtime-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 4px 0 6px;
+}
+
+.cortex-runtime-row {
+  border: 1px solid rgba(72, 82, 106, 0.46);
+  border-radius: 8px;
+  background: rgba(18, 22, 28, 0.82);
+  padding: 7px 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.cortex-runtime-row strong {
+  color: rgba(226, 233, 244, 0.95);
+  font-size: 0.78rem;
+}
+
+.cortex-runtime-row span {
+  color: rgba(194, 202, 214, 0.76);
+  font-size: 0.7rem;
+}
+
+.cortex-runtime-muted {
+  color: rgba(178, 189, 204, 0.7);
+  font-size: 0.78rem;
+}
+
+.cortex-runtime-lock {
+  border: 1px solid rgba(126, 115, 174, 0.46);
+  border-radius: 999px;
+  padding: 2px 8px;
+  color: rgba(188, 196, 233, 0.9);
+}
+
+.cortex-runtime-chip {
+  border: 1px solid rgba(87, 104, 141, 0.48);
+  border-radius: 999px;
+  padding: 2px 8px;
+  background: rgba(20, 25, 33, 0.84);
+  font-size: 0.66rem;
+  color: rgba(196, 210, 233, 0.92);
+}
+
+.cortex-provider-meta,
+.cortex-bridge-meta {
+  font-size: 0.68rem;
+  color: rgba(168, 180, 198, 0.72);
+}
+
+.cortex-bridge-matrix {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cortex-bridge-category-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cortex-bridge-category {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.64rem;
+  color: rgba(168, 192, 226, 0.78);
+}
+
+.cortex-bridge-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.cortex-bridge-card {
+  border: 1px solid rgba(84, 99, 132, 0.42);
+  border-radius: 9px;
+  background: rgba(15, 19, 27, 0.84);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cortex-bridge-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cortex-bridge-status strong {
+  font-size: 0.76rem;
+  color: rgba(225, 233, 245, 0.94);
+}
+
+.cortex-bridge-readiness {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.68rem;
+  color: rgba(180, 194, 216, 0.82);
+}
+
+.cortex-bridge-progress {
+  height: 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(84, 99, 132, 0.4);
+  background: rgba(21, 27, 36, 0.94);
+  overflow: hidden;
+}
+
+.cortex-bridge-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(98, 122, 177, 0.72), rgba(84, 182, 206, 0.84));
+}
+
+.cortex-bridge-blocked,
+.cortex-bridge-path {
+  margin: 0;
+  font-size: 0.69rem;
+  color: rgba(190, 202, 222, 0.84);
+}
+
+.cortex-provider-matrix {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cortex-provider-category-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cortex-provider-category {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.64rem;
+  color: rgba(171, 197, 232, 0.78);
+}
+
+.cortex-provider-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.cortex-provider-card {
+  border: 1px solid rgba(82, 100, 132, 0.42);
+  border-radius: 9px;
+  background: rgba(14, 19, 27, 0.86);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cortex-provider-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cortex-provider-status strong {
+  font-size: 0.76rem;
+  color: rgba(226, 234, 245, 0.95);
+}
+
+.cortex-provider-readiness {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.68rem;
+  color: rgba(181, 196, 217, 0.84);
+}
+
+.cortex-provider-progress {
+  height: 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(81, 98, 130, 0.42);
+  background: rgba(20, 26, 36, 0.95);
+  overflow: hidden;
+}
+
+.cortex-provider-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(103, 125, 176, 0.72), rgba(96, 190, 212, 0.84));
+}
+
+.cortex-provider-capabilities {
+  margin: 0;
+  font-size: 0.69rem;
+  color: rgba(187, 200, 220, 0.84);
+}
+
+.cortex-provider-blocked,
+.cortex-provider-path {
+  margin: 0;
+  font-size: 0.69rem;
+  color: rgba(191, 203, 223, 0.84);
+}
+
+.cortex-activation-gate {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cortex-activation-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.cortex-activation-card,
+.cortex-activation-request {
+  border: 1px solid rgba(89, 104, 138, 0.42);
+  border-radius: 9px;
+  background: rgba(16, 21, 30, 0.85);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cortex-activation-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cortex-activation-btn {
+  border: 1px solid rgba(107, 124, 162, 0.52);
+  border-radius: 8px;
+  background: rgba(20, 25, 36, 0.82);
+  color: rgba(206, 218, 238, 0.92);
+  padding: 5px 9px;
+  font-size: 0.68rem;
+}
+
+.cortex-activation-denied,
+.cortex-containment-lock,
+.cortex-operator-review,
+.cortex-activation-pending {
+  border: 1px solid rgba(118, 130, 166, 0.48);
+  border-radius: 999px;
+  padding: 2px 7px;
+  font-size: 0.62rem;
+  color: rgba(193, 207, 233, 0.92);
+}
+
+.cortex-execution-readiness {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cortex-execution-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.cortex-execution-card,
+.cortex-execution-queue,
+.cortex-execution-request {
+  border: 1px solid rgba(88, 104, 138, 0.42);
+  border-radius: 9px;
+  background: linear-gradient(180deg, rgba(15, 20, 29, 0.88), rgba(11, 15, 22, 0.9));
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cortex-execution-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cortex-execution-status strong {
+  color: rgba(226, 234, 245, 0.95);
+  font-size: 0.76rem;
+}
+
+.cortex-local-only-chip,
+.cortex-sandbox-warning,
+.cortex-permission-denied {
+  border-radius: 999px;
+  padding: 2px 7px;
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  color: rgba(205, 217, 238, 0.92);
+}
+
+.cortex-local-only-chip {
+  border: 1px solid rgba(101, 127, 177, 0.52);
+  background: rgba(20, 30, 45, 0.78);
+}
+
+.cortex-sandbox-warning {
+  border: 1px solid rgba(178, 137, 76, 0.46);
+  background: rgba(72, 50, 24, 0.32);
+  color: rgba(231, 205, 158, 0.9);
+}
+
+.cortex-permission-denied {
+  border: 1px solid rgba(124, 115, 164, 0.48);
+  background: rgba(38, 31, 55, 0.42);
+}
+
+.cortex-event-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cortex-event-status-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.cortex-event-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.cortex-event-filter-chip,
+.cortex-event-clear-btn {
+  border: 1px solid rgba(105, 121, 158, 0.5);
+  border-radius: 999px;
+  background: rgba(18, 24, 34, 0.78);
+  color: rgba(198, 212, 236, 0.92);
+  padding: 4px 9px;
+  font-size: 0.64rem;
+  text-transform: uppercase;
+}
+
+.cortex-event-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cortex-event-row {
+  border: 1px solid rgba(85, 99, 131, 0.42);
+  border-radius: 9px;
+  background: rgba(14, 19, 27, 0.86);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cortex-event-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cortex-event-time,
+.cortex-event-severity,
+.cortex-event-type,
+.cortex-event-description {
+  font-size: 0.69rem;
+  color: rgba(186, 201, 223, 0.86);
+  margin: 0;
+}
+
+.cortex-dock-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cortex-dock-card {
+  border: 1px solid rgba(84, 99, 132, 0.4);
+  border-radius: 8px;
+  background: rgba(14, 19, 27, 0.86);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cortex-dock-title {
+  margin: 0;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgba(205, 218, 238, 0.92);
+}
+
+.cortex-dock-meta {
+  margin: 0;
+  font-size: 0.68rem;
+  color: rgba(178, 192, 216, 0.84);
+}
+
+.cortex-command-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: start center;
+  padding-top: 12vh;
+  background: rgba(5, 8, 12, 0.52);
+}
+
+.cortex-command-palette {
+  width: min(420px, calc(100vw - 32px));
+  border: 1px solid rgba(92, 108, 145, 0.5);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(18, 22, 31, 0.98), rgba(10, 13, 19, 0.98));
+  box-shadow: 0 20px 46px rgba(0, 0, 0, 0.58);
+  padding: 10px;
+}
+
+.cortex-command-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(86, 102, 135, 0.46);
+  border-radius: 8px;
+  background: rgba(9, 12, 18, 0.92);
+  color: rgba(225, 232, 243, 0.95);
+  padding: 8px 9px;
+  font-size: 0.78rem;
+}
+
+.cortex-command-list {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.cortex-command-item {
+  border: 1px solid rgba(82, 98, 130, 0.4);
+  border-radius: 8px;
+  background: rgba(17, 22, 31, 0.82);
+  color: rgba(199, 213, 236, 0.92);
+  padding: 6px 8px;
+  font-size: 0.68rem;
+  text-align: left;
+}
+
+.cortex-operational-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cortex-operational-strip,
+.cortex-system-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.cortex-operational-chip {
+  border: 1px solid rgba(106, 124, 163, 0.52);
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 0.64rem;
+  color: rgba(198, 213, 237, 0.92);
+  background: rgba(18, 24, 34, 0.76);
+}
+
+.cortex-command-readiness {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.cortex-runtime-posture {
+  margin: 0;
+  font-size: 0.7rem;
+  color: rgba(189, 202, 223, 0.88);
+}
+
+.cortex-command-bar {
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(22, 28, 39, 0.95);
+  border: 1px solid rgba(84, 99, 130, 0.42);
+  overflow: hidden;
+}
+
+.cortex-command-fill {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(101, 124, 178, 0.76), rgba(96, 190, 212, 0.84));
+}
+
+.cortex-capability-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.cortex-capability-row {
+  margin: 0;
+  border: 1px solid rgba(85, 100, 132, 0.38);
+  border-radius: 8px;
+  background: rgba(14, 19, 27, 0.84);
+  padding: 6px 8px;
+  font-size: 0.7rem;
+  color: rgba(190, 203, 224, 0.88);
+}
+
+.cortex-capability-blocked {
+  border-color: rgba(122, 115, 164, 0.44);
+  color: rgba(186, 194, 224, 0.9);
+}
+
+/* Cortex workspace rescue: give the operational content room before the dock gets any. */
+.valhalla-chamber-overlay-scroll > .valhalla-chamber-shell-cortex {
+  width: min(96vw, 1500px);
+  max-width: 1500px;
+}
+
+.valhalla-chamber-shell-cortex .valhalla-chamber-body {
+  padding: 14px;
+}
+
+.cortex-chamber {
+  width: 100%;
+  max-width: 1500px;
+  box-sizing: border-box;
+  padding: 12px;
+}
+
+.cortex-chamber-scroll {
+  padding-right: 0.2rem;
+}
+
+.cortex-chamber-sticky-header {
+  padding: 8px 10px;
+}
+
+.cortex-contained-badge {
+  margin-top: 6px;
+  padding: 3px 7px;
+}
+
+.cortex-workspace {
+  grid-template-columns: 180px minmax(680px, 1fr) 260px;
+  gap: 1rem;
+}
+
+.cortex-workspace-dock-collapsed {
+  grid-template-columns: 180px minmax(680px, 1fr);
+}
+
+.cortex-workspace-main {
+  min-width: 0;
+}
+
+.cortex-workspace-nav,
+.cortex-dock-pane {
+  top: 8px;
+}
+
+.cortex-nav-rail {
+  padding: 7px;
+  gap: 6px;
+}
+
+.cortex-nav-status-strip {
+  gap: 4px;
+}
+
+.cortex-nav-status-pill {
+  padding: 2px 6px;
+  font-size: 0.58rem;
+}
+
+.cortex-dock-toggle {
+  border: 1px solid rgba(107, 124, 162, 0.44);
+  border-radius: 8px;
+  background: rgba(16, 21, 30, 0.78);
+  color: rgba(197, 212, 236, 0.88);
+  padding: 5px 8px;
+  font-size: 0.64rem;
+}
+
+.cortex-section-anchor {
+  scroll-margin-top: 120px;
+}
+
+.cortex-section-focused {
+  outline-color: rgba(92, 154, 188, 0.44);
+  outline-offset: 3px;
+  background: linear-gradient(180deg, rgba(84, 182, 206, 0.035), transparent 120px);
+}
+
+.cortex-focus-pulse {
+  animation: cortexFocusPulse 760ms ease-out 1;
+}
+
+@keyframes cortexFocusPulse {
+  from { box-shadow: 0 0 0 rgba(84, 182, 206, 0); }
+  40% { box-shadow: 0 0 0 3px rgba(84, 182, 206, 0.11), 0 0 24px rgba(84, 182, 206, 0.1); }
+  to { box-shadow: 0 0 0 rgba(84, 182, 206, 0); }
+}
+
+.cortex-status-grid {
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+
+.cortex-diagnostics-grid,
+.cortex-runtime-summary-grid {
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+.cortex-bridge-grid,
+.cortex-provider-grid,
+.cortex-activation-grid,
+.cortex-execution-grid {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 10px;
+}
+
+.cortex-bridge-card,
+.cortex-provider-card,
+.cortex-activation-card,
+.cortex-activation-request,
+.cortex-execution-card,
+.cortex-execution-queue,
+.cortex-execution-request,
+.cortex-event-row {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.cortex-provider-progress,
+.cortex-bridge-progress,
+.cortex-readiness-bar,
+.cortex-command-bar {
+  min-width: 120px;
+}
+
+.cortex-diagnostics-strip,
+.cortex-operational-strip,
+.cortex-system-counts,
+.cortex-event-status-strip,
+.cortex-event-filter-bar,
+.cortex-dock-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.cortex-dock-pane {
+  gap: 7px;
+}
+
+.cortex-dock-card {
+  padding: 8px;
+  gap: 7px;
+}
+
+.cortex-dock-meta {
+  line-height: 1.4;
+}
+
+.cortex-dock-chip {
+  border: 1px solid rgba(95, 113, 150, 0.42);
+  border-radius: 999px;
+  background: rgba(18, 24, 34, 0.72);
+  color: rgba(196, 210, 234, 0.9);
+  padding: 2px 7px;
+  font-size: 0.6rem;
+}
+
+.cortex-command-palette {
+  width: min(680px, calc(100vw - 36px));
+}
+
+@media (max-width: 1250px) {
+  .cortex-workspace,
+  .cortex-workspace-dock-collapsed {
+    grid-template-columns: 170px minmax(0, 1fr);
+  }
+
+  .cortex-dock-pane {
+    display: none;
+  }
+
+  .cortex-bridge-grid,
+  .cortex-provider-grid,
+  .cortex-activation-grid,
+  .cortex-execution-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+@media (max-width: 850px) {
+  .valhalla-chamber-overlay-scroll {
+    padding: 1rem 0.75rem;
+  }
+
+  .cortex-workspace,
+  .cortex-workspace-dock-collapsed {
+    grid-template-columns: 1fr;
+  }
+
+  .cortex-workspace-nav,
+  .cortex-dock-pane {
+    position: static;
+  }
+
+  .cortex-nav-rail {
+    position: sticky;
+    top: 0;
+  }
+
+  .cortex-nav-list {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 2px;
+  }
+
+  .cortex-bridge-grid,
+  .cortex-provider-grid,
+  .cortex-activation-grid,
+  .cortex-execution-grid,
+  .cortex-diagnostics-grid,
+  .cortex-runtime-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Cortex proportion refinement: compact chrome, dominant workspace, quieter hierarchy. */
+.valhalla-chamber-overlay-scroll > .valhalla-chamber-shell-cortex {
+  width: min(97vw, 1540px);
+  max-width: 1540px;
+}
+
+.valhalla-chamber-shell-cortex .valhalla-chamber-body {
+  padding: 10px 12px 12px;
+  gap: 8px;
+}
+
+.valhalla-chamber-shell-cortex .valhalla-chamber-header {
+  padding: 9px 12px;
+}
+
+.cortex-chamber {
+  margin-top: 8px;
+  padding: 10px;
+  gap: 9px;
+  border-color: rgba(105, 118, 152, 0.24);
+  box-shadow: inset 0 0 0 1px rgba(115, 132, 186, 0.07), 0 12px 26px rgba(0, 0, 0, 0.28);
+}
+
+.cortex-chamber-scroll {
+  gap: 9px;
+  padding-right: 2px;
+}
+
+.cortex-chamber-sticky-header {
+  padding: 7px 9px;
+  border-color: rgba(93, 105, 136, 0.18);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.22);
+}
+
+.cortex-chamber-header h3 {
+  font-size: 0.86rem;
+  letter-spacing: 0.03em;
+}
+
+.cortex-chamber-header p {
+  margin-top: 2px;
+  font-size: 0.72rem;
+}
+
+.cortex-contained-badge {
+  margin-top: 5px;
+  padding: 2px 7px;
+  font-size: 0.58rem;
+  border-color: rgba(124, 116, 178, 0.32);
+}
+
+.cortex-workspace {
+  grid-template-columns: 170px minmax(760px, 1fr) 220px;
+  gap: 0.9rem;
+}
+
+.cortex-workspace-dock-collapsed {
+  grid-template-columns: 170px minmax(760px, 1fr);
+}
+
+.cortex-workspace-main {
+  width: 100%;
+  max-width: 1180px;
+  min-width: 0;
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding-inline: 0.75rem;
+  gap: 0.75rem;
+}
+
+.cortex-workspace-main-inner {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.cortex-nav-rail {
+  width: 170px;
+  box-sizing: border-box;
+  padding: 0.65rem;
+  gap: 6px;
+  border-color: rgba(82, 97, 130, 0.24);
+  box-shadow: none;
+}
+
+.cortex-nav-header {
+  font-size: 0.58rem;
+  letter-spacing: 0.11em;
+}
+
+.cortex-nav-status-strip {
+  gap: 3px;
+}
+
+.cortex-nav-status-pill {
+  padding: 1px 5px;
+  font-size: 0.54rem;
+  border-color: rgba(99, 118, 156, 0.32);
+  background: rgba(16, 21, 30, 0.62);
+}
+
+.cortex-nav-list {
+  gap: 4px;
+}
+
+.cortex-nav-item {
+  padding: 3px 7px;
+  font-size: 0.59rem;
+  border-radius: 7px;
+  border-color: rgba(86, 102, 135, 0.3);
+  background: rgba(17, 22, 31, 0.68);
+}
+
+.cortex-nav-item-active {
+  border-color: rgba(109, 136, 176, 0.5);
+  background: rgba(25, 33, 47, 0.78);
+  box-shadow: inset 2px 0 0 rgba(84, 182, 206, 0.38);
+}
+
+.cortex-nav-actions {
+  margin-top: 4px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(93, 105, 136, 0.18);
+}
+
+.cortex-nav-actions .cortex-nav-item {
+  padding: 2px 6px;
+  font-size: 0.55rem;
+  color: rgba(176, 190, 214, 0.78);
+  background: rgba(12, 16, 23, 0.56);
+}
+
+.cortex-command-trigger,
+.cortex-dock-toggle {
+  padding: 4px 7px;
+  font-size: 0.6rem;
+  border-color: rgba(107, 124, 162, 0.34);
+  background: rgba(16, 21, 30, 0.68);
+}
+
+.cortex-dock-pane {
+  width: 220px;
+  max-width: 220px;
+  gap: 6px;
+}
+
+.cortex-dock-card {
+  padding: 7px;
+  gap: 5px;
+  border-color: rgba(84, 99, 132, 0.28);
+  background: rgba(12, 17, 25, 0.76);
+}
+
+.cortex-dock-title {
+  font-size: 0.6rem;
+  letter-spacing: 0.09em;
+}
+
+.cortex-dock-meta {
+  font-size: 0.63rem;
+  color: rgba(170, 185, 210, 0.76);
+}
+
+.cortex-dock-chip {
+  padding: 1px 6px;
+  font-size: 0.55rem;
+  border-color: rgba(95, 113, 150, 0.3);
+}
+
+.cortex-section {
+  border-color: rgba(76, 88, 117, 0.24);
+  background: linear-gradient(180deg, rgba(17, 20, 27, 0.74), rgba(9, 12, 17, 0.84));
+}
+
+.cortex-section-header {
+  padding: 5px;
+}
+
+.cortex-section-toggle {
+  padding: 7px 9px;
+  border-color: rgba(74, 88, 116, 0.32);
+  background: rgba(18, 23, 32, 0.68);
+  font-size: 0.65rem;
+}
+
+.cortex-section-body {
+  padding: 0 8px 8px;
+  gap: 6px;
+}
+
+.cortex-chip,
+.cortex-status-pill,
+.cortex-runtime-chip,
+.cortex-operational-chip,
+.cortex-local-only-chip,
+.cortex-sandbox-warning,
+.cortex-permission-denied,
+.cortex-activation-denied,
+.cortex-containment-lock,
+.cortex-operator-review,
+.cortex-activation-pending {
+  border-color: rgba(105, 124, 163, 0.34);
+  box-shadow: none;
+}
+
+.cortex-status-grid,
+.cortex-diagnostics-grid,
+.cortex-runtime-summary-grid {
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 8px;
+}
+
+.cortex-bridge-grid,
+.cortex-provider-grid,
+.cortex-activation-grid,
+.cortex-execution-grid {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 8px;
+}
+
+.cortex-status-card,
+.cortex-runtime-card,
+.cortex-diagnostics-card,
+.cortex-bridge-card,
+.cortex-provider-card,
+.cortex-activation-card,
+.cortex-activation-request,
+.cortex-execution-card,
+.cortex-execution-queue,
+.cortex-execution-request,
+.cortex-event-row,
+.cortex-capability-row,
+.cortex-warning-row,
+.cortex-alert-row {
+  border-color: rgba(82, 98, 130, 0.3);
+  background-color: rgba(13, 18, 26, 0.78);
+}
+
+.cortex-status-card,
+.cortex-runtime-card,
+.cortex-diagnostics-card {
+  padding: 8px;
+}
+
+.cortex-bridge-card,
+.cortex-provider-card,
+.cortex-activation-card,
+.cortex-activation-request,
+.cortex-execution-card,
+.cortex-execution-queue,
+.cortex-execution-request {
+  padding: 8px;
+  gap: 6px;
+}
+
+.cortex-operational-summary,
+.cortex-command-readiness,
+.cortex-capability-list {
+  gap: 6px;
+}
+
+.cortex-operational-strip,
+.cortex-system-counts {
+  gap: 5px;
+}
+
+.cortex-operational-chip,
+.cortex-status-pill {
+  padding: 2px 7px;
+}
+
+.cortex-provider-status strong,
+.cortex-bridge-status strong,
+.cortex-execution-status strong,
+.cortex-activation-status strong {
+  font-size: 0.74rem;
+}
+
+.cortex-runtime-muted,
+.cortex-provider-meta,
+.cortex-bridge-meta,
+.cortex-provider-blocked,
+.cortex-provider-path,
+.cortex-bridge-blocked,
+.cortex-bridge-path,
+.cortex-provider-capabilities {
+  line-height: 1.42;
+}
+
+.cortex-section-anchor {
+  scroll-margin-top: 104px;
+}
+
+.cortex-section-focused {
+  outline: 1px solid rgba(84, 182, 206, 0.28);
+  outline-offset: 2px;
+  background: linear-gradient(180deg, rgba(84, 182, 206, 0.025), transparent 96px);
+}
+
+.cortex-command-palette {
+  width: min(680px, calc(100vw - 42px));
+  padding: 12px;
+}
+
+@media (max-width: 1380px) {
+  .cortex-workspace,
+  .cortex-workspace-dock-collapsed {
+    grid-template-columns: 165px minmax(0, 1fr);
+  }
+
+  .cortex-dock-pane {
+    display: none;
+  }
+}
+
+@media (max-width: 1250px) {
+  .cortex-workspace,
+  .cortex-workspace-dock-collapsed {
+    grid-template-columns: 160px minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 850px) {
+  .cortex-workspace-main {
+    max-width: none;
+    padding-inline: 0;
+  }
+
+  .cortex-nav-rail {
+    width: 100%;
+  }
+
+  .cortex-nav-actions {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .cortex-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .cortex-workspace-nav,
+  .cortex-dock-pane {
+    position: static;
+  }
+
+  .cortex-diagnostics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cortex-runtime-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cortex-bridge-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cortex-provider-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cortex-activation-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cortex-execution-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cortex-nav-rail {
+    position: sticky;
+    top: 0;
+  }
+
+  .cortex-nav-list {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 2px;
+  }
+}
+
+/* Cortex lane correction: keep main content inside its own grid column. */
+.cortex-workspace {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr) 220px;
+  gap: 1rem;
+  align-items: start;
+  width: 100%;
+  overflow: visible;
+}
+
+.cortex-workspace-dock-collapsed {
+  grid-template-columns: 190px minmax(0, 1fr);
+}
+
+.cortex-workspace-nav {
+  grid-column: 1;
+  width: 190px;
+  min-width: 190px;
+  max-width: 190px;
+  align-self: start;
+}
+
+.cortex-nav-rail {
+  width: 190px;
+  max-width: 190px;
+}
+
+.cortex-workspace-main {
+  grid-column: 2;
+  min-width: 0;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding-left: 0.75rem;
+  padding-right: 0;
+  border-left: 1px solid rgba(24, 202, 230, 0.12);
+  overflow: visible;
+}
+
+.cortex-workspace-main-inner {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0;
+  padding: 0;
+}
+
+.cortex-layout-zone,
+.cortex-section-anchor {
+  width: 100%;
+  min-width: 0;
+  overflow: visible;
+}
+
+.cortex-dock-pane {
+  grid-column: 3;
+  width: 220px;
+  max-width: 220px;
+}
+
+@media (min-width: 1251px) {
+  .cortex-dock-pane {
+    display: flex;
+  }
+}
+
+@media (max-width: 1250px) {
+  .cortex-workspace,
+  .cortex-workspace-dock-collapsed {
+    grid-template-columns: 190px minmax(0, 1fr);
+  }
+
+  .cortex-workspace-nav {
+    grid-column: 1;
+    width: 190px;
+    min-width: 190px;
+    max-width: 190px;
+  }
+
+  .cortex-nav-rail {
+    width: 190px;
+    max-width: 190px;
+  }
+
+  .cortex-workspace-main {
+    grid-column: 2;
+  }
+
+  .cortex-dock-pane {
+    display: none;
+  }
+}
+
+@media (max-width: 850px) {
+  .cortex-workspace,
+  .cortex-workspace-dock-collapsed {
+    grid-template-columns: 1fr;
+  }
+
+  .cortex-workspace-nav,
+  .cortex-workspace-main {
+    grid-column: 1;
+  }
+
+  .cortex-workspace-nav,
+  .cortex-nav-rail {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .cortex-workspace-main {
+    padding-left: 0;
+    border-left: 0;
+  }
+}
+
+/* Cortex registry rows: cleaner provider/bridge hierarchy, less raw dump. */
+.cortex-registry-row {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.25fr) minmax(180px, 0.9fr) auto;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 9px 10px;
+}
+
+.cortex-registry-identity {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cortex-registry-identity strong {
+  color: rgba(232, 238, 247, 0.96);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.cortex-registry-identity span {
+  color: rgba(154, 169, 196, 0.62);
+  font-size: 0.62rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.cortex-registry-meta {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: rgba(184, 198, 220, 0.76);
+  font-size: 0.66rem;
+  line-height: 1.35;
+}
+
+.cortex-registry-meta span:last-child {
+  color: rgba(154, 169, 196, 0.64);
+}
+
+.cortex-registry-chips {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.cortex-registry-chips .cortex-runtime-chip {
+  padding: 2px 7px;
+  font-size: 0.58rem;
+  border-color: rgba(91, 114, 150, 0.28);
+  background: rgba(15, 20, 29, 0.58);
+  color: rgba(188, 203, 226, 0.82);
+}
+
+.cortex-execution-results {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cortex-execution-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.cortex-execution-result {
+  border: 1px solid rgba(82, 98, 130, 0.3);
+  border-radius: 9px;
+  background: linear-gradient(180deg, rgba(14, 19, 27, 0.82), rgba(9, 13, 19, 0.88));
+  padding: 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cortex-execution-output {
+  border: 1px solid rgba(84, 182, 206, 0.16);
+  border-radius: 8px;
+  background: rgba(6, 10, 15, 0.68);
+  color: rgba(220, 230, 241, 0.9);
+  padding: 8px;
+  line-height: 1.45;
+  font-size: 0.72rem;
+  white-space: pre-wrap;
+}
+
+.cortex-execution-approved,
+.cortex-execution-running,
+.cortex-execution-completed,
+.cortex-execution-blocked,
+.cortex-execution-failed,
+.cortex-execution-denied {
+  border-radius: 999px;
+  padding: 2px 7px;
+  font-size: 0.58rem;
+  border: 1px solid rgba(105, 124, 163, 0.34);
+  color: rgba(205, 217, 238, 0.9);
+  background: rgba(15, 20, 29, 0.62);
+}
+
+.cortex-execution-approved,
+.cortex-execution-running {
+  border-color: rgba(84, 182, 206, 0.28);
+}
+
+.cortex-execution-completed {
+  border-color: rgba(120, 178, 158, 0.32);
+  color: rgba(202, 232, 221, 0.9);
+}
+
+.cortex-execution-blocked,
+.cortex-execution-failed,
+.cortex-execution-denied {
+  border-color: rgba(178, 137, 76, 0.36);
+  color: rgba(231, 205, 158, 0.9);
+}
+
+@media (max-width: 980px) {
+  .cortex-registry-row {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 6px;
+  }
+
+  .cortex-registry-chips {
+    justify-content: flex-start;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ARC B — FORGE WORLD SYSTEM STATE REACTIONS
+   ═══════════════════════════════════════════ */
+
+/* STATE TRANSITION SMOOTHING */
+.forge-canvas-panel .forge-embers,
+.forge-canvas-panel .forge-haze,
+.forge-canvas-panel .forge-smoke,
+.forge-canvas-panel .ambient-flare,
+.forge-canvas-panel .ambient-ripple,
+.forge-canvas-panel .ambient-resonance-wave {
+  transition: opacity 0.6s ease, filter 0.6s ease, background 0.6s ease;
+}
+
+/* IDLE */
+.forge-canvas-panel.forge-system-idle .forge-embers {
+  opacity: 0.35;
+  animation-duration: 6s;
+}
+.forge-canvas-panel.forge-system-idle .forge-haze {
+  opacity: 0.4;
+  transition: opacity 1.2s ease, filter 1.2s ease, background 1.2s ease;
+}
+.eco-state-idle .eco-card,
+.eco-state-idle .drone-body,
+.eco-state-idle .wolf-face,
+.eco-state-idle .xpod-cockpit {
+  animation: none;
+}
+
+/* PROCESSING */
+.forge-canvas-panel.forge-system-processing .forge-embers {
+  opacity: 0.85;
+  animation-duration: 1.8s;
+  filter: brightness(1.4);
+}
+.forge-canvas-panel.forge-system-processing .forge-haze {
+  background: rgba(255, 140, 0, 0.10);
+  opacity: 0.75;
+}
+.forge-canvas-panel.forge-system-processing .forge-smoke {
+  animation-duration: 2.4s;
+  opacity: 0.6;
+}
+.forge-canvas-panel.forge-system-processing .ambient-flare {
+  animation-duration: 1.2s;
+  opacity: 0.6;
+}
+
+/* WARNING */
+.forge-canvas-panel.forge-system-warning .forge-embers {
+  animation-duration: 2.8s;
+  filter: hue-rotate(-20deg) brightness(1.2);
+}
+.forge-canvas-panel.forge-system-warning .forge-haze {
+  background: rgba(220, 160, 0, 0.10);
+}
+.forge-canvas-panel.forge-system-warning .ambient-ripple {
+  animation-duration: 1.8s;
+}
+
+/* ERROR */
+.forge-canvas-panel.forge-system-error .forge-embers {
+  animation-duration: 0.9s;
+  filter: hue-rotate(-60deg) brightness(1.6) saturate(1.8);
+}
+.forge-canvas-panel.forge-system-error .forge-haze {
+  background: rgba(220, 40, 40, 0.12);
+  opacity: 0.8;
+}
+.forge-canvas-panel.forge-system-error .forge-smoke {
+  animation-duration: 1.4s;
+  opacity: 0.75;
+  filter: hue-rotate(-40deg);
+}
+.forge-canvas-panel.forge-system-error .ambient-flare {
+  animation-duration: 0.7s;
+  opacity: 0.8;
+}
+.forge-canvas-panel.forge-system-error .ambient-resonance-wave {
+  animation-duration: 0.8s;
+  opacity: 0.7;
+}
+
+/* FORGE NODE STATE REACTIONS */
+.forge-canvas-panel.forge-system-error .forge-node.boot-cortex {
+  filter: drop-shadow(0 0 12px rgba(220, 40, 40, 0.8));
+}
+.forge-canvas-panel.forge-system-processing .forge-node.boot-local-ai {
+  filter: drop-shadow(0 0 10px rgba(0, 200, 255, 0.7));
+}
+.forge-canvas-panel.forge-system-warning .forge-node.boot-companion {
+  filter: drop-shadow(0 0 8px rgba(220, 160, 0, 0.7));
+}
+.forge-canvas-panel.forge-system-error .forge-node:not(.boot-cortex):not(.boot-companion) {
+  opacity: 0.6;
+}
+
+/* ECOSYSTEM CLUSTER (header nodes) */
+.eco-state-processing .drone-wing,
+.eco-state-processing .drone-facet,
+.eco-state-processing .drone-light {
+  animation-duration: 0.3s !important;
+}
+.eco-state-error .drone-body {
+  filter: drop-shadow(0 0 8px rgba(220, 40, 40, 0.9));
+}
+.eco-state-error .wolf-ear,
+.eco-state-error .wolf-face,
+.eco-state-error .wolf-eye {
+  animation: wolf-error-pulse 0.8s ease-in-out infinite alternate;
+}
+@keyframes wolf-error-pulse {
+  from { filter: drop-shadow(0 0 6px rgba(220, 40, 40, 0.6)); }
+  to   { filter: drop-shadow(0 0 14px rgba(220, 40, 40, 1.0)); }
+}
+.eco-state-warning .wolf-ear,
+.eco-state-warning .wolf-face,
+.eco-state-warning .wolf-eye {
+  filter: drop-shadow(0 0 8px rgba(220, 160, 0, 0.8));
+}
+.eco-state-processing .xpod-ring {
+  animation-duration: 1.2s !important;
+}
+.eco-state-processing .xpod-cockpit {
+  filter: drop-shadow(0 0 10px rgba(0, 200, 255, 0.8));
+}
+.eco-state-error .xpod-cockpit {
+  opacity: 0.4;
+}
+
+/* ═══════════════════════════════════════════
+   ARC B — FORGE STATE PILLS (Cortex chamber)
+   ═══════════════════════════════════════════ */
+.forge-state-idle       { background: rgba(0, 200, 100, 0.15); color: #00c864; }
+.forge-state-processing { background: rgba(0, 180, 255, 0.15); color: #00b4ff; }
+.forge-state-warning    { background: rgba(220, 160, 0, 0.15);  color: #dca000; }
+.forge-state-error      { background: rgba(220, 40, 40, 0.15);  color: #dc2828; }
+
+.cortex-chamber-header {
+  transition: border-color 0.6s ease, box-shadow 0.6s ease;
+}
+
+.cortex-chamber-header.state-error {
+  border-color: rgba(220, 40, 40, 0.6);
+}
+
+.cortex-chamber-header.state-warning {
+  border-color: rgba(220, 160, 0, 0.6);
+}
+
+.cortex-chamber-header.state-processing {
+  border-color: rgba(0, 180, 255, 0.6);
+}
+
+/* ── Spec Intake ────────────────────────────────────────── */
+
+.cortex-spec-intake-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cortex-spec-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(0, 242, 254, 0.25);
+  border-radius: 4px;
+  color: #e0f7ff;
+  font-family: "Consolas", "Menlo", monospace;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  resize: vertical;
+  transition: border-color 0.15s ease;
+}
+
+.cortex-spec-input:focus {
+  outline: none;
+  border-color: rgba(0, 242, 254, 0.65);
+  box-shadow: 0 0 8px rgba(0, 242, 254, 0.12);
+}
+
+.cortex-spec-input:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.cortex-spec-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }

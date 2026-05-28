@@ -2,7 +2,7 @@
 import path from "node:path";
 import fs from "node:fs";
 import { spawn } from "node:child_process";
-import { appendDiagnosticLog, defaultLicenseState, defaultReleaseSettings, ensureUserDataReady, getReleaseInfo, showSafeFailureDialog, type LicenseState, type ReleaseSettings } from "./release";
+import { appendDiagnosticLog, clearDiagnosticLogs, defaultLicenseState, defaultReleaseSettings, ensureUserDataReady, getReleaseInfo, showSafeFailureDialog, type LicenseState, type ReleaseSettings } from "./release";
 import { validateCommandRequest } from "../lib/commandSafety";
 
 type FeatureStatus = "todo" | "in progress" | "done";
@@ -14,14 +14,47 @@ type FeatureItem = { id: string; name: string; status: FeatureStatus };
 type CommandHistoryItem = { id: string; command: string; timestamp: string; success: boolean; outputPreview: string };
 type ArchitectureNotes = { notes: string; importantFiles: string; doNotRewriteAreas: string; knownFragileSystems: string };
 type BuildIntelligence = { buildSuccessful: boolean; buildFailed: boolean; kotlinCompileErrors: number; typescriptErrors: number; gradleErrors: number; missingDependencyErrors: number };
-type Project = { id: string; name: string; path: string; projectType: ProjectType; appGoal: string; currentPhase: string; features: FeatureItem[]; memoryNotes: string; noRewriteRules: string; buildLogs: string; buildStatus?: BuildStatus; commandHistory: CommandHistoryItem[]; snapshot?: ProjectSnapshot; architectureNotes: ArchitectureNotes; buildIntel?: BuildIntelligence };
+type Project = { id: string; name: string; path: string; projectType: ProjectType; appGoal: string; currentPhase: string; features: FeatureItem[]; memoryNotes: string; noRewriteRules: string; buildLogs: string; buildCommand?: string; buildCommandPreset?: string; buildCommandCustom?: string; lastBuildCommand?: string; buildStatus?: BuildStatus; commandHistory: CommandHistoryItem[]; snapshot?: ProjectSnapshot; architectureNotes: ArchitectureNotes; buildIntel?: BuildIntelligence };
 type ApprovalItem = { id: string; projectId: string; kind: "prompt" | "command"; title: string; payload: string; status: "pending" | "approved" | "sent" | "completed" | "failed" | "rejected"; createdAt: string; approvedAt?: string; sentAt?: string; completedAt?: string; failedAt?: string };
-type AppState = { projects: Project[]; approvals: ApprovalItem[]; releaseSettings?: ReleaseSettings; license?: LicenseState; settings: { openAiApiKeyPlaceholder: string; ollamaPlaceholder: string; vsCodeExecutable: string; androidStudioExecutable: string; projectRootPath: string; gradleWrapperPath: string; terminalPath: string } };
+type AppState = { projects: Project[]; approvals: ApprovalItem[]; releaseSettings?: ReleaseSettings; license?: LicenseState; settings: { openAiApiKeyPlaceholder: string; ollamaPlaceholder: string; vsCodeExecutable: string; androidStudioExecutable: string; projectRootPath: string; gradleWrapperPath: string; terminalPath: string; lastSelectedProjectId?: string } };
 type CommandRequest = { projectId: string; command: string; args: string[]; cwd?: string };
-type ProviderStatus = "connected" | "disabled" | "placeholder" | "missing_api_key" | "unreachable" | "local_only" | "unavailable";
+type ProviderStatus = "connected" | "configured" | "not-configured" | "disconnected" | "disabled" | "placeholder" | "missing_api_key" | "unreachable" | "local_only" | "unavailable";
 type ProviderTestInput = { displayName: string; apiKey: string; baseUrl: string; modelName: string; timeout: number; localOnly: boolean; enabled: boolean; status: ProviderStatus };
 
-const defaultState: AppState = { projects: [], approvals: [], releaseSettings: defaultReleaseSettings, license: defaultLicenseState, settings: { openAiApiKeyPlaceholder: "", ollamaPlaceholder: "", vsCodeExecutable: "", androidStudioExecutable: "", projectRootPath: "", gradleWrapperPath: "", terminalPath: "" } };
+let ollamaProcess: ReturnType<typeof spawn> | null = null;
+
+const startOllama = (): { started: boolean; message: string } => {
+  if (ollamaProcess && !ollamaProcess.killed) {
+    return { started: true, message: "Ollama already running." };
+  }
+  try {
+    ollamaProcess = spawn("ollama", ["serve"], {
+      detached: false,
+      shell: true,
+      stdio: "ignore"
+    });
+    ollamaProcess.on("error", (err) => {
+      appendDiagnosticLog(`Ollama start error: ${String(err)}`);
+      ollamaProcess = null;
+    });
+    ollamaProcess.on("exit", (code) => {
+      appendDiagnosticLog(`Ollama exited with code ${String(code)}`);
+      ollamaProcess = null;
+    });
+    return { started: true, message: "Ollama serve started." };
+  } catch (err) {
+    return { started: false, message: `Failed to start Ollama: ${String(err)}` };
+  }
+};
+
+const stopOllama = (): void => {
+  if (ollamaProcess && !ollamaProcess.killed) {
+    ollamaProcess.kill();
+    ollamaProcess = null;
+  }
+};
+
+const defaultState: AppState = { projects: [], approvals: [], releaseSettings: defaultReleaseSettings, license: defaultLicenseState, settings: { openAiApiKeyPlaceholder: "", ollamaPlaceholder: "", vsCodeExecutable: "", androidStudioExecutable: "", projectRootPath: "", gradleWrapperPath: "", terminalPath: "", lastSelectedProjectId: "" } };
 let mainWindow: BrowserWindow | null = null;
 let state: AppState = defaultState;
 const getDataPath = (): string => path.join(app.getPath("userData"), "kcx-studio-companion-state.json");
@@ -51,6 +84,10 @@ const normalizeState = (candidate: Partial<AppState>): AppState => ({
     currentPhase: p.currentPhase || "Idea",
     features: Array.isArray(p.features) ? p.features : [],
     commandHistory: Array.isArray(p.commandHistory) ? p.commandHistory : [],
+    buildCommand: typeof p.buildCommand === "string" ? p.buildCommand : "",
+    buildCommandPreset: typeof p.buildCommandPreset === "string" ? p.buildCommandPreset : "custom",
+    buildCommandCustom: typeof p.buildCommandCustom === "string" ? p.buildCommandCustom : "",
+    lastBuildCommand: typeof p.lastBuildCommand === "string" ? p.lastBuildCommand : "",
     buildStatus: p.buildStatus || "Waiting Approval",
     architectureNotes: p.architectureNotes || { notes: "", importantFiles: "", doNotRewriteAreas: "", knownFragileSystems: "" }
   })) : [],
@@ -249,14 +286,20 @@ app.whenReady().then(() => {
   ipcMain.handle("state:get", () => state);
   ipcMain.handle("state:save", (_evt, nextState: AppState) => { state = normalizeState(nextState); saveState(); return state; });
   ipcMain.handle("app:releaseInfo", () => getReleaseInfo());
+  ipcMain.handle("diagnostics:clear-logs", async () => clearDiagnosticLogs());
   ipcMain.handle("cmd:run", async (evt, request: CommandRequest) => runCommand(request, evt.sender));
   ipcMain.handle("provider:test", async (_evt, provider: ProviderTestInput) => testProviderConnection(provider));
   ipcMain.handle("project:scan", (_evt, rootPath: string) => {
     console.log("[main] project:scan", rootPath);
     return scanProject(rootPath);
   });
+  ipcMain.handle("ollama:start", () => startOllama());
+  ipcMain.handle("ollama:stop", () => stopOllama());
   createWindow();
   app.on("activate", () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 });
 
-app.on("window-all-closed", () => { if (process.platform !== "darwin") app.quit(); });
+app.on("window-all-closed", () => {
+  stopOllama();
+  if (process.platform !== "darwin") app.quit();
+});
