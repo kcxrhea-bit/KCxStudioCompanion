@@ -19,7 +19,6 @@ export type CortexSystemId =
   | "dino-holo-friend"
   | "after-earth"
   | "easy-launcher"
-  | "godzilla-viewer"
   | "pc-streamer";
 
 export type CortexRuntimeState = "dormant" | "contained" | "monitoring" | "read-only" | "active";

@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ReactFlow, { Background, Controls, Edge, MiniMap, Node, NodeMouseHandler, OnMove } from "reactflow";
 import "reactflow/dist/style.css";
+import type { CortexRuntimeSnapshot } from "../../cortex/types";
 
 export type ActivityState = "dormant" | "idle" | "active" | "synchronizing" | "warning" | "locked";
 export type SystemClass = "Forge System" | "Runtime System" | "Memory System" | "AI Infrastructure" | "Device Node" | "Reactor Core" | "Protected System" | "Experimental Subsystem";
@@ -15,10 +16,76 @@ type ForgeCanvasProps = {
   operationalOverlay: boolean;
   focusMode: ValhallaFocusMode;
   systemState?: ForgeSystemState;
+  cortexSnapshot?: CortexRuntimeSnapshot;
   onSelectSystem: (system: ForgeSystemMeta | null) => void;
   onSelectRegion: (region: ForgeRegionMeta | null) => void;
   onViewportMove: (message: string) => void;
 };
+
+// Maps each system node to the bridge id or provider id that represents its live state.
+// Bridge ids take precedence (checked first); provider ids are the fallback.
+const SYSTEM_BRIDGE_MAP: Record<string, string> = {
+  companion:    "studio-companion-self",
+  valhalla:     "valhalla-runtime",
+  mode:         "messenger",
+  messenger:    "messenger",
+  "local-ai":   "kcxmodeai",     // closest proxy — local AI layer
+  "cloud-ai":   "cortex-intelligence",
+  robot:        "robot-buddy",
+  cortex:       "cortex-intelligence",
+  "godzilla-ai": "kcxmodeai",
+};
+
+const SYSTEM_PROVIDER_MAP: Record<string, string> = {
+  "local-ai":    "local-ollama-runtime",
+  "godzilla-ai": "kcxmodeai",
+  cortex:        "studio-companion-analysis",
+};
+
+function deriveActivityState(
+  systemId: string,
+  snapshot: CortexRuntimeSnapshot | undefined
+): ActivityState {
+  if (!snapshot) return "idle";
+
+  // Runtime state drives the cortex node directly
+  if (systemId === "cortex") {
+    const s = snapshot.state;
+    if (s === "active") return "active";
+    if (s === "monitoring") return "synchronizing";
+    if (s === "read-only") return "idle";
+    if (s === "dormant") return "dormant";
+    return "locked";
+  }
+
+  // Try bridge first
+  const bridgeId = SYSTEM_BRIDGE_MAP[systemId];
+  if (bridgeId) {
+    const bridge = snapshot.bridges.find((b) => b.id === bridgeId);
+    if (bridge) {
+      if (bridge.state === "connected") return "active";
+      if (bridge.state === "monitoring") return "synchronizing";
+      if (bridge.state === "disabled") return "dormant";
+      // disconnected
+      if (bridge.readiness >= 60) return "idle";
+      return "dormant";
+    }
+  }
+
+  // Try provider
+  const providerId = SYSTEM_PROVIDER_MAP[systemId];
+  if (providerId) {
+    const provider = snapshot.providers.find((p) => p.id === providerId);
+    if (provider) {
+      if (provider.state === "active") return "active";
+      if (provider.state === "monitoring") return "synchronizing";
+      if (provider.state === "dormant") return "dormant";
+      return "idle";
+    }
+  }
+
+  return "idle";
+}
 
 export const regions: ForgeRegionMeta[] = [
   { id: "creation", name: "Creation Forge", role: "Primary construction chamber for ecosystem systems.", systems: 2, sync: "High", atmosphere: "Molten industrial haze", summary: "Core forge pressure is stable and contained.", lore: "Foundational fabrication layer where system forms are tempered." },
@@ -55,7 +122,7 @@ const edges: Edge[] = [
   { id: "e-cortex-godzilla", source: "cortex", target: "godzilla-ai", className: "forge-edge edge-experimental", animated: false }
 ];
 
-export function ForgeCanvas({ selectedSystemId, selectedRegionId, operationalOverlay, focusMode, systemState = "idle", onSelectSystem, onSelectRegion, onViewportMove }: ForgeCanvasProps) {
+export function ForgeCanvas({ selectedSystemId, selectedRegionId, operationalOverlay, focusMode, systemState = "idle", cortexSnapshot, onSelectSystem, onSelectRegion, onViewportMove }: ForgeCanvasProps) {
   const panelRef = useRef<HTMLElement | null>(null);
   const [lastFocusRegion, setLastFocusRegion] = useState<string | null>(null);
   const [isNavigating, setIsNavigating] = useState(false);
@@ -100,8 +167,9 @@ export function ForgeCanvas({ selectedSystemId, selectedRegionId, operationalOve
         : (selectedSystemId && !isSelected && !sympathy) || (selectedRegionId && !sympathy)
     );
     const classTone = `class-${system.systemClass.toLowerCase().replace(/\s+/g, "-")}`;
-    return { id: system.id, position: positions[system.id], data: { label: system.name }, type: "default", draggable: false, className: ["forge-node", `state-${system.state}`, classTone, `boot-${system.id}`, isSelected ? "is-selected" : "", isDimmed ? "is-dimmed" : "", sympathy ? "is-related" : "", isFocusMatch ? "is-focus-match" : ""].filter(Boolean).join(" ") };
-  }), [focusMatchesSystem, focusMode, selectedSystemId, selectedRegionId]);
+    const liveState = cortexSnapshot ? deriveActivityState(system.id, cortexSnapshot) : system.state;
+    return { id: system.id, position: positions[system.id], data: { label: system.name }, type: "default", draggable: false, className: ["forge-node", `state-${liveState}`, classTone, `boot-${system.id}`, isSelected ? "is-selected" : "", isDimmed ? "is-dimmed" : "", sympathy ? "is-related" : "", isFocusMatch ? "is-focus-match" : ""].filter(Boolean).join(" ") };
+  }), [focusMatchesSystem, focusMode, selectedSystemId, selectedRegionId, cortexSnapshot]);
 
   const onNodeClick: NodeMouseHandler = (_, node) => {
     const found = systems.find((s) => s.id === node.id) ?? null;

@@ -13,6 +13,7 @@ contextBridge.exposeInMainWorld("kcxApi", {
     return ipcRenderer.invoke("project:scan", rootPath);
   },
   testProviderConnection: (provider: unknown) => ipcRenderer.invoke("provider:test", provider),
+  getSrcTree: (rootPath: string) => ipcRenderer.invoke("src:tree", rootPath),
   onBuildOutputLine: (callback: (event: any) => void) => {
     const listener = (_event: unknown, payload: any) => {
       console.log('[preload] build-output-line received:', JSON.stringify(payload));

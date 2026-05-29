@@ -1,6 +1,7 @@
 import { CortexExecutionPermissions } from "./CortexExecutionPermissions";
 import { CortexExecutionSandbox } from "./CortexExecutionSandbox";
 import { CortexManualExecutionQueueSnapshot, CortexManualExecutionRequest, CortexProviderAdapterReadiness } from "./CortexExecutionTypes";
+import { evaluate as seraEvaluate } from "../sera/KCxSERA";
 
 type CreateManualRequestInput = {
   providerId: string;
@@ -27,6 +28,31 @@ export class CortexManualExecutionQueue {
       requiresApproval: true,
       blockedReason: "Execution adapter not enabled."
     };
+
+    // SERA policy gate — runs before permissions and sandbox.
+    // command is left unset for AI summarization requests so SERA evaluates intent only,
+    // not the raw prompt text (which may contain shell-like patterns in example code).
+    const seraResult = seraEvaluate({
+      id: request.id,
+      source: "cortex",
+      intent: input.purpose,
+      proposedAction: input.purpose,
+    });
+    console.warn("[CortexManualExecutionQueue] SERA evaluation", {
+      requestId: request.id,
+      decision: seraResult.decision,
+      actionType: seraResult.actionType,
+      reasons: seraResult.reasons,
+    });
+    if (seraResult.decision === "block") {
+      request.status = "blocked";
+      request.blockedReason = `SERA blocked: ${seraResult.safeSummary} — ${seraResult.reasons.join("; ")}`;
+      this.requests = [request, ...this.requests].slice(0, 20);
+      return request;
+    }
+    // requireApproval: let the normal permission/sandbox flow proceed.
+    // SERA reasons are already logged above; they do not block execution.
+
     const createCheck = this.permissions.canCreateRequest();
     const sandboxCheck = this.sandbox.validateExecutionRequest(request);
     request.blockedReason = [...createCheck.blockedReasons, ...sandboxCheck.blockedReasons].join(" ") || request.blockedReason;

@@ -293,6 +293,27 @@ app.whenReady().then(() => {
     console.log("[main] project:scan", rootPath);
     return scanProject(rootPath);
   });
+  ipcMain.handle("src:tree", (_evt, rootPath: string) => {
+    const SKIP = new Set(["node_modules", ".git", "dist", "build", "out", ".vite"]);
+    const lines: string[] = [];
+    const walk = (dir: string, prefix: string, depth: number) => {
+      if (depth > 4) return;
+      let entries: fs.Dirent[];
+      try { entries = fs.readdirSync(dir, { withFileTypes: true }); } catch { return; }
+      entries.sort((a, b) => {
+        if (a.isDirectory() !== b.isDirectory()) return a.isDirectory() ? -1 : 1;
+        return a.name.localeCompare(b.name);
+      });
+      for (const e of entries) {
+        if (SKIP.has(e.name)) continue;
+        lines.push(`${prefix}${e.isDirectory() ? e.name + "/" : e.name}`);
+        if (e.isDirectory()) walk(path.join(dir, e.name), prefix + "  ", depth + 1);
+      }
+    };
+    const srcPath = path.join(rootPath, "src");
+    if (fs.existsSync(srcPath)) { lines.push("src/"); walk(srcPath, "  ", 1); }
+    return lines.join("\n");
+  });
   ipcMain.handle("ollama:start", () => startOllama());
   ipcMain.handle("ollama:stop", () => stopOllama());
   createWindow();

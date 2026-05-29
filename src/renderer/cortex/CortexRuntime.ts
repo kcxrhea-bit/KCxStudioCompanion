@@ -3,6 +3,7 @@ import { cortexEventBus } from "./CortexEventBus";
 import { registerProvider, createCortexProvider } from "./CortexProvider";
 import { getActivationBlockedReason } from "./CortexPermissions";
 import { BuildAnalysisExecutionBridge } from "./bridges/BuildAnalysisExecutionBridge";
+import { deriveBridgeReadinessFromSnapshot } from "./bridges/CortexBridgeReadiness";
 import { CortexExecutionEngine } from "./execution/CortexExecutionEngine";
 import { CortexExecutionHistory } from "./execution/CortexExecutionHistory";
 import { cortexExecutionPermissions } from "./execution/CortexExecutionPermissions";
@@ -19,11 +20,11 @@ class CortexRuntime {
   private readonly PERSIST_KEY = "cortex-runtime-config";
   private state: CortexRuntimeState = "contained";
   private providers = [
-    createCortexProvider("studio-companion-analysis", "studio-companion-analysis", "StudioCompanionAnalysis", ["build_intel", "context_scan"], "dormant", 28, "analysis", "monitoring only", "Runtime containment active", "Manual operator activation", "Build analysis bridge", "contained"),
+    createCortexProvider("studio-companion-analysis", "studio-companion-analysis", "StudioCompanionAnalysis", ["build_intel", "context_scan"], "dormant", 28, "analysis", "display-only / not connected", "Provider registered / adapter missing", "Manual operator activation", "Build analysis bridge", "contained"),
     createCortexProvider("kcxmodeai", "kcxmodeai", "KCxModeAI", ["mode_orchestration", "local_brain_fallback"], "monitoring", 72, "orchestration", "embedded — local fallback active", "Embedded brain contained — execution read-only", "Brain active as local Cortex fallback", "KCxModeAI embedded brain", "contained"),
     createCortexProvider("local-ollama-runtime", "local-ollama", "LocalOllamaRuntime", ["local_inference", "model_registry"], "dormant", 6, "local-runtime", "offline", "Local runtime unavailable", "Initialize local runtime", "Local runtime host", "contained"),
-    createCortexProvider("valhalla-runtime-provider", "studio-companion-analysis", "ValhallaRuntime", ["runtime_orchestration"], "monitoring", 18, "orchestration", "monitoring only", "Runtime containment active", "Register runtime provider", "Valhalla runtime bridge", "contained"),
-    createCortexProvider("build-telemetry-provider", "studio-companion-analysis", "BuildTelemetryProvider", ["build_events", "pipeline_summary"], "dormant", 22, "telemetry", "unavailable", "Operator approval required", "Manual operator activation", "Telemetry bridge", "contained")
+    createCortexProvider("valhalla-runtime-provider", "studio-companion-analysis", "ValhallaRuntime", ["runtime_orchestration"], "monitoring", 18, "orchestration", "display-only / monitoring", "Provider registered / adapter missing", "Register runtime provider", "Valhalla runtime bridge", "contained"),
+    createCortexProvider("build-telemetry-provider", "studio-companion-analysis", "BuildTelemetryProvider", ["build_events", "pipeline_summary"], "dormant", 12, "telemetry", "unavailable", "Provider registered / adapter missing", "Manual operator activation", "Telemetry bridge", "contained")
   ];
   private bridges = [
     createBridge("valhalla-runtime", "ValhallaRuntimeBridge", "read-only", 22, "runtime", "Valhalla runtime kernel", "Runtime containment active", "Local runtime initialization"), // future arc: activate when Valhalla runtime wires its own execution boundary
@@ -34,8 +35,8 @@ class CortexRuntime {
     createBridge("messenger", "MessengerBridge", "read-only", 10, "messaging", "Messenger companion channel", "Operator approval required", "Manual operator activation"),
     // Ecosystem map — honest readiness, no fabricated runtime connections
     createBridge("studio-companion-self", "StudioCompanionBridge", "read-only", 85, "ecosystem", "KCx Studio Companion (this app)", "Self-referential — runtime active", "Local runtime active"),
-    createBridge("cortex-intelligence", "CortexBridge", "read-only", 72, "ecosystem", "Cortex orchestration layer", "Runtime containment active", "Cortex session active"),
-    createBridge("smart-brain-normalizer", "SmartBrainBridge", "read-only", 68, "ecosystem", "SmartBrain normalizer module", "Runtime containment active", "Normalizer session active"),
+    createBridge("cortex-intelligence", "CortexBridge", "read-only", 45, "ecosystem", "Cortex orchestration layer", "Display-only / not connected", "Cortex session active"),
+    createBridge("smart-brain-normalizer", "SmartBrainBridge", "read-only", 45, "ecosystem", "SmartBrain normalizer module", "Display-only / not connected", "Normalizer session active"),
     createBridge("kcxmode-android", "KCxModeBridge", "disabled", 0, "ecosystem", "KCxMode / GodzillaMode Android launcher", "External Android project — no runtime connection", "Configure local project path"),
     createBridge("messenger-desktop", "MessengerDesktopBridge", "read-only", 5, "ecosystem", "KCx Messenger Desktop", "Desktop runtime not wired", "Manual operator activation"),
     createBridge("robot-buddy", "RobotBuddyBridge", "disabled", 0, "ecosystem", "KCx Robot Buddy — Android", "External Android project — no runtime connection", "Configure local project path"),
@@ -45,7 +46,6 @@ class CortexRuntime {
     createBridge("dino-holo-friend", "DinoHoloFriendBridge", "disabled", 0, "ecosystem", "DinoHoloFriend — Android", "External Android project — no runtime connection", "Configure local project path"),
     createBridge("after-earth", "AfterEarthBridge", "disabled", 0, "ecosystem", "AfterEarth — Android", "External Android project — no runtime connection", "Configure local project path"),
     createBridge("easy-launcher", "EasyLauncherBridge", "disabled", 0, "ecosystem", "EasyLauncher — Android", "External Android project — no runtime connection", "Configure local project path"),
-    createBridge("godzilla-viewer", "GodzillaViewerBridge", "disabled", 0, "ecosystem", "GodzillaViewer — Android", "External Android project — no runtime connection", "Configure local project path"),
     createBridge("pc-streamer", "PCStreamerBridge", "disabled", 0, "ecosystem", "PCStreamer — utility", "External project — no runtime connection", "Configure local project path")
   ];
   private permissions: Record<string, "read-only" | "monitored" | "operator-approved" | "restricted" | "disabled"> = {
@@ -65,6 +65,7 @@ class CortexRuntime {
   private readonly buildAnalysisBridge = new BuildAnalysisExecutionBridge();
   private cachedContext: {
     projectName?: string;
+    projectPath?: string;
     buildLogTail?: string;
     lastErrorType?: string;
     ollamaStatus?: string;
@@ -165,6 +166,7 @@ class CortexRuntime {
         const projectName = event.payload?.projectName as string | undefined;
         this.cachedContext = {
           projectName,
+          projectPath: event.payload?.projectPath as string | undefined,
           buildLogTail: event.payload?.buildLogTail as string | undefined,
           lastErrorType: event.payload?.lastErrorType as string | undefined,
           ollamaStatus: event.payload?.ollamaStatus as string | undefined,
@@ -195,24 +197,36 @@ class CortexRuntime {
   }
 
   getSnapshot(): CortexRuntimeSnapshot {
+    const memoryHints = cortexMemory.getHints();
+    const bridgeCtx = {
+      embeddedBrain: this.kcxBrainDiagnostics,
+      telemetry: this.providerTelemetry,
+      buildContextAvailable: Boolean(this.cachedContext.buildLogTail?.trim()),
+      projectMemoryEntries: memoryHints.topFiles.length,
+      ollamaEnabled: this.ollamaProviderAdapter.describeReadiness().enabled,
+    };
+    const derivedBridges = this.bridges.map((bridge) => ({
+      ...bridge,
+      ...deriveBridgeReadinessFromSnapshot(bridge, bridgeCtx),
+    }));
     const availableProviders = this.providers.filter((provider) => provider.available).length;
-    const connectedBridges = this.bridges.filter((bridge) => bridge.state === "connected").length;
-    const containedSystems = this.providers.filter((provider) => provider.containmentState === "contained").length + this.bridges.length;
-    const readonlySystems = this.providers.filter((provider) => provider.readonly).length + this.bridges.filter((bridge) => bridge.readonly).length;
-    const lockedSystems = this.bridges.filter((bridge) => bridge.state !== "connected").length + this.providers.filter((provider) => provider.state === "dormant").length;
-    const monitoringSystems = this.providers.filter((provider) => provider.state === "monitoring").length + this.bridges.filter((bridge) => bridge.state === "monitoring").length;
+    const connectedBridges = derivedBridges.filter((bridge) => bridge.state === "connected").length;
+    const containedSystems = this.providers.filter((provider) => provider.containmentState === "contained").length + derivedBridges.length;
+    const readonlySystems = this.providers.filter((provider) => provider.readonly).length + derivedBridges.filter((bridge) => bridge.readonly).length;
+    const lockedSystems = derivedBridges.filter((bridge) => bridge.state !== "connected").length + this.providers.filter((provider) => provider.state === "dormant").length;
+    const monitoringSystems = this.providers.filter((provider) => provider.state === "monitoring").length + derivedBridges.filter((bridge) => bridge.state === "monitoring").length;
     return {
       state: this.state,
       contained: this.state === "contained" || this.state === "dormant",
       providers: this.providers,
-      bridges: this.bridges,
+      bridges: derivedBridges,
       permissions: this.permissions,
       alerts: this.alerts,
       activationRequests: this.activationRequests,
       timelineEvents: this.timelineEvents,
       operationalSummary: {
         runtimePosture: "Contained Monitoring Mode",
-        commandReadiness: Math.round((this.providers.reduce((sum, provider) => sum + provider.readiness, 0) + this.bridges.reduce((sum, bridge) => sum + bridge.readiness, 0)) / (this.providers.length + this.bridges.length)),
+        commandReadiness: Math.round((this.providers.reduce((sum, provider) => sum + provider.readiness, 0) + derivedBridges.reduce((sum, bridge) => sum + bridge.readiness, 0)) / (this.providers.length + derivedBridges.length)),
         activeExecution: false,
         containedSystems,
         readonlySystems,
@@ -241,7 +255,7 @@ class CortexRuntime {
       diagnostics: {
         runtimeHealth: "stable",
         containment: "active",
-        bridgeReadiness: connectedBridges === 0 ? 0 : Math.round((connectedBridges / this.bridges.length) * 100),
+        bridgeReadiness: connectedBridges === 0 ? 0 : Math.round((connectedBridges / derivedBridges.length) * 100),
         providerAvailability: this.providers.length === 0 ? 0 : Math.round((availableProviders / this.providers.length) * 100),
         permissionIntegrity: "stable",
         alerts: [],
@@ -588,6 +602,17 @@ class CortexRuntime {
 
   private specIntakeRunning = false;
 
+  private async fetchSrcTree(projectPath: string): Promise<string> {
+    try {
+      const api = (window as any).kcxApi;
+      if (typeof api?.getSrcTree === "function") {
+        const tree = await api.getSrcTree(projectPath);
+        if (typeof tree === "string" && tree.trim()) return tree;
+      }
+    } catch { /* non-fatal */ }
+    return "";
+  }
+
   async createSpecIntakeRequest(spec: string): Promise<void> {
     if (!spec.trim() || this.specIntakeRunning) return;
     this.specIntakeRunning = true;
@@ -639,24 +664,32 @@ class CortexRuntime {
       const projectName = ctx.projectName ?? "Unknown project";
       const discoveredFiles = (ctx.filesFound ?? []).slice(0, 12);
 
+      const srcTree = ctx.projectPath ? await this.fetchSrcTree(ctx.projectPath) : "";
+      const srcTreeSection = srcTree
+        ? ["", "Full src/ file tree (depth ≤ 4 — these are the REAL files, use exact paths):", "```", srcTree, "```"]
+        : ["", "Known repo files discovered in this workspace:",
+           discoveredFiles.length > 0 ? discoveredFiles.map((file) => `- ${file}`).join("\n") : "- No discovered files available yet."];
+
       const prompt = [
       "Read-only local summarization only.",
       "You are generating a Claude Code/Codex-style implementation prompt for the KCx Studio Companion repo.",
       "",
       "Grounding Rules:",
-      "- Use only files and folders discovered in the current repo. Do not invent file paths, directories, components, or config changes.",
-      '- If the exact file is unknown, say "inspect the repo and locate the existing component first."',
-      '- If uncertain, stop and ask instead of guessing.',
+      "- Use ONLY file paths from the src/ tree provided below. Do not invent file paths, directories, components, or config changes.",
+      "- Always reference actual file paths from the provided src tree. Never guess or fabricate a file name.",
+      '- If the exact file is ambiguous, list the two most likely candidates from the tree and explain which one fits better.',
+      '- If you cannot find a suitable file in the tree, say "inspect the repo and locate the existing component first."',
       "- Never suggest edits to dist/, README.md, package.json, vite.config.ts, tsconfig.json, or git commit/push unless the user explicitly requested them.",
-      "- Prefer existing files such as src/renderer/App.tsx and existing styles when they are the real target. Do not invent new components, hooks, folders, or files.",
+      "- Match the project's existing patterns: if components use inline styles, use inline styles; if they use CSS classes, use CSS classes. Check the tree before deciding.",
+      "- Keep changes surgical — one file at a time where possible.",
       "- Produce minimal patch instructions, one focused change at a time, with exact existing file references.",
-      "- Include a verification step using npm.cmd run build.",
+      "- Include a verification step using npm.cmd run build and npm test.",
       "",
       "Do Not Include:",
       "- git commit, git push, or branch management commands",
       "- README/docs changes unless asked",
       "- package installs unless asked",
-      "- fake directories or fake components",
+      "- invented file names, directories, or components not present in the src tree",
       "- CI/CD workflow steps",
       "- vague source-control review steps",
       "",
@@ -664,16 +697,15 @@ class CortexRuntime {
       `Frameworks: ${frameworkList}`,
       `Source types: ${typeList}`,
       `Top folders: ${folderList}`,
-      "Known repo files discovered in this workspace:",
-      discoveredFiles.length > 0 ? discoveredFiles.map((file) => `- ${file}`).join("\n") : "- No discovered files available yet.",
+      ...srcTreeSection,
       "",
       `Feature request: ${normalized.structuredPrompt}`,
       "",
       "Generate a concise implementation prompt that:",
-      "1. identifies the exact existing files to inspect before editing",
+      "1. identifies the exact existing files to inspect before editing (by path from the tree above)",
       "2. specifies the surgical code change without inventing paths or components",
-      "3. includes a verification command: npm.cmd run build",
-      "4. stops and asks if the repo file is not found"
+      "3. includes a verification command: npm.cmd run build && npm test",
+      "4. stops and asks if the required file is not found in the tree"
       ].join("\n");
 
       const request = this.manualExecutionQueue.createManualRequest({

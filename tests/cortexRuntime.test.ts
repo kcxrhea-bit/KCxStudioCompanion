@@ -181,8 +181,8 @@ describe("CortexRuntime spec intake lifecycle", () => {
     const prompt = requestArgs?.prompt ?? "";
     expect(prompt).toContain("Grounding Rules:");
     expect(prompt).toContain("Do Not Include:");
-    expect(prompt).toContain('If the exact file is unknown, say "inspect the repo and locate the existing component first."');
-    expect(prompt).toContain("Use only files and folders discovered in the current repo.");
+    expect(prompt).toContain('If the exact file is ambiguous, list the two most likely candidates');
+    expect(prompt).toContain("Never suggest edits to dist/");
     expect(prompt).toContain("dist/");
     expect(prompt).toContain("npm.cmd run build");
     expect(prompt).toContain("git commit, git push");

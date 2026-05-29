@@ -74,7 +74,7 @@ const getCompanionRouteForSelection = (selection: ForgeSystemMeta | ForgeRegionM
   if (name === "Memory Vault") return { companionSectionId: "Project Memory" };
   if (name === "AI Systems" || name === "Local AI" || name === "Cloud AI") return { companionSectionId: "AI Providers" };
   if (name === "Device Grid") return { companionSectionId: "Settings" };
-  if (name === "GodzillaMode AI") return { message: "KCxModeAI brain is embedded as a local fallback intelligence module. It supports Cortex when Ollama is unavailable. No external app launch required.", companionSectionId: "AI Providers" };
+  if (name === "GodzillaMode AI") return { companionSectionId: "AI Providers" };
   if (name === "KCx Mode" || name === "KCx Messenger" || name === "Robot Buddy") return { message: bridgeMessage };
   if (name === "KCx Cortex" || name === "Cortex Core") return { message: "Cortex is planned / not implemented." };
 
@@ -754,6 +754,7 @@ export function ValhallaPage({ onExit, onNavigateToCompanionSection }: ValhallaP
           operationalOverlay={operationalOverlay}
           focusMode={focusMode}
           systemState={forgeSystemState}
+          cortexSnapshot={cortexSnapshot}
           onSelectSystem={logSystemSelection}
           onSelectRegion={logRegionSelection}
           onViewportMove={(kind) => appendDevLog(kind)}
@@ -788,32 +789,58 @@ export function ValhallaPage({ onExit, onNavigateToCompanionSection }: ValhallaP
                   ? cortexSnapshot.localExecution.activeExecution
                     ? "active / Build loop operational | Inference ready"
                     : "active / Ollama offline — build loop paused | Awaiting model"
+                  : "id" in activeChamberSelection && activeChamberSelection.id === "godzilla-ai"
+                  ? "Local brain integrated"
+                  : "state" in activeChamberSelection && (activeChamberSelection.state === "dormant" || activeChamberSelection.state === "locked")
+                    && !getCompanionRouteForSelection(activeChamberSelection, "Chamber").companionSectionId
+                  ? "External app dormant — bridge not configured yet"
                   : "state" in activeChamberSelection
                   ? `${activeChamberSelection.state} / ${activeChamberSelection.metrics}`
                   : `${activeChamberSelection.sync} sync`
               }</p>
               <div className="valhalla-chamber-actions">
-                <p>{chamberResult ?? "Companion-linked entry is available where routing exists."}</p>
-                <button type="button" onClick={() => {
-                  if ("id" in activeChamberSelection && activeChamberSelection.id === "cortex") {
-                    const msg = cortexSnapshot.localExecution.activeExecution
-                      ? "Cortex runtime active. Build loop operational. Local inference via Ollama."
-                      : "Cortex runtime active. Ollama offline — enable Ollama in AI Providers to start the build loop.";
-                    setChamberResult(msg);
-                    appendDevLog(`Chamber route: KCx Cortex (${cortexSnapshot.localExecution.activeExecution ? "active" : "offline"})`);
-                    return;
-                  }
-                  const route = getCompanionRouteForSelection(activeChamberSelection, "Chamber");
-                  if (route.companionSectionId) {
-                    appendDevLog(`Chamber route: ${activeChamberSelection.name} -> ${route.companionSectionId}`);
-                    onNavigateToCompanionSection?.(route.companionSectionId);
-                    setIsChamberOpen(false);
-                    return;
-                  }
-                  const message = route.message ?? "No linked Companion route is available for this chamber.";
-                  setChamberResult(message);
-                  appendDevLog(`Chamber route unavailable: ${activeChamberSelection.name}`);
-                }}>Open In Companion</button>
+                {(() => {
+                  const isCortexNode = "id" in activeChamberSelection && activeChamberSelection.id === "cortex";
+                  const isGodzillaNode = "id" in activeChamberSelection && activeChamberSelection.id === "godzilla-ai";
+                  const route = (!isCortexNode && !isGodzillaNode)
+                    ? getCompanionRouteForSelection(activeChamberSelection, "Chamber")
+                    : { companionSectionId: undefined, message: undefined };
+                  const hasRoute = isCortexNode || isGodzillaNode || Boolean(route.companionSectionId);
+                  const isDormantExternal = !hasRoute && !isCortexNode && !isGodzillaNode;
+                  return (
+                    <>
+                      <p>{chamberResult ?? (isDormantExternal
+                        ? "This project is registered in the KCx ecosystem map but is not connected to Studio Companion runtime yet."
+                        : "Companion-linked entry is available where routing exists.")
+                      }</p>
+                      <button
+                        type="button"
+                        disabled={isDormantExternal}
+                        onClick={() => {
+                          if (isCortexNode) {
+                            const msg = cortexSnapshot.localExecution.activeExecution
+                              ? "Cortex runtime active. Build loop operational. Local inference via Ollama."
+                              : "Cortex runtime active. Ollama offline — enable Ollama in AI Providers to start the build loop.";
+                            setChamberResult(msg);
+                            appendDevLog(`Chamber route: KCx Cortex (${cortexSnapshot.localExecution.activeExecution ? "active" : "offline"})`);
+                            return;
+                          }
+                          if (route.companionSectionId) {
+                            appendDevLog(`Chamber route: ${activeChamberSelection.name} -> ${route.companionSectionId}`);
+                            onNavigateToCompanionSection?.(route.companionSectionId);
+                            setIsChamberOpen(false);
+                            return;
+                          }
+                          const message = route.message ?? "No linked Companion route is available for this chamber.";
+                          setChamberResult(message);
+                          appendDevLog(`Chamber route unavailable: ${activeChamberSelection.name}`);
+                        }}
+                      >
+                        {isDormantExternal ? "Bridge Not Configured" : "Open In Companion"}
+                      </button>
+                    </>
+                  );
+                })()}
               </div>
               {"id" in activeChamberSelection && activeChamberSelection.id === "cortex" && (
                 <div className="valhalla-cortex-chamber">
@@ -833,6 +860,32 @@ export function ValhallaPage({ onExit, onNavigateToCompanionSection }: ValhallaP
                     onClick={() => appendDevLog("Cortex activation attempted - runtime not ready")}
                   >
                     Attempt Activation
+                  </button>
+                </div>
+              )}
+              {"id" in activeChamberSelection && activeChamberSelection.id === "godzilla-ai" && (
+                <div className="valhalla-cortex-chamber">
+                  <p className="cortex-chamber-status">EMBEDDED BRAIN ACTIVE</p>
+                  <p className="cortex-chamber-detail">
+                    KCxModeAI is an internal Cortex provider — no bridge required.
+                    The brain is embedded directly inside Studio Companion and activates
+                    as a local fallback when Ollama is unavailable.
+                  </p>
+                  <p className="cortex-chamber-detail">
+                    {cortexSnapshot.localExecution.activeExecution
+                      ? "Cortex active — KCxModeAI brain standing by as secondary fallback."
+                      : "Ollama offline — KCxModeAI brain is the active local fallback."}
+                  </p>
+                  <button
+                    type="button"
+                    className="cortex-activate-btn"
+                    onClick={() => {
+                      onNavigateToCompanionSection?.("AI Providers");
+                      setIsChamberOpen(false);
+                      appendDevLog("KCxModeAI: navigated to AI Providers");
+                    }}
+                  >
+                    View in AI Providers
                   </button>
                 </div>
               )}
@@ -1248,14 +1301,23 @@ export function ValhallaPage({ onExit, onNavigateToCompanionSection }: ValhallaP
                           <div key={category} className="cortex-provider-category-group">
                             <p className="cortex-provider-category">{category}</p>
                             <div className="cortex-provider-grid">
-                              {providers.map((provider) => (
+                              {providers.map((provider) => {
+                                const adapterMissing = (provider.activationBlockedReason ?? "").includes("adapter missing");
+                                const isEmbedded = provider.id === "kcxmodeai";
+                                const statusLabel = isEmbedded
+                                  ? "Local brain integrated"
+                                  : adapterMissing
+                                  ? "Provider registered / adapter missing"
+                                  : provider.runtimeAvailability ?? provider.state;
+                                return (
                                 <article key={provider.id} className="cortex-provider-card">
                                   <div className="cortex-provider-status">
                                     <strong>{provider.label}</strong>
                                     <span className="cortex-runtime-chip">{provider.state}</span>
                                   </div>
+                                  <p className="cortex-provider-meta cortex-provider-status-label">{statusLabel}</p>
                                   <div className="cortex-provider-readiness">
-                                    <span>{provider.readiness}% ready / {provider.runtimeAvailability}</span>
+                                    <span>{provider.readiness}% ready</span>
                                     <div className="cortex-provider-progress"><div className="cortex-provider-progress-fill" style={{ width: `${provider.readiness}%` }} /></div>
                                   </div>
                                   <p className="cortex-provider-capabilities">Capabilities: {provider.capabilities.length}</p>
@@ -1265,7 +1327,8 @@ export function ValhallaPage({ onExit, onNavigateToCompanionSection }: ValhallaP
                                   <p className="cortex-provider-blocked">Blocked: {provider.activationBlockedReason ?? "none"}</p>
                                   <p className="cortex-provider-path">Path: {provider.activationPath ?? "manual operator activation"}</p>
                                 </article>
-                              ))}
+                                );
+                              })}
                             </div>
                           </div>
                         ))}
@@ -1342,7 +1405,33 @@ export function ValhallaPage({ onExit, onNavigateToCompanionSection }: ValhallaP
                       <div className="cortex-spec-intake-panel">
                         <p className="cortex-runtime-muted">Describe a feature in plain language. Cortex reads your project structure and synthesises a Claude Code implementation prompt. The prompt lands in the Approval Queue for review before handoff.</p>
                         {!cortexSnapshot.localExecution.activeExecution && (
-                          <p className="cortex-runtime-muted">Ollama is offline — KCxModeAI Brain local fallback will be used. Enable Ollama in AI Providers for full model-guided output.</p>
+                          <div className="cortex-ollama-setup">
+                            <p className="cortex-runtime-muted">Ollama is offline — KCxModeAI Brain local fallback will be used. Enable Ollama in AI Providers for full model-guided output.</p>
+                            <p className="cortex-runtime-muted cortex-ollama-setup-title">Setup required — Ollama local model</p>
+                            <ol className="cortex-ollama-steps">
+                              <li>
+                                <span>Install Ollama from </span>
+                                <span className="cortex-ollama-url">ollama.com</span>
+                              </li>
+                              <li>
+                                <span>Pull the model:</span>
+                                <div className="cortex-ollama-cmd-row">
+                                  <code className="cortex-ollama-cmd">ollama pull phi3:latest</code>
+                                  <button
+                                    type="button"
+                                    className="cortex-ollama-copy-btn"
+                                    onClick={() => {
+                                      void navigator.clipboard?.writeText("ollama pull phi3:latest");
+                                      appendDevLog("Copied: ollama pull phi3:latest");
+                                    }}
+                                  >Copy</button>
+                                </div>
+                              </li>
+                              <li>
+                                <span>Start Ollama, then use the Enable Local Ollama button in Local Execution Readiness below.</span>
+                              </li>
+                            </ol>
+                          </div>
                         )}
                         <textarea
                           className="cortex-spec-input"

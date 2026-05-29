@@ -1,6 +1,6 @@
 {
   "name": "kcx-studio-companion",
-  "version": "0.9.0-beta.1",
+  "version": "0.9.5-beta",
   "private": true,
   "description": "Local-first AI-assisted workflow orchestration platform for desktop builds, prompts, review, and project memory.",
   "author": {
