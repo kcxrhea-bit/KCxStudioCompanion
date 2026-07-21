@@ -6,6 +6,7 @@ import { EcosystemCluster } from "./components/EcosystemCluster";
 import { EcosystemStatusPanel } from "./components/EcosystemStatusPanel";
 import { EcosystemTest } from "./components/EcosystemTest";
 import { DashboardBackground } from "./components/DashboardBackground";
+import { GuideSection } from "./components/GuideSection";
 import kcxEcosystemReference from "./assets/kcx-ecosystem-reference.png";
 import kcxDashboardBg from "./assets/branding/kcx-dashboard-bg.png";
 import { ValhallaPage } from "./valhalla/ValhallaPage";
@@ -18,7 +19,7 @@ const coreWorkflowNavItems = ["Dashboard", "Projects", "Project Memory"] as cons
 const aiOperationsNavItems = ["Approval Queue", "AI Providers"] as const;
 const developmentNavItems = ["Build Logs", "Patch Review", "Project Context", "Session Timeline"] as const;
 const systemNavItems = ["Settings", "Telemetry"] as const;
-const productInfoNavItems = ["About", "Release Notes", "First Launch", "Product Foundation"] as const;
+const productInfoNavItems = ["Guide", "About", "Release Notes", "First Launch", "Product Foundation"] as const;
 const devDebugNavItems = ["Development Tools", "Ecosystem Test"] as const;
 const navItems = [...coreWorkflowNavItems, ...aiOperationsNavItems, ...developmentNavItems, ...systemNavItems, ...productInfoNavItems, ...devDebugNavItems] as const;
 const sectionKey = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -1536,6 +1537,7 @@ ${safetyBlock}`;
     {isDevelopment && tab === "Development Tools" && <section><button onClick={async () => { if (!selectedProject) { setCopyStatus({ id: "dev-tools", message: "Build command runner not wired yet." }); return; } const newApproval: ApprovalItem = { id: id(), projectId: selectedProject.id, kind: "command", title: "Run npm build", payload: JSON.stringify({ command: "npm.cmd", args: ["run", "build"], cwd: selectedProject.path }), status: "pending", createdAt: new Date().toISOString() }; await persist({ ...state, approvals: [newApproval, ...state.approvals] }); setCopyStatus({ id: "dev-tools", message: "Build command queued in Approval Queue." }); }}>Run npm build</button>{copyStatus?.id === "dev-tools" && <p>{copyStatus.message}</p>}</section>}
     {tab === "Project Context" && <section><button onClick={scanProject} disabled={isScanning}>{isScanning ? "Scanning..." : "Scan Project"}</button><button onClick={generateNextPrompt}>Generate Next Prompt</button><article><p>Detected frameworks: {(selectedProject?.snapshot?.frameworks || []).join(", ") || "None"}</p><p>File count: {selectedProject?.snapshot?.totalFileCount ?? 0}</p><p>Project size: {selectedProject?.snapshot?.approxProjectSize || "n/a"}</p><p>Top folders: {(selectedProject?.snapshot?.majorSourceFolders || []).slice(0, 8).join(", ") || "None"}</p><p>Last scan time: {selectedProject?.snapshot?.lastScanTime || "Never"}</p></article></section>}
     {tab === "Settings" && renderSettings()}
+    {tab === "Guide" && <GuideSection />}
     {tab === "About" && <section><h3 className="title">KCx Studio Companion</h3><div className="grid-2"><article><p>KCx Labs</p><p className="subtle">Local-first orchestration environment for build review, prompt chains, project memory, and safe workflow execution.</p><p>Version: {releaseInfo?.version || "0.9.5-beta"}</p><p>Channel: {releaseInfo?.channel || state.releaseSettings?.buildChannel || "private-beta"}</p></article><article><p>Runtime</p><p>Electron: {releaseInfo?.electron || "n/a"}</p><p>Chrome: {releaseInfo?.chrome || "n/a"}</p><p>Node: {releaseInfo?.node || "n/a"}</p><p>Packaged: {releaseInfo?.packaged ? "yes" : "no"}</p></article></div><footer className="subtle">Copyright (c) 2026 KCx Labs. Local data remains on this machine unless a user-configured provider is explicitly used.</footer></section>}
     {tab === "Release Notes" && <section className="release-notes"><h3 className="title">Release Notes</h3>
       <article className="release-notes-entry">

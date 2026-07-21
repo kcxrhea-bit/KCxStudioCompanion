@@ -1,5 +1,7 @@
 # KCx Studio Companion — Claude Code Notes
 
+> **See also**: `docs/MASTER_ARCHITECTURE.md` (full architecture audit, 2026-07-21). The preset panel has grown since the 2026-05-27 audit below: it now renders 8 tabs (Android, Node/NPM, Electron, Project Root, ADB, Git, Tools, Reset) with 100+ tiles via `commandPresetGroups` in App.tsx. The structural MUST checks below still hold. A "Guide" tab (built-in manual, `src/renderer/components/GuideSection.tsx`) was added 2026-07-21.
+
 ## Architecture Overview
 
 Electron + React + TypeScript. Main process, preload bridge (`window.kcxApi`), and renderer.
@@ -81,8 +83,8 @@ These unit tests are absent from `tests/startupState.test.ts`:
 
 ```
 npm run build       # must pass clean
-npm test            # 169 tests, 6 suites
-npm test startupState  # 16 tests for command generation / persistence
+npm test            # 281 tests, 14 suites (v0.9.5-beta baseline)
+npm test startupState  # command generation / persistence suite
 ```
 
 ## Windows Specifics
