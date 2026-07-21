@@ -15,6 +15,37 @@ Key source files:
 - `src/lib/commandRunner.ts` — safe child-process runner
 - `src/lib/commandSafety.ts` — block dangerous commands
 
+## Spec Intake Permission Scanning (fixed 2026-07-21)
+
+Summarize-safe token scanning in `CortexExecutionPermissions` previously ran over
+`purpose + prompt`. Because the Spec Intake prompt embeds the real `src/` file
+tree, a repository file named `background.css` matched the blocked `background`
+token and denied approval for entirely safe requests.
+
+### Contract
+
+- `CortexManualExecutionRequest.userContent` carries the **user-authored** text only.
+- When `userContent` is set, token scanning inspects `purpose + userContent`.
+- When `userContent` is absent, scanning falls back to `purpose + prompt` (previous, stricter behavior).
+- `CortexRuntime.createSpecIntakeRequest` passes the raw operator spec as `userContent`.
+
+### MUST Checks
+
+1. **Never scan trusted generated context** — src trees, filenames, architecture
+   summaries, grounded source context and fixed prompt templates are not user intent.
+2. **Do not remove the `userContent`-absent fallback.** Callers that never declare a
+   user surface (`createSafeSummarizeExecutionRequest`, build loop) stay strictly gated.
+3. **SERA and sandbox checks are unchanged.** SERA still evaluates `purpose` intent;
+   `CortexExecutionSandbox` still scans `purpose`. Do not relax either.
+4. **Spec Intake approval failure must not return silently.** It records the
+   `permission`/`denied` timeline entry, emits a `spec-intake-status` event for the
+   UI, then routes through `runSpecIntakeFallback` (KCxModeAI Brain → rule-based).
+5. **Ollama chip and chamber header share one source** — `src/renderer/cortex/ollamaStatus.ts`,
+   derived from `snapshot.localExecution.activeExecution`. Do not reintroduce a
+   separate event-driven `ollamaLive` state; it went stale on `Enable Local Ollama`.
+
+Regression coverage: `tests/specIntakePermissions.test.ts`.
+
 ## Preset Tile Panel (audited 2026-05-27)
 
 The command preset UI is a **tile panel**, not a `<select>` dropdown.

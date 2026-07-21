@@ -3196,3 +3196,26 @@
   gap: 10px;
   flex-wrap: wrap;
 }
+
+.cortex-spec-status {
+  margin: 10px 0 0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.74rem;
+  line-height: 1.45;
+  border: 1px solid rgba(105, 124, 163, 0.34);
+  background: rgba(20, 30, 45, 0.6);
+  color: rgba(205, 217, 238, 0.92);
+}
+
+.cortex-spec-status-warning {
+  border-color: rgba(178, 137, 76, 0.46);
+  background: rgba(72, 50, 24, 0.32);
+  color: rgba(231, 205, 158, 0.92);
+}
+
+.cortex-spec-status-error {
+  border-color: rgba(184, 88, 88, 0.5);
+  background: rgba(74, 26, 26, 0.34);
+  color: rgba(240, 197, 197, 0.94);
+}

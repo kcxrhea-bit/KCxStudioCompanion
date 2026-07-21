@@ -711,7 +711,13 @@ class CortexRuntime {
       const request = this.manualExecutionQueue.createManualRequest({
         providerId: "ollama-provider-adapter",
         prompt,
-        purpose: "Summarize feature specification into structured implementation guidance"
+        purpose: "Summarize feature specification into structured implementation guidance",
+        // Only the operator's own words are subject to summarize-safe token
+        // scanning. The rest of `prompt` is trusted application-generated
+        // context (fixed template, src tree, filenames, project summary) and
+        // must not be scanned — real paths such as `background.css` are not
+        // dangerous intent.
+        userContent: spec
       });
 
       this.addTimelineEvent("activation", request.status === "blocked" ? "locked" : "monitoring",
@@ -726,9 +732,16 @@ class CortexRuntime {
 
       const approved = this.approveLatestManualExecutionRequest();
       if (approved?.status !== "approved") {
+        const reason = approved?.blockedReason?.trim() || "Approval denied.";
         this.recordProviderAttempt("blocked");
-        this.recordProviderFailure("blocked", approved?.blockedReason ?? "Approval denied.");
-        this.addTimelineEvent("permission", "denied", "Spec intake approval failed", approved?.blockedReason ?? "Unknown", "system");
+        this.recordProviderFailure("blocked", reason);
+        // Timeline entry is preserved for auditability…
+        this.addTimelineEvent("permission", "denied", "Spec intake approval failed", reason, "system", approved?.id);
+        // …but approval failure must not end the run silently. Route to the
+        // embedded KCxModeAI Brain fallback so the operator still receives an
+        // implementation prompt in the Approval Queue.
+        this.emitSpecIntakeStatus("warning", `Spec intake approval failed — falling back to KCxModeAI Brain. ${reason}`);
+        this.runSpecIntakeFallback(normalized, spec, projectName, "Approval failed — KCxModeAI Brain unavailable.");
         return;
       }
 
@@ -753,34 +766,58 @@ class CortexRuntime {
         });
         this.addTimelineEvent("activation", "info", "Spec intake completed", "Implementation prompt queued in Approval Queue.", "system", result.requestId);
       } else {
-        this.recordProviderFailure("ollama", result?.error ?? "Ollama did not return output.");
+        const reason = result?.error ?? "Ollama did not return output.";
+        this.recordProviderFailure("ollama", reason);
         this.addTimelineEvent("provider", "warning", "Spec intake — Ollama failed, trying KCxModeAI Brain",
-          result?.error ?? "Ollama did not return output.", "provider", result?.providerId);
-        const brainUsed = this.tryKcxModeAIBrainFallback(normalized.structuredPrompt, spec, normalized, projectName);
-        if (!brainUsed) {
-          this.recordProviderAttempt("rule-based");
-          this.recordProviderSuccess("rule-based");
-          cortexEventBus.emit("spec-intake-completed", `Spec intake completed (offline) for: ${projectName}`, {
-            spec,
-            output: normalized.structuredPrompt,
-            projectName,
-            taskType: normalized.taskType,
-            riskLevel: normalized.riskLevel,
-            offline: true,
-            normTrace: {
-              original: normalized.diagnostics.originalInput,
-              sanitized: normalized.diagnostics.sanitizedInput,
-              replacements: normalized.diagnostics.replacementsApplied,
-              classificationReason: normalized.diagnostics.classificationReason,
-              rewriteReduced: normalized.diagnostics.rewriteReduced,
-            }
-          });
-          this.addTimelineEvent("activation", "info", "Offline — rule-based prompt (final fallback)", "KCxModeAI Brain and Ollama both unavailable.", "system");
-        }
+          reason, "provider", result?.providerId);
+        this.runSpecIntakeFallback(normalized, spec, projectName, "KCxModeAI Brain and Ollama both unavailable.");
       }
     } finally {
       this.specIntakeRunning = false;
     }
+  }
+
+  /**
+   * Shared terminal fallback chain for Spec Intake: embedded KCxModeAI Brain
+   * first, then the rule-based normalized prompt. Both paths emit
+   * `spec-intake-completed`, so output always reaches the Approval Queue.
+   */
+  private runSpecIntakeFallback(
+    normalized: ReturnType<typeof smartBrainNormalize>,
+    spec: string,
+    projectName: string,
+    ruleBasedDetail: string
+  ): void {
+    const brainUsed = this.tryKcxModeAIBrainFallback(normalized.structuredPrompt, spec, normalized, projectName);
+    if (brainUsed) return;
+
+    this.recordProviderAttempt("rule-based");
+    this.recordProviderSuccess("rule-based");
+    cortexEventBus.emit("spec-intake-completed", `Spec intake completed (offline) for: ${projectName}`, {
+      spec,
+      output: normalized.structuredPrompt,
+      projectName,
+      taskType: normalized.taskType,
+      riskLevel: normalized.riskLevel,
+      offline: true,
+      normTrace: {
+        original: normalized.diagnostics.originalInput,
+        sanitized: normalized.diagnostics.sanitizedInput,
+        replacements: normalized.diagnostics.replacementsApplied,
+        classificationReason: normalized.diagnostics.classificationReason,
+        rewriteReduced: normalized.diagnostics.rewriteReduced,
+      }
+    });
+    this.addTimelineEvent("activation", "info", "Offline — rule-based prompt (final fallback)", ruleBasedDetail, "system");
+    this.emitSpecIntakeStatus("warning", `KCxModeAI Brain fallback unavailable — rule-based prompt used instead. ${ruleBasedDetail}`);
+  }
+
+  /**
+   * Surfaces a user-facing Spec Intake status so approval or fallback failures
+   * are visible in the UI rather than only in the event timeline.
+   */
+  private emitSpecIntakeStatus(level: "info" | "warning" | "error", message: string): void {
+    cortexEventBus.emit("spec-intake-status", message, { level, message });
   }
 
   approveLatestManualExecutionRequest() {

@@ -5,6 +5,7 @@ import { ForgeCanvas, ForgeRegionMeta, ForgeSystemMeta, systems, regions, Valhal
 import { SystemInspector } from "./components/SystemInspector";
 import { cortexRuntime } from "../cortex/CortexRuntime";
 import { cortexEventBus } from "../cortex/CortexEventBus";
+import { isOllamaInferenceReady, resolveCortexChamberReadiness, resolveOllamaChipState } from "../cortex/ollamaStatus";
 import "./styles/valhalla.css";
 
 type ValhallaPageProps = {
@@ -103,7 +104,7 @@ export function ValhallaPage({ onExit, onNavigateToCompanionSection }: ValhallaP
   const [isChamberOpen, setIsChamberOpen] = useState(false);
   const [cortexChamberOpen, setCortexChamberOpen] = useState(false);
   const [chamberResult, setChamberResult] = useState<string | null>(null);
-  const [ollamaLive, setOllamaLive] = useState(false);
+  const [specStatus, setSpecStatus] = useState<{ level: "info" | "warning" | "error"; message: string } | null>(null);
   const [forgeSystemState, setForgeSystemState] = useState<"idle" | "processing" | "warning" | "error">("idle");
   const [cortexSnapshot, setCortexSnapshot] = useState(() => cortexRuntime.getSnapshot());
   const [specInput, setSpecInput] = useState("");
@@ -131,6 +132,11 @@ export function ValhallaPage({ onExit, onNavigateToCompanionSection }: ValhallaP
     nextActivationSteps: false,
     specIntake: true
   });
+  // Ollama readiness is derived from the live snapshot (same source the Cortex
+  // chamber header uses) rather than a separate event-driven state, so the chip
+  // cannot go stale when readiness changes without a cortex-status-changed event.
+  const ollamaInferenceReady = isOllamaInferenceReady(cortexSnapshot);
+  const ollamaChip = resolveOllamaChipState(ollamaInferenceReady);
   const runtimeViewerLogRef = useRef(false);
   const providersViewedLogRef = useRef(false);
   const bridgesViewedLogRef = useRef(false);
@@ -204,7 +210,8 @@ export function ValhallaPage({ onExit, onNavigateToCompanionSection }: ValhallaP
     executionResults: "Execution Results",
     eventTimeline: "Cortex Event Timeline",
     permissionLayer: "Permission Layer",
-    nextActivationSteps: "Next Activation Steps"
+    nextActivationSteps: "Next Activation Steps",
+    specIntake: "Spec Intake"
   }), []);
   const navExpansionTargets: Record<CortexNavSectionId, CortexPanelId[]> = useMemo(() => ({
     overview: [],
@@ -293,6 +300,7 @@ export function ValhallaPage({ onExit, onNavigateToCompanionSection }: ValhallaP
     const requestId = specRequestRef.current + 1;
     specRequestRef.current = requestId;
     setSpecLoading(true);
+    setSpecStatus(null);
     appendDevLog("Spec intake: sending to Ollama…");
     try {
       await cortexRuntime.createSpecIntakeRequest(specInput.trim());
@@ -302,7 +310,9 @@ export function ValhallaPage({ onExit, onNavigateToCompanionSection }: ValhallaP
       }
     } catch (error) {
       if (specRequestRef.current === requestId) {
-        appendDevLog(`Spec intake: failed — ${error instanceof Error ? error.message : "unknown error"}`);
+        const message = error instanceof Error ? error.message : "unknown error";
+        setSpecStatus({ level: "error", message: `Spec intake failed — ${message}` });
+        appendDevLog(`Spec intake: failed — ${message}`);
       }
       throw error;
     } finally {
@@ -472,8 +482,16 @@ export function ValhallaPage({ onExit, onNavigateToCompanionSection }: ValhallaP
       if (event.type === "bridge-state-changed" && event.message.includes("activated")) appendDevLog("Bridge activated");
       if (event.type === "permission-updated" && event.message.includes("denied")) appendDevLog("Permission denied");
       if (event.type === "cortex-status-changed") {
-        setOllamaLive(Boolean(event.payload?.ollamaEnabled));
+        // Chip state is derived from the snapshot (refreshed above), so this
+        // handler only needs to log the transition.
         appendDevLog(event.payload?.ollamaEnabled ? "Cortex: Ollama live" : "Cortex: Ollama offline");
+      }
+      if (event.type === "spec-intake-status") {
+        const rawLevel = event.payload?.level;
+        const level: "info" | "warning" | "error" =
+          rawLevel === "error" ? "error" : rawLevel === "warning" ? "warning" : "info";
+        setSpecStatus({ level, message: String(event.payload?.message ?? event.message) });
+        appendDevLog(`Spec intake status: ${event.message}`);
       }
       if (event.type === "system-state-changed") {
         const nextSystemState = event.payload?.systemState;
@@ -786,9 +804,7 @@ export function ValhallaPage({ onExit, onNavigateToCompanionSection }: ValhallaP
               <p><strong>Purpose:</strong> {"notes" in activeChamberSelection ? activeChamberSelection.notes : activeChamberSelection.summary}</p>
               <p><strong>Readiness:</strong> {
                 "id" in activeChamberSelection && activeChamberSelection.id === "cortex"
-                  ? cortexSnapshot.localExecution.activeExecution
-                    ? "active / Build loop operational | Inference ready"
-                    : "active / Ollama offline — build loop paused | Awaiting model"
+                  ? resolveCortexChamberReadiness(ollamaInferenceReady)
                   : "id" in activeChamberSelection && activeChamberSelection.id === "godzilla-ai"
                   ? "Local brain integrated"
                   : "state" in activeChamberSelection && (activeChamberSelection.state === "dormant" || activeChamberSelection.state === "locked")
@@ -818,11 +834,11 @@ export function ValhallaPage({ onExit, onNavigateToCompanionSection }: ValhallaP
                         disabled={isDormantExternal}
                         onClick={() => {
                           if (isCortexNode) {
-                            const msg = cortexSnapshot.localExecution.activeExecution
+                            const msg = ollamaInferenceReady
                               ? "Cortex runtime active. Build loop operational. Local inference via Ollama."
                               : "Cortex runtime active. Ollama offline — enable Ollama in AI Providers to start the build loop.";
                             setChamberResult(msg);
-                            appendDevLog(`Chamber route: KCx Cortex (${cortexSnapshot.localExecution.activeExecution ? "active" : "offline"})`);
+                            appendDevLog(`Chamber route: KCx Cortex (${ollamaInferenceReady ? "active" : "offline"})`);
                             return;
                           }
                           if (route.companionSectionId) {
@@ -963,8 +979,8 @@ export function ValhallaPage({ onExit, onNavigateToCompanionSection }: ValhallaP
                       ))}
                       <article className="cortex-status-card">
                         <span className="cortex-label">Ollama</span>
-                        <span className={`cortex-status-pill ${ollamaLive ? "status-active" : "status-dormant"}`}>
-                          {ollamaLive ? "Live" : "Dormant"}
+                        <span className={`cortex-status-pill ${ollamaChip.pillClass}`}>
+                          {ollamaChip.label}
                         </span>
                       </article>
                       <article className="cortex-status-card">
@@ -1450,8 +1466,16 @@ export function ValhallaPage({ onExit, onNavigateToCompanionSection }: ValhallaP
                           >
                             {specLoading ? "Generating…" : "Generate Implementation Prompt"}
                           </button>
-                          {specLoading && <span className="cortex-local-only-chip">{cortexSnapshot.localExecution.activeExecution ? "Ollama synthesising…" : "KCxModeAI Brain processing…"}</span>}
+                          {specLoading && <span className="cortex-local-only-chip">{ollamaInferenceReady ? "Ollama synthesising…" : "KCxModeAI Brain processing…"}</span>}
                         </div>
+                        {specStatus && (
+                          <p
+                            className={`cortex-spec-status cortex-spec-status-${specStatus.level}`}
+                            role="status"
+                          >
+                            {specStatus.message}
+                          </p>
+                        )}
                       </div>
                     </CortexSection>
                     <CortexSection title="Local Execution Readiness" open={expandedSections.localExecution} onToggle={(open) => {
@@ -1649,7 +1673,7 @@ export function ValhallaPage({ onExit, onNavigateToCompanionSection }: ValhallaP
                     </CortexSection>
                     <div className="cortex-bridge-list">
                       <h4>Containment Status</h4>
-                      <p>{ollamaLive ? "Active. Local inference ready." : cortexSnapshot.state ? "Contained. Local inference dormant." : "Contained. Awaiting activation."}</p>
+                      <p>{ollamaInferenceReady ? "Active. Local inference ready." : cortexSnapshot.state ? "Contained. Local inference dormant." : "Contained. Awaiting activation."}</p>
                     </div>
                     </div>
                     <div ref={(node) => { navAnchorRefs.current.future = node; }} data-cortex-nav-id="future" className={getAnchorClass("future")}>

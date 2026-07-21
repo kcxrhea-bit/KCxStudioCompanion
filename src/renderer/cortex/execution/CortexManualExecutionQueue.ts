@@ -7,6 +7,12 @@ type CreateManualRequestInput = {
   providerId: string;
   prompt: string;
   purpose: string;
+  /**
+   * Optional user-authored portion of the request. When supplied, the
+   * permission layer restricts summarize-safe token scanning to this text
+   * instead of the full generated prompt. See CortexManualExecutionRequest.
+   */
+  userContent?: string;
 };
 
 export class CortexManualExecutionQueue {
@@ -23,6 +29,7 @@ export class CortexManualExecutionQueue {
       providerId: input.providerId,
       prompt: input.prompt,
       purpose: input.purpose,
+      ...(typeof input.userContent === "string" ? { userContent: input.userContent } : {}),
       createdAt: new Date().toISOString(),
       status: "blocked",
       requiresApproval: true,

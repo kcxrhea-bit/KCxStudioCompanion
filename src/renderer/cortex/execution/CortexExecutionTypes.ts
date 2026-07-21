@@ -18,6 +18,20 @@ export interface CortexManualExecutionRequest {
   providerId: string;
   prompt: string;
   purpose: string;
+  /**
+   * The user-authored portion of the request (e.g. the raw Spec Intake text).
+   *
+   * `prompt` is assembled by the application and contains trusted, generated
+   * context — fixed prompt templates, repository file trees, filenames and
+   * architecture summaries. Scanning that trusted context for dangerous tokens
+   * produces false positives (a real file named `background.css` matched the
+   * blocked `background` token and denied approval).
+   *
+   * When this field is set, summarize-safe token scanning is restricted to it.
+   * When it is absent, scanning falls back to the full prompt so that callers
+   * which have not declared a user-authored surface stay strictly gated.
+   */
+  userContent?: string;
   createdAt: string;
   status: CortexExecutionStatus;
   requiresApproval: boolean;

@@ -12,6 +12,8 @@ type SummarizeSafetyDiagnostic = {
   matchedToken?: string;
   matchedRule?: string;
   matchedText?: string;
+  /** Which surface was scanned: user-authored content, or the whole prompt. */
+  scannedSurface: "user-content" | "full-prompt";
 };
 
 export class CortexExecutionPermissions {
@@ -34,6 +36,7 @@ export class CortexExecutionPermissions {
       matchedToken: safety.matchedToken,
       matchedRule: safety.matchedRule,
       matchedText: safety.matchedText,
+      scannedSurface: safety.scannedSurface,
       adapterType: adapter?.providerType,
       adapterCapabilities: adapter?.capabilities,
       adapterEnabled: adapter?.enabled
@@ -61,6 +64,7 @@ export class CortexExecutionPermissions {
       matchedToken: safety.matchedToken,
       matchedRule: safety.matchedRule,
       matchedText: safety.matchedText,
+      scannedSurface: safety.scannedSurface,
       adapterType: adapter?.providerType,
       adapterCapabilities: adapter?.capabilities,
       adapterEnabled: adapter?.enabled
@@ -121,8 +125,26 @@ export class CortexExecutionPermissions {
     }
   }
 
+  /**
+   * Returns the text that summarize-safe token scanning is allowed to inspect.
+   *
+   * Only user-authored content is scanned when the caller declares it. Trusted
+   * application-generated context (fixed prompt templates, repository file
+   * trees, filenames, architecture summaries and grounded source context) is
+   * excluded, because it legitimately contains words such as "background",
+   * "write" or "delete" inside real file paths and instructions.
+   *
+   * Callers that do not declare `userContent` keep the previous, stricter
+   * behaviour of scanning the whole prompt.
+   */
+  private getScannableUserText(request: CortexManualExecutionRequest): string {
+    return typeof request.userContent === "string" ? request.userContent : request.prompt;
+  }
+
   private getSummarizeSafetyDiagnostic(request: CortexManualExecutionRequest): SummarizeSafetyDiagnostic {
-    const haystack = `${request.purpose} ${request.prompt}`;
+    const scannedSurface: SummarizeSafetyDiagnostic["scannedSurface"] =
+      typeof request.userContent === "string" ? "user-content" : "full-prompt";
+    const haystack = `${request.purpose} ${this.getScannableUserText(request)}`;
     const dangerousPatterns = [
       { token: "shell", rule: "blocked shell token", regex: /\bshell\b/i },
       { token: "write", rule: "blocked write token", regex: /\bwrite\b/i },
@@ -141,12 +163,14 @@ export class CortexExecutionPermissions {
         allowed: false,
         matchedToken: match.token,
         matchedRule: match.rule,
-        matchedText
+        matchedText,
+        scannedSurface
       };
     }
 
     return {
-      allowed: /summar/i.test(request.purpose)
+      allowed: /summar/i.test(request.purpose),
+      scannedSurface
     };
   }
 
